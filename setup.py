@@ -9,7 +9,7 @@ CLASSIFIERS = [
 ]
 
 setup(name='tileset_analyzer',
-      version='0.0.1',
+      version='0.0.3',
       url='https://github.com/geoyogesh/tileset_analyzer',
       license='GNU-GPL',
       author='Yogesh Dhanapal',
