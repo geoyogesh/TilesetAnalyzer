@@ -9,7 +9,7 @@ CLASSIFIERS = [
 ]
 
 setup(name='tileset_analyzer',
-      version='0.0.10',
+      version='0.0.11',
       url='https://github.com/geoyogesh/tileset_analyzer',
       license='MIT',
       author='Yogesh Dhanapal',
@@ -21,5 +21,5 @@ setup(name='tileset_analyzer',
       long_description_content_type='text/markdown',
       zip_safe=False,
       classifiers=CLASSIFIERS,
-      install_requires=['fastapi', 'uvicorn[standard]'],
+      packages=['fastapi', 'uvicorn[standard]'],
  )
