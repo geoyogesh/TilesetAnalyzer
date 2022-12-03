@@ -21,5 +21,6 @@ setup(name='tileset_analyzer',
       long_description_content_type='text/markdown',
       zip_safe=False,
       classifiers=CLASSIFIERS,
-      install_requires=['fastapi', 'uvicorn[standard]']
+      include_package_data=True,
+      install_requires=['setuptools', 'fastapi', 'uvicorn[standard]']
  )
