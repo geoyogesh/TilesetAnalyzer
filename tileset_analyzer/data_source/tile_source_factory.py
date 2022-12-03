@@ -1,6 +1,6 @@
 import abc
 from sqlite3 import Connection
-from data_source.mbtiles.mbtiles_source import MBTileSource
+from tileset_analyzer.data_source.mbtiles.mbtiles_source import MBTileSource
 
 
 class TilesetSourceFactory():

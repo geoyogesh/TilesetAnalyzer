@@ -32,3 +32,8 @@ tileset_analyzer
 ```
 
 pipx run tileset_analyzer --source data/maptiler-osm-2017-07-03-v3.6.1-us_virginia.mbtiles
+pipx run tileset_analyzer=0.0.3 --source data/maptiler-osm-2017-07-03-v3.6.1-us_virginia.mbtiles
+
+
+pipx install tileset_analyzer
+tileset_analyzer --source data/maptiler-osm-2017-07-03-v3.6.1-us_virginia.mbtiles

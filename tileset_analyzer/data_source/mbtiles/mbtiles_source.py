@@ -2,10 +2,10 @@ import abc
 from collections import namedtuple
 from sqlite3 import Connection
 from typing import List
-from data_source.mbtiles.sqllite_utils import create_connection
-from data_source.tile_source import TileSource
-from entities.tileset_analysis_result import LevelCount, TilesetAnalysisResult
-from .sql_queries import SQL_COUNT_TILES, SQL_COUNT_TILES_BY_Z
+from tileset_analyzer.data_source.mbtiles.sqllite_utils import create_connection
+from tileset_analyzer.data_source.tile_source import TileSource
+from tileset_analyzer.entities.tileset_analysis_result import LevelCount, TilesetAnalysisResult
+from tileset_analyzer.data_source.mbtiles.sql_queries import SQL_COUNT_TILES, SQL_COUNT_TILES_BY_Z
 
 
 class MBTileSource(TileSource):

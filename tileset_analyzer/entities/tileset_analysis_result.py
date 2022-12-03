@@ -1,7 +1,7 @@
 from collections import namedtuple
 from typing import List
 import json
-from entities.level_count import LevelCount
+from tileset_analyzer.entities.level_count import LevelCount
 
 #LevelCount = namedtuple('LevelCount', ['z', 'count'])
 

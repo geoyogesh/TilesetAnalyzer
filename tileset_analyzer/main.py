@@ -2,7 +2,7 @@
 
 
 from tileset_analyzer.data_source.tile_source_factory import TilesetSourceFactory
-from utils.json_utils import write_json_file
+from tileset_analyzer.utils.json_utils import write_json_file
 import sys
 
 OUTPUT_JSON = 'output/analysis_result.json'
