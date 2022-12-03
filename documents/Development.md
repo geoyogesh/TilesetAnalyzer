@@ -55,7 +55,7 @@ pip freeze > requirements.txt
 local debugging
 python3 -m pip install --upgrade build && python3 -m build
 
-wheel unpack  dist/tileset_analyzer-0.0.18-py2.py3-none-any.whl
+wheel unpack  dist/tileset_analyzer-0.0.19-py2.py3-none-any.whl
 
 
 ```
