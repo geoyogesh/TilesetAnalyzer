@@ -13,12 +13,13 @@ class TilesetAnalysisResult:
     def __init__(self):
         pass
     
-    def set_total_tile_count(self, num: int):
-        self.total_tile_count = num
+    def set_count_tiles_total(self, num: int):
+        self.count_tiles_total = num
 
     def set_count_tiles_by_z(self, level_counts: List[LevelCount]):
         self.count_tiles_by_z = level_counts
 
     
     def get_json(self):
-        return json.dumps(self.__dict__, indent=4, cls=CustomEncoder)
+        return json.dumps(self.__dict__, indent=4, cls=CustomEncoder, sort_keys=True,
+                      separators=(',', ': '), ensure_ascii=False)

@@ -2,7 +2,7 @@ from collections import namedtuple
 from sqlite3 import Connection
 from typing import List
 from entities.tileset_analysis_result import LevelCount
-from utils.sql_queries import SQL_COUNT_TILES, SQL_COUNT_TILES_BY_Z
+from .sql_queries import SQL_COUNT_TILES, SQL_COUNT_TILES_BY_Z
 
 def count_tiles(conn: Connection) -> int:
     cur = conn.cursor()
