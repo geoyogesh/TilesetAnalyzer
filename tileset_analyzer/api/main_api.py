@@ -5,6 +5,8 @@ import uvicorn
 
 def start_api():
     app = FastAPI()
-    app.mount("/", StaticFiles(directory="ui", html=True), name="static")
+    app.mount("/api", StaticFiles(directory="static/data"), name="api")
+    app.mount("/", StaticFiles(directory="static/ui", html=True), name="ui")
+    
     uvicorn.run(app, host="0.0.0.0", port=8080)
     

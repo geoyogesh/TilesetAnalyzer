@@ -5,11 +5,28 @@ on:
 jobs:
   pypi:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build_local
+
       - run: python3 -m pip install --upgrade build && python3 -m build
       - name: Publish package
         uses: pypa/gh-action-pypi-publish@release/v1

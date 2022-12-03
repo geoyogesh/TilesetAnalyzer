@@ -54,3 +54,24 @@ pip freeze > requirements.txt
 
 local debugging
 python3 -m pip install --upgrade build && python3 -m build
+
+
+
+```
+brew update 
+brew install nvm 
+
+mkdir ~/.nvm
+
+export NVM_DIR=~/.nvm
+source $(brew --prefix nvm)/nvm.sh
+```
+
+cd /webapp/tileset-analyzer-app
+npm start
+
+npm run build_local
+
+
+http://0.0.0.0:8080/api/analysis_result.json
+http://0.0.0.0:8080
