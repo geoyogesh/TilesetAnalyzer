@@ -6,7 +6,7 @@ from tileset_analyzer.data_source.tile_source_factory import TilesetSourceFactor
 from tileset_analyzer.utils.json_utils import write_json_file
 import sys
 
-OUTPUT_JSON = 'static/data/analysis_result.json'
+OUTPUT_JSON = 'tileset_analyzer/static/data/analysis_result.json'
 
 
 def execute(src_path):

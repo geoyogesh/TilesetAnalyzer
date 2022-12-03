@@ -3,7 +3,7 @@ from sqlite3 import Connection
 from tileset_analyzer.data_source.mbtiles.mbtiles_source import MBTileSource
 
 
-class TilesetSourceFactory():
+class TilesetSourceFactory:
     @staticmethod
     def get_tileset_source(src_path: str):
         try:

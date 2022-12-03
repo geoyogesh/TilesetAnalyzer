@@ -163,7 +163,7 @@ cython_debug/
 .vscode/*
 /**/.DS_Store
 data/*
-static/data/*
-static/ui/*
+tileset_analyzer/static/data/*
+tileset_analyzer/static/ui/*
 
 !/**/**/.gitkeep

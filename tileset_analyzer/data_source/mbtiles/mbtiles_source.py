@@ -26,7 +26,6 @@ class MBTileSource(TileSource):
         for row in rows:
             result.append(LevelCount(row[0], row[1]))
         return result
-    
 
     def analyze(self) -> TilesetAnalysisResult:
         result = TilesetAnalysisResult()
