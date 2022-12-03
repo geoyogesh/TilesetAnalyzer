@@ -7,7 +7,11 @@ conda create -n tileset_analyzer
 conda activate tileset_analyzer
 conda config --env --add channels conda-forge
 conda config --env --set channel_priority strict
-conda install python=3 geopandas pipx
+conda install python=3 pipx
+
+
+
+conda env remove -n tileset_analyzer
 ```
 
 
