@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+from importlib.metadata import entry_points
 
 CLASSIFIERS = [
     "Operating System :: OS Independent",
@@ -16,11 +17,11 @@ setup(name='tileset_analyzer',
       author_email='geoyogesh@gmail.com',
       entry_points={"console_scripts": ["tileset_analyzer = tileset_analyzer.main:cli"]},
       description='Analyze vector Tileset',
+      python_requires=">=3.9, <4",
       packages=find_packages(),
       long_description=open('README.md').read(),
       long_description_content_type='text/markdown',
       zip_safe=False,
       classifiers=CLASSIFIERS,
-      include_package_data=True,
-      install_requires=['setuptools', 'fastapi', 'uvicorn[standard]']
+      install_requires=["fastapi", "uvicorn[standard]"]
  )
