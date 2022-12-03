@@ -29,6 +29,8 @@ test install
 ``` bash
 /usr/bin/python3 setup.py develop
 tileset_analyzer
+
+/usr/bin/python3 setup.py develop --uninstall
 ```
 
 pipx run tileset_analyzer --source data/maptiler-osm-2017-07-03-v3.6.1-us_virginia.mbtiles
@@ -40,3 +42,7 @@ tileset_analyzer --source data/maptiler-osm-2017-07-03-v3.6.1-us_virginia.mbtile
 
 
 pipx upgrade tileset_analyzer
+
+
+pip install -r requirements.txt
+pip freeze > requirements.txt

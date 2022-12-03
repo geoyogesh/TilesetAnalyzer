@@ -162,6 +162,6 @@ cython_debug/
 
 /**/.DS_Store
 data/*
-output/*
+ui/data/*
 
 !/**/.gitkeep
