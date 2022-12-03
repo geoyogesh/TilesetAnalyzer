@@ -46,3 +46,7 @@ pipx upgrade tileset_analyzer
 
 pip install -r requirements.txt
 pip freeze > requirements.txt
+
+
+local debugging
+python3 -m pip install --upgrade build && python3 -m build

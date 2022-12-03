@@ -9,16 +9,17 @@ CLASSIFIERS = [
 ]
 
 setup(name='tileset_analyzer',
-      version='0.0.11',
+      version='0.0.12',
       url='https://github.com/geoyogesh/tileset_analyzer',
       license='MIT',
       author='Yogesh Dhanapal',
       author_email='geoyogesh@gmail.com',
       entry_points={"console_scripts": ["tileset_analyzer = tileset_analyzer.main:cli"]},
       description='Analyze vector Tileset',
+      packages=find_packages(),
       long_description=open('README.md').read(),
       long_description_content_type='text/markdown',
       zip_safe=False,
       classifiers=CLASSIFIERS,
-      packages=['fastapi', 'uvicorn[standard]'],
+      install_requires=['fastapi', 'uvicorn[standard]']
  )
