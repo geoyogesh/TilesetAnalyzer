@@ -21,11 +21,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install dependencies
-        run: npm install
-
       - name: Build
-        run: npm run build_local
+        run: cd webapp/tileset-analyzer-app && npm install && npm run build_local
+
 
       - run: python3 -m pip install --upgrade build && python3 -m build
       - name: Publish package
