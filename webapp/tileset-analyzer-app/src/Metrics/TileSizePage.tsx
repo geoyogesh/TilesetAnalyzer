@@ -1,7 +1,7 @@
 import { Card, Select, Skeleton, Space } from "antd";
 import { useEffect, useState } from "react";
 import { AnalysisResult, TilesSizeAggByZ } from "../AnalysisResult";
-import ReactEcharts from "echarts-for-react"
+import ReactEcharts, { EChartsOption } from "echarts-for-react"
 
 function TileSize() {
     const [tilesSizeAggbyZ, setTilesSizeAggbyZ] = useState<{ [agg_type: string]: any } | null>(null);
@@ -54,7 +54,7 @@ function TileSize() {
         fetch('http://0.0.0.0:8080/api/analysis_result.json')
             .then((res) => res.json())
             .then((res: AnalysisResult) => {
-                
+
                 const aggTypes = [
                     ['MIN', 'tiles_size_agg_min_by_z'],
                     ['MAX', 'tiles_size_agg_max_by_z'],
@@ -65,7 +65,10 @@ function TileSize() {
                 const tileSizeAggOptions: { [agg_type: string]: any } = {}
 
                 for (const [aggType, agg_metric] of aggTypes) {
-                    const options = {
+                    const options: EChartsOption = {
+                        tooltip: {
+                            trigger: 'axis'
+                        },
                         grid: { top: 10, right: 10, bottom: 10, left: 10, containLabel: true },
                         xAxis: {
                             type: "category",
@@ -89,7 +92,8 @@ function TileSize() {
                             {
                                 data: (res as any)[agg_metric].map((item: TilesSizeAggByZ) => item.size),
                                 type: "bar",
-                                smooth: true
+                                smooth: true,
+                                name: 'Tile Size'
                             }
                         ]
                     }
@@ -114,7 +118,7 @@ function TileSize() {
 
 
     return (<Space direction="vertical" size="middle" style={{ display: 'flex' }}>
-   
+
         <Card size="small" title={`Tile Size ${aggOptions.filter(item => item.value === aggSelection)[0].label} by Zoom level`} extra={<Select
             defaultValue={aggSelection}
             style={{ width: 120 }}

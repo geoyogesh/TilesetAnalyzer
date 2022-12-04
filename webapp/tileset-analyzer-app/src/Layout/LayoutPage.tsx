@@ -1,7 +1,8 @@
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { BarChartOutlined } from '@ant-design/icons';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, MenuProps } from 'antd';
 import CustomBreadcrumb from "./CustomBreadcrumb";
+import React from "react";
 
 const { Header, Content, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -9,8 +10,26 @@ const { SubMenu } = Menu;
 
 function LayoutPage() {
   const location = useLocation();
+  const navigate = useNavigate();
 
-
+  const navItems: MenuProps['items'] = [
+    {
+      key: '/',
+      icon: React.createElement(BarChartOutlined),
+      label: `Tileset Metrics`,
+      children: [{
+        key: '/tile-count',
+        label: 'Tile Count',
+        onClick: () => navigate('/tile-count')
+      },
+      {
+        key: '/tile-size',
+        label: 'Tile Size',
+        onClick: () => navigate('/tile-size')
+      }]
+    }
+  ];
+  
   return (
     <>
       <Layout>
@@ -24,16 +43,8 @@ function LayoutPage() {
               selectedKeys={[location.pathname]}
               defaultOpenKeys={['/']}
               style={{ height: '100%', borderRight: 0 }}
-            >
-              <SubMenu key="/" title={<span><BarChartOutlined /><span>Tileset Metrics</span></span>}>
-                <Menu.Item key="/tile-count">
-                  <NavLink to="/tile-count" className="nav-text">Tile Count</NavLink>
-                </Menu.Item>
-                <Menu.Item key="/tile-size">
-                  <NavLink to="/tile-size" className="nav-text">Tile Size</NavLink>
-                </Menu.Item>
-              </SubMenu>
-            </Menu>
+              items={navItems}
+            />
           </Sider>
           <Layout style={{ padding: '0 24px 24px' }}>
             <CustomBreadcrumb/>
