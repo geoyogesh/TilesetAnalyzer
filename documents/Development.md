@@ -76,3 +76,6 @@ npm run build_local
 
 http://0.0.0.0:8080/api/analysis_result.json
 http://0.0.0.0:8080
+
+
+npm install antd --save
