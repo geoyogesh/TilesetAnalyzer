@@ -5,8 +5,9 @@ from tileset_analyzer.api.main_api import start_api
 from tileset_analyzer.data_source.tile_source_factory import TilesetSourceFactory
 from tileset_analyzer.utils.json_utils import write_json_file
 import sys
+import os
 
-OUTPUT_JSON = 'tileset_analyzer/static/data/analysis_result.json'
+OUTPUT_JSON = f'{os.getcwd()}/tileset_analyzer/static/data/analysis_result.json'
 
 
 def execute(src_path):
