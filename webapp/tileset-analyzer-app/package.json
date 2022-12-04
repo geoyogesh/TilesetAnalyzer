@@ -28,7 +28,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build_local": "BUILD_PATH='../../tileset_analyzer/static/ui/' react-scripts build"
+    "build_local": "BUILD_PATH='../../tileset_analyzer/static/ui/' CI=false react-scripts build"
   },
   "eslintConfig": {
     "extends": [
