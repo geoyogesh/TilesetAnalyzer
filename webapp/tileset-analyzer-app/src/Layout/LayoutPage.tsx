@@ -2,13 +2,13 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { BarChartOutlined } from '@ant-design/icons';
 import { Layout, Menu, MenuProps } from 'antd';
 import CustomBreadcrumb from "./CustomBreadcrumb";
-import React from "react";
+import React, { FC } from "react";
 
 const { Header, Content, Sider } = Layout;
 const { SubMenu } = Menu;
 
 
-function LayoutPage() {
+const LayoutPage: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -34,7 +34,7 @@ function LayoutPage() {
     <>
       <Layout>
         <Header className="header">
-          <div className="logo" />
+          <img className="logo" src="/logo.png" />
         </Header>
         <Layout>
           <Sider width={200} className="site-layout-background">

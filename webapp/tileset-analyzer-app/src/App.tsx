@@ -10,8 +10,9 @@ import TileCount from "./Metrics/TileCountPage";
 import TileSize from "./Metrics/TileSizePage";
 import 'antd/dist/reset.css';
 import './App.css';
+import React, { FC } from 'react';
 
-function App1() {
+const App: FC = () => {
     const router = createBrowserRouter([
         {
             path: "/",
@@ -37,4 +38,4 @@ function App1() {
     return (<RouterProvider router={router} />);
 }
 
-export default App1;
+export default App;

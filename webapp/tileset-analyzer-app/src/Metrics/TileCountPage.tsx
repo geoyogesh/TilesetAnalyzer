@@ -1,10 +1,9 @@
 import { Card, Skeleton, Space } from "antd";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { AnalysisResult } from "../AnalysisResult";
 import ReactEcharts from "echarts-for-react";
 
-function TileCount() {
-
+const TileCount: FC = () => {
     const [countTilesbyZ, setCountTilesbyZ] = useState<any>(null);
 
     const chartStyle = {

@@ -1,8 +1,8 @@
 import { Breadcrumb } from "antd";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-function CustomBreadcrumb() {
+const CustomBreadcrumb: FC = () => {
     const location = useLocation();
     const [active, setActive] = useState<string | null>(null);
 

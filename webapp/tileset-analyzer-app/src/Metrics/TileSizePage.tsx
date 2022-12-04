@@ -1,9 +1,9 @@
 import { Card, Select, Skeleton, Space } from "antd";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { AnalysisResult, TilesSizeAggByZ } from "../AnalysisResult";
 import ReactEcharts, { EChartsOption } from "echarts-for-react"
 
-function TileSize() {
+const TileSize: FC = () => {
     const [tilesSizeAggbyZ, setTilesSizeAggbyZ] = useState<{ [agg_type: string]: any } | null>(null);
     const [aggSelection, setAggSelection] = useState<string>('AVG');
 
