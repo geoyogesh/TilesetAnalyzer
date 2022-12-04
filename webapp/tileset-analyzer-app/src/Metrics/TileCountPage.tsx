@@ -15,9 +15,6 @@ function TileCount() {
         fetch('http://0.0.0.0:8080/api/analysis_result.json')
             .then((res) => res.json())
             .then((res: AnalysisResult) => {
-                console.log(res);
-
-
                 const options = {
                     grid: { top: 10, right: 10, bottom: 10, left: 10, containLabel: true },
                     xAxis: {

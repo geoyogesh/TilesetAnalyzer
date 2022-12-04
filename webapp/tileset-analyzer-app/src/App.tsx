@@ -20,14 +20,14 @@ function App1() {
             children: [
                 {
                     path: "/",
-                    element: <Navigate to="/tilesize" />,
+                    element: <Navigate to="/tile-size" />,
                 },
                 {
-                    path: "/tilesize",
+                    path: "/tile-size",
                     element: <TileSize />,
                 },
                 {
-                    path: "/tilecount",
+                    path: "/tile-count",
                     element: <TileCount />,
                 },
             ],
