@@ -7,7 +7,7 @@ from tileset_analyzer.utils.json_utils import write_json_file
 import sys
 import os
 
-OUTPUT_JSON = f'{os.getcwd()}/tileset_analyzer/static/data/analysis_result.json'
+OUTPUT_JSON = f'{os.path.dirname(__file__)}/static/data/analysis_result.json'
 
 
 def execute(src_path):
