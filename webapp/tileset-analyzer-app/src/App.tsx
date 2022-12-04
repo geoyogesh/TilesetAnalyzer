@@ -1,35 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { BarChartOutlined, LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
+import { BarChartOutlined } from '@ant-design/icons';
 import { Card, MenuProps, Select, Skeleton, Space } from 'antd';
 import { Breadcrumb, Layout, Menu } from 'antd';
 import 'antd/dist/reset.css';
 import './App.css';
 import ReactEcharts from "echarts-for-react"
 import { AnalysisResult, TilesSizeAggByZ } from './AnalysisResult';
-import { Typography } from 'antd';
-
-const { Title } = Typography;
-
-const options = {
-  grid: { top: 20, right: 40, bottom: 20, left: 40 },
-  xAxis: {
-    type: "category",
-    data: ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5"]
-  },
-  yAxis: {
-    type: "value"
-  },
-  series: [
-    {
-      data: [400, 300, 350, 200, 280],
-      type: "bar",
-      smooth: true
-    }
-  ],
-  tooltip: {
-    trigger: "axis"
-  }
-}
 
 const { Header, Content, Sider } = Layout;
 
@@ -54,7 +30,7 @@ const navItems: MenuProps['items'] = [
 function App() {
 
 
-  const [data, setData] = useState<AnalysisResult | null>(null);
+  const [, setData] = useState<AnalysisResult | null>(null);
   const [countTilesbyZ, setCountTilesbyZ] = useState<any>(null);
   const [tilesSizeAggbyZ, setTilesSizeAggbyZ] = useState<{ [agg_type: string]: any } | null>(null);
   const [aggSelection, setAggSelection] = useState<string>('AVG');
