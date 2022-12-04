@@ -2,6 +2,8 @@ import { Card, Select, Skeleton, Space } from "antd";
 import { FC, useEffect, useState } from "react";
 import { AnalysisResult, TilesSizeAggByZ } from "../AnalysisResult";
 import ReactEcharts, { EChartsOption } from "echarts-for-react"
+import { BASE_CHART_CONFIG, CHART_STYLE } from "./ChartProps";
+import { bytesConverted, bytesToString, bytesUnit } from "./SizeConversions";
 
 const TileSize: FC = () => {
     const [tilesSizeAggbyZ, setTilesSizeAggbyZ] = useState<{ [agg_type: string]: any } | null>(null);
@@ -27,30 +29,6 @@ const TileSize: FC = () => {
     ];
 
     useEffect(() => {
-
-        const bytesConversion = (bytes: number, si = false, dp = 1) => {
-            const thresh = si ? 1000 : 1024;
-
-            if (Math.abs(bytes) < thresh) {
-                return bytes + ' B';
-            }
-
-            const units = si
-                ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-                : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-            let u = -1;
-            const r = 10 ** dp;
-
-            do {
-                bytes /= thresh;
-                ++u;
-            } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
-
-
-            return bytes.toFixed(dp) + ' ' + units[u];
-        }
-
-
         fetch('http://0.0.0.0:8080/api/analysis_result.json')
             .then((res) => res.json())
             .then((res: AnalysisResult) => {
@@ -65,37 +43,48 @@ const TileSize: FC = () => {
                 const tileSizeAggOptions: { [agg_type: string]: any } = {}
 
                 for (const [aggType, agg_metric] of aggTypes) {
+                    const values = (res as any)[agg_metric].map((item: TilesSizeAggByZ) => item.size);
+                    const maxValue = Math.max(...(res as any)[agg_metric]
+                        .filter((item: TilesSizeAggByZ) => item.size !== null)
+                        .map((item: TilesSizeAggByZ) => item.size));
+                    const unit = bytesUnit(maxValue, true, 0);
+                    
+                    const convertedValues = (res as any)[agg_metric].map((item: TilesSizeAggByZ) => bytesConverted(item.size, unit, true, 0));
+                    console.log(aggType, maxValue, unit, values, convertedValues);
                     const options: EChartsOption = {
-                        tooltip: {
-                            trigger: 'axis'
-                        },
-                        grid: { top: 10, right: 10, bottom: 10, left: 10, containLabel: true },
-                        xAxis: {
-                            type: "category",
-                            data: (res as any)[agg_metric].map((item: TilesSizeAggByZ) => item.z),
-                        },
-                        yAxis: {
-                            type: "value",
-                            name: 'Tile Size',
-                            axisLabel: {
-                                formatter: (value: number) => {
-                                    var val = bytesConversion(value, true);
-                                    return val;
+                        ...BASE_CHART_CONFIG,
+                        ...{
+                            xAxis: {
+                                ...BASE_CHART_CONFIG.xAxis,
+                                ...{
+                                    type: "category",
+                                    data: (res as any)[agg_metric].map((item: TilesSizeAggByZ) => item.z),
+                                    name: 'Zoom Level'
                                 }
                             },
-                        },
-                        formatter: (params: any) => {
-                            var val = bytesConversion(params[0].value, true, 0);
-                            return val;
-                        },
-                        series: [
-                            {
-                                data: (res as any)[agg_metric].map((item: TilesSizeAggByZ) => item.size),
-                                type: "bar",
-                                smooth: true,
-                                name: 'Tile Size'
-                            }
-                        ]
+                            yAxis: {
+                                ...BASE_CHART_CONFIG.yAxis,
+                                ...{
+                                    type: "value",
+                                    name: `Tile Size (in ${unit})`,
+                                    nameGap: 40,
+                                },
+                            },
+                            /*
+                            formatter: (params: any) => {
+                                var val = bytesConversion(params[0].value, true, 0);
+                                return val;
+                            },
+                            */
+                            series: [
+                                {
+                                    data: convertedValues,
+                                    type: "bar",
+                                    smooth: true,
+                                    name: 'Tile Size'
+                                }
+                            ]
+                        }
                     }
                     tileSizeAggOptions[aggType] = options;
                 }
@@ -105,11 +94,6 @@ const TileSize: FC = () => {
                 console.log(err.message);
             });
     }, []);
-
-
-    const chartStyle = {
-        height: "300px"
-    };
 
 
     const handleChange = (value: string) => {
@@ -125,7 +109,7 @@ const TileSize: FC = () => {
             onChange={handleChange}
             options={aggOptions}
         />}>
-            {tilesSizeAggbyZ !== null ? <ReactEcharts option={tilesSizeAggbyZ[aggSelection]} style={chartStyle}></ReactEcharts> : <Skeleton />}
+            {tilesSizeAggbyZ !== null ? <ReactEcharts option={tilesSizeAggbyZ[aggSelection]} style={CHART_STYLE}></ReactEcharts> : <Skeleton />}
         </Card>
 
     </Space>);

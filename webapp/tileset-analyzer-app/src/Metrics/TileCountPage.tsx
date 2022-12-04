@@ -1,40 +1,44 @@
 import { Card, Skeleton, Space } from "antd";
 import { FC, useEffect, useState } from "react";
 import { AnalysisResult } from "../AnalysisResult";
-import ReactEcharts from "echarts-for-react";
+import ReactEcharts, { EChartsOption } from "echarts-for-react";
+import { BASE_CHART_CONFIG, CHART_STYLE } from "./ChartProps";
 
 const TileCount: FC = () => {
     const [countTilesbyZ, setCountTilesbyZ] = useState<any>(null);
-
-    const chartStyle = {
-        height: "300px"
-    };
 
     useEffect(() => {
         fetch('http://0.0.0.0:8080/api/analysis_result.json')
             .then((res) => res.json())
             .then((res: AnalysisResult) => {
-                const options = {
-                    tooltip: {
-                        trigger: 'axis'
-                    },
-                    grid: { top: 10, right: 10, bottom: 10, left: 10, containLabel: true },
-                    xAxis: {
-                        type: "category",
-                        data: res.count_tiles_by_z.map(item => item.z)
-                    },
-                    yAxis: {
-                        type: "value"
-                    },
-                    series: [
-                        {
-                            data: res.count_tiles_by_z.map(item => item.count),
-                            type: "bar",
-                            smooth: true,
-                            name: 'Tile Count'
-                        }
-                    ]
-                }
+                const options: EChartsOption = {
+                    ...BASE_CHART_CONFIG,
+                    ...{
+                        xAxis: {
+                            ...BASE_CHART_CONFIG.xAxis,
+                            ...{
+                                type: "category",
+                                data: res.count_tiles_by_z.map(item => item.z),
+                                name: 'Zoom Level',
+                            }
+                        },
+                        yAxis: {
+                            ...BASE_CHART_CONFIG.yAxis, 
+                            ...{
+                                type: "value",
+                                name: "Tile Count",
+                            }
+                        },
+                        series: [
+                            {
+                                data: res.count_tiles_by_z.map(item => item.count),
+                                type: "bar",
+                                smooth: true,
+                                name: 'Tile Count'
+                            }
+                        ]
+                    }
+                };
                 setCountTilesbyZ(options);
 
             })
@@ -47,7 +51,7 @@ const TileCount: FC = () => {
     return (
         <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
             <Card size="small" title="Tiles Count by Zoom Level">
-                {countTilesbyZ !== null ? <ReactEcharts option={countTilesbyZ} style={chartStyle}></ReactEcharts> : <Skeleton />}
+                {countTilesbyZ !== null ? <ReactEcharts option={countTilesbyZ} style={CHART_STYLE}></ReactEcharts> : <Skeleton />}
             </Card>
         </Space>);
 }
