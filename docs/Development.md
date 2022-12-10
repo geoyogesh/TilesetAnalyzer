@@ -9,8 +9,6 @@ conda config --env --add channels conda-forge
 conda config --env --set channel_priority strict
 conda install python=3 pipx
 
-
-
 conda env remove -n tileset_analyzer
 ```
 
