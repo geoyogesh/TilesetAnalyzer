@@ -163,6 +163,7 @@ cython_debug/
 .vscode/*
 /**/.DS_Store
 data/*
+output/*
 tileset_analyzer/static/data/*
 tileset_analyzer/static/ui/*
 

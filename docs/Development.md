@@ -40,8 +40,7 @@ pipx run tileset_analyzer=0.0.3 --source data/maptiler-osm-2017-07-03-v3.6.1-us_
 
 
 pipx install tileset_analyzer
-tileset_analyzer --source /Users/yogeshdhanapal/Desktop/GitHub/tileset_analyzer/data/maptiler-osm-2017-07-03-v3.6.1-us_virginia.mbtiles
-
+tileset_analyzer --source /Users/yogeshdhanapal/Desktop/GitHub/tileset_analyzer/data/maptiler-osm-2017-07-03-v3.6.1-us_virginia.mbtiles --temp_folder /Users/yogeshdhanapal/Desktop/GitHub/tileset_analyzer/output/
 
 pipx upgrade tileset_analyzer
 
