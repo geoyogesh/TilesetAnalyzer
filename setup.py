@@ -9,7 +9,7 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 3.9",
 ]
 
-setup (
+setup(
     name='tileset_analyzer',
     version='0.0.33',
     url='https://github.com/geoyogesh/tileset_analyzer',
@@ -24,6 +24,6 @@ setup (
     long_description_content_type='text/markdown',
     zip_safe=False,
     classifiers=CLASSIFIERS,
-    include_package_data = True,
-    install_requires=["fastapi", "uvicorn[standard]", "pandas"]
+    include_package_data=True,
+    install_requires=["fastapi", "uvicorn[standard]", "pandas", "protobuf"]
 )

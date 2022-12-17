@@ -11,6 +11,7 @@ import TileSize from "./Metrics/TileSizePage";
 import 'antd/dist/reset.css';
 import './App.css';
 import React, { FC } from 'react';
+import TilesetInfo from "./Info/TilesetInfo";
 
 const App: FC = () => {
     const router = createBrowserRouter([
@@ -22,6 +23,10 @@ const App: FC = () => {
                 {
                     path: "/",
                     element: <Navigate to="/tile-size" />,
+                },
+                {
+                    path: "/tileset-info",
+                    element: <TilesetInfo />,
                 },
                 {
                     path: "/tile-size",

@@ -7,7 +7,7 @@ conda create -n tileset_analyzer
 conda activate tileset_analyzer
 conda config --env --add channels conda-forge
 conda config --env --set channel_priority strict
-conda install python=3 pipx pandas
+conda install python=3 pipx pandas protobuf
 
 conda env remove -n tileset_analyzer
 ```
@@ -76,3 +76,28 @@ http://0.0.0.0:8080
 
 
 npm install antd --save
+
+
+vector tile
+Reference:
+https://github.com/mapbox/vector-tile-spec
+https://github.com/tilezen/mapbox-vector-tile
+https://github.com/mapbox/vector-tile-base
+
+polygon should follow right hand rule
+https://github.com/chris48s/geojson-rewind
+
+
+brew install protobuf
+protoc -I=. --python_out=./pbf_vt/ ./proto
+protoc -I=. --python_out=./pbf_vt/ ./proto/*
+
+https://github.com/mapbox/vector-tile-js
+https://github.com/mapbox/point-geometry
+https://github.com/mapbox/pbf
+https://github.com/feross/ieee754
+https://github.com/tmcw/awesome-geojson
+
+
+Python 
+https://github.com/mapbox/vector-tile-base

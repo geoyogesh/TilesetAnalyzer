@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { BarChartOutlined } from '@ant-design/icons';
+import { BarChartOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { Layout, Menu, MenuProps } from 'antd';
 import CustomBreadcrumb from "./CustomBreadcrumb";
 import React, { FC } from "react";
@@ -13,6 +13,16 @@ const LayoutPage: FC = () => {
   const navigate = useNavigate();
 
   const navItems: MenuProps['items'] = [
+    {
+      key: '/info',
+      icon: React.createElement(InfoCircleOutlined),
+      label: `Infomation`,
+      children: [{
+        key: '/tileset-info',
+        label: 'Tileset Info',
+        onClick: () => navigate('/tileset-info')
+      }]
+    },
     {
       key: '/',
       icon: React.createElement(BarChartOutlined),
@@ -41,7 +51,7 @@ const LayoutPage: FC = () => {
             <Menu
               mode="inline"
               selectedKeys={[location.pathname]}
-              defaultOpenKeys={['/']}
+              defaultOpenKeys={['/', '/info']}
               style={{ height: '100%', borderRight: 0 }}
               items={navItems}
             />

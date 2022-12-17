@@ -41,7 +41,6 @@ const TileCount: FC = () => {
                                     position: 'top',
                                     valueAnimation: true,
                                     formatter: (param: any) => { 
-                                        console.log(param); 
                                         return `${abbreviateNumber(param.data)}`; 
                                     } 
                                 }

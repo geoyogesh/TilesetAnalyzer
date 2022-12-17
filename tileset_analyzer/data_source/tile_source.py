@@ -4,11 +4,12 @@ from typing import List
 from tileset_analyzer.entities.level_count import LevelCount
 from tileset_analyzer.entities.level_size import LevelSize
 from tileset_analyzer.entities.tileset_analysis_result import TilesetAnalysisResult
+from tileset_analyzer.entities.tileset_info import TilesetInfo
 
 
 class TileSource(abc.ABC):
     @abc.abstractmethod
-    def __init__(self, src_path: str):
+    def __init__(self, src_path: str, scheme: str):
         pass
 
     @abc.abstractmethod
@@ -53,6 +54,10 @@ class TileSource(abc.ABC):
 
     @abc.abstractmethod
     def tiles_size_agg_99p_by_z(self) -> List[LevelSize]:
+        pass
+
+    @abc.abstractmethod
+    def tileset_info(self) -> TilesetInfo:
         pass
 
     @abc.abstractmethod

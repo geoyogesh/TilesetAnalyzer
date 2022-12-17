@@ -2,6 +2,7 @@ from typing import List
 import json
 from tileset_analyzer.entities.level_count import LevelCount
 from tileset_analyzer.entities.level_size import LevelSize
+from tileset_analyzer.entities.tileset_info import TilesetInfo
 
 
 class CustomEncoder(json.JSONEncoder):
@@ -22,6 +23,8 @@ class TilesetAnalysisResult:
         self.tiles_size_agg_90p_by_z: List[LevelSize] = None
         self.tiles_size_agg_95p_by_z: List[LevelSize] = None
         self.tiles_size_agg_99p_by_z: List[LevelSize] = None
+
+        self.tileset_info: TilesetInfo = None
 
     def set_count_tiles_total(self, num: int):
         self.count_tiles_total = num
@@ -55,6 +58,9 @@ class TilesetAnalysisResult:
 
     def set_tiles_size_agg_99p_by_z(self, level_sizes: List[LevelSize]):
         self.tiles_size_agg_99p_by_z = level_sizes
+
+    def set_tileset_info(self, tileset_info: TilesetInfo):
+        self.tileset_info = tileset_info
 
     def get_json(self):
         return json.dumps(

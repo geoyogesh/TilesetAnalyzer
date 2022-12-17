@@ -10,13 +10,17 @@ from tileset_analyzer.data_source.mbtiles.sql_queries import SQL_COUNT_TILES, SQ
     SQL_SUM_TILE_SIZES_BY_Z, SQL_MIN_TILE_SIZES_BY_Z, SQL_MAX_TILE_SIZES_BY_Z, SQL_AVG_TILE_SIZES_BY_Z, \
     SQL_LIST_TILE_SIZES_BY_Z
 import pandas as pd
-import numpy as np
+from tileset_analyzer.entities.tileset_info import TilesetInfo
+import os
+from pathlib import Path
 
 
 class MBTileSource(TileSource):
-    def __init__(self, src_path: str):
+    def __init__(self, src_path: str, scheme: str):
         self.conn = create_connection(src_path)
         self.tiles_size_z_df = None
+        self.src_path = src_path
+        self.scheme = scheme
 
     def count_tiles(self) -> int:
         cur = self.conn.cursor()
@@ -111,6 +115,15 @@ class MBTileSource(TileSource):
     def tiles_size_agg_99p_by_z(self) -> List[LevelSize]:
         return self._get_agg_tile_size_percentiles_z('99p')
 
+    def tileset_info(self) -> TilesetInfo:
+        tileset_info = TilesetInfo()
+        tileset_info.set_name((self.src_path.split('/')[-1]).split('.')[0])
+        tileset_info.set_size(os.stat(self.src_path).st_size)
+        tileset_info.set_scheme(self.scheme)
+        tileset_info.set_location(str(Path(self.src_path).parent.absolute()))
+        tileset_info.set_ds_type('mbtiles')
+        return tileset_info
+
     def analyze(self) -> TilesetAnalysisResult:
         result = TilesetAnalysisResult()
         result.set_count_tiles_total(self.count_tiles())
@@ -127,6 +140,8 @@ class MBTileSource(TileSource):
         result.set_tiles_size_agg_95p_by_z(self.tiles_size_agg_95p_by_z())
         result.set_tiles_size_agg_99p_by_z(self.tiles_size_agg_99p_by_z())
         self._clear_tilesize_z_dataframe()
+
+        result.set_tileset_info(self.tileset_info())
 
         return result
 

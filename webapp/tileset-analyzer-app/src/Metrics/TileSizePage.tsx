@@ -75,7 +75,7 @@ const TileSize: FC = () => {
                     const unit = bytesUnit(maxValue, true, 0);
                     
                     const convertedValues = (res as any)[agg_metric].map((item: TilesSizeAggByZ) => bytesConverted(item.size, unit, true, 0));
-                    console.log(aggType, maxValue, unit, values, convertedValues);
+                    //console.log(aggType, maxValue, unit, values, convertedValues);
                     const options: EChartsOption = {
                         ...BASE_CHART_CONFIG,
                         ...{
