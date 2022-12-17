@@ -3,6 +3,7 @@ import { FC, useEffect, useState } from "react";
 import { AnalysisResult } from "../AnalysisResult";
 import ReactEcharts, { EChartsOption } from "echarts-for-react";
 import { BASE_CHART_CONFIG, CHART_STYLE } from "./ChartProps";
+import { abbreviateNumber } from "./NumberConverions";
 
 const TileCount: FC = () => {
     const [countTilesbyZ, setCountTilesbyZ] = useState<any>(null);
@@ -34,7 +35,16 @@ const TileCount: FC = () => {
                                 data: res.count_tiles_by_z.map(item => item.count),
                                 type: "bar",
                                 smooth: true,
-                                name: 'Tile Count'
+                                name: 'Tile Count',
+                                label: {
+                                    show: true,
+                                    position: 'top',
+                                    valueAnimation: true,
+                                    formatter: (param: any) => { 
+                                        console.log(param); 
+                                        return `${abbreviateNumber(param.data)}`; 
+                                    } 
+                                }
                             }
                         ]
                     }

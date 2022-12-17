@@ -106,7 +106,13 @@ const TileSize: FC = () => {
                                     data: convertedValues,
                                     type: "bar",
                                     smooth: true,
-                                    name: 'Tile Size'
+                                    name: 'Tile Size',
+                                    label: {
+                                        show: true,
+                                        position: 'top',
+                                        valueAnimation: true,
+                                        formatter: `{@score} ${unit}`
+                                    }
                                 }
                             ]
                         }
