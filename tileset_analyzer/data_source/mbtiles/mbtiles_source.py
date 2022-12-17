@@ -16,6 +16,7 @@ import numpy as np
 class MBTileSource(TileSource):
     def __init__(self, src_path: str):
         self.conn = create_connection(src_path)
+        self.tiles_size_z_df = None
 
     def count_tiles(self) -> int:
         cur = self.conn.cursor()
@@ -53,24 +54,31 @@ class MBTileSource(TileSource):
             result.append(LevelSize(row[0], row[1]))
         return result
 
+    def _set_tilesize_z_dataframe(self):
+        query = SQL_LIST_TILE_SIZES_BY_Z
+        cur = self.conn.cursor()
+        self.tiles_size_z_df = pd.read_sql(query, self.conn)
+        cur.close()
+
+    def _clear_tilesize_z_dataframe(self):
+        self.tiles_size_z_df = None
+
     def _get_agg_tile_size_percentiles_z(self, percentile_type: str) -> List[LevelSize]:
         quantile = None
         if percentile_type == '50p':
             quantile = 0.5
+        elif percentile_type == '85p':
+            quantile = 0.85
         elif percentile_type == '90p':
             quantile = 0.9
+        elif percentile_type == '95p':
+            quantile = 0.95
         elif percentile_type == '99p':
             quantile = 0.99
         else:
             raise 'UNKNOWN PERCENTILE TYPE'
 
-        query = SQL_LIST_TILE_SIZES_BY_Z
-        cur = self.conn.cursor()
-        df = pd.read_sql(query, self.conn)
-        cur.close()
-
-        result_df = df.groupby('zoom_level').quantile(quantile)
-        # result_df = df.groupby('zoom_level').agg(lambda x: np.percentile(x['size'], q=95))
+        result_df = self.tiles_size_z_df.groupby('zoom_level').quantile(quantile)
         result: List[LevelSize] = []
         for row in result_df.itertuples():
             result.append(LevelSize(row[0], row[1]))
@@ -91,8 +99,14 @@ class MBTileSource(TileSource):
     def tiles_size_agg_50p_by_z(self) -> List[LevelSize]:
         return self._get_agg_tile_size_percentiles_z('50p')
 
+    def tiles_size_agg_85p_by_z(self) -> List[LevelSize]:
+        return self._get_agg_tile_size_percentiles_z('85p')
+
     def tiles_size_agg_90p_by_z(self) -> List[LevelSize]:
         return self._get_agg_tile_size_percentiles_z('90p')
+
+    def tiles_size_agg_95p_by_z(self) -> List[LevelSize]:
+        return self._get_agg_tile_size_percentiles_z('95p')
 
     def tiles_size_agg_99p_by_z(self) -> List[LevelSize]:
         return self._get_agg_tile_size_percentiles_z('99p')
@@ -105,8 +119,14 @@ class MBTileSource(TileSource):
         result.set_tiles_size_agg_min_by_z(self.tiles_size_agg_min_by_z())
         result.set_tiles_size_agg_max_by_z(self.tiles_size_agg_max_by_z())
         result.set_tiles_size_agg_avg_by_z(self.tiles_size_agg_avg_by_z())
+
+        self._set_tilesize_z_dataframe()
         result.set_tiles_size_agg_50p_by_z(self.tiles_size_agg_50p_by_z())
+        result.set_tiles_size_agg_85p_by_z(self.tiles_size_agg_85p_by_z())
         result.set_tiles_size_agg_90p_by_z(self.tiles_size_agg_90p_by_z())
+        result.set_tiles_size_agg_95p_by_z(self.tiles_size_agg_95p_by_z())
         result.set_tiles_size_agg_99p_by_z(self.tiles_size_agg_99p_by_z())
+        self._clear_tilesize_z_dataframe()
+
         return result
 

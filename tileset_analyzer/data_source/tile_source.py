@@ -40,7 +40,15 @@ class TileSource(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def tiles_size_agg_85p_by_z(self) -> List[LevelSize]:
+        pass
+
+    @abc.abstractmethod
     def tiles_size_agg_90p_by_z(self) -> List[LevelSize]:
+        pass
+
+    @abc.abstractmethod
+    def tiles_size_agg_95p_by_z(self) -> List[LevelSize]:
         pass
 
     @abc.abstractmethod

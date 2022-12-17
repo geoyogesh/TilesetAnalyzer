@@ -31,8 +31,16 @@ const TileSize: FC = () => {
             label: '50th Percentile',
         },
         {
+            value: '85p',
+            label: '85th Percentile',
+        },
+        {
             value: '90p',
             label: '90th Percentile',
+        },
+        {
+            value: '95p',
+            label: '95th Percentile',
         },
         {
             value: '99p',
@@ -51,7 +59,9 @@ const TileSize: FC = () => {
                     ['AVG', 'tiles_size_agg_avg_by_z'],
                     ['SUM', 'tiles_size_agg_sum_by_z'],
                     ['50p', 'tiles_size_agg_50p_by_z'],
+                    ['85p', 'tiles_size_agg_85p_by_z'],
                     ['90p', 'tiles_size_agg_90p_by_z'],
+                    ['95p', 'tiles_size_agg_95p_by_z'],
                     ['99p', 'tiles_size_agg_99p_by_z']
                 ]
 
