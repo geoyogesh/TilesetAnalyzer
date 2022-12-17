@@ -36,5 +36,17 @@ class TileSource(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def tiles_size_agg_50p_by_z(self) -> List[LevelSize]:
+        pass
+
+    @abc.abstractmethod
+    def tiles_size_agg_90p_by_z(self) -> List[LevelSize]:
+        pass
+
+    @abc.abstractmethod
+    def tiles_size_agg_99p_by_z(self) -> List[LevelSize]:
+        pass
+
+    @abc.abstractmethod
     def analyze(self) -> TilesetAnalysisResult:
         pass

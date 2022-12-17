@@ -25,5 +25,5 @@ setup (
     zip_safe=False,
     classifiers=CLASSIFIERS,
     include_package_data = True,
-    install_requires=["fastapi", "uvicorn[standard]"]
+    install_requires=["fastapi", "uvicorn[standard]", "pandas"]
 )

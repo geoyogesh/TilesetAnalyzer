@@ -26,6 +26,18 @@ const TileSize: FC = () => {
             value: 'AVG',
             label: 'Average',
         },
+        {
+            value: '50p',
+            label: '50th Percentile',
+        },
+        {
+            value: '90p',
+            label: '90th Percentile',
+        },
+        {
+            value: '99p',
+            label: '99th Percentile',
+        }
     ];
 
     useEffect(() => {
@@ -37,7 +49,10 @@ const TileSize: FC = () => {
                     ['MIN', 'tiles_size_agg_min_by_z'],
                     ['MAX', 'tiles_size_agg_max_by_z'],
                     ['AVG', 'tiles_size_agg_avg_by_z'],
-                    ['SUM', 'tiles_size_agg_sum_by_z']
+                    ['SUM', 'tiles_size_agg_sum_by_z'],
+                    ['50p', 'tiles_size_agg_50p_by_z'],
+                    ['90p', 'tiles_size_agg_90p_by_z'],
+                    ['99p', 'tiles_size_agg_99p_by_z']
                 ]
 
                 const tileSizeAggOptions: { [agg_type: string]: any } = {}
@@ -105,7 +120,7 @@ const TileSize: FC = () => {
 
         <Card size="small" title={`Tile Size ${aggOptions.filter(item => item.value === aggSelection)[0].label} by Zoom level`} extra={<Select
             defaultValue={aggSelection}
-            style={{ width: 120 }}
+            style={{ width: 160 }}
             onChange={handleChange}
             options={aggOptions}
         />}>
