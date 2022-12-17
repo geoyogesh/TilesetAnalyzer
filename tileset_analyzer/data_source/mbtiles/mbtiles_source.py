@@ -4,15 +4,22 @@ from sqlite3 import Connection
 from typing import List
 from tileset_analyzer.data_source.mbtiles.sqllite_utils import create_connection
 from tileset_analyzer.data_source.tile_source import TileSource
+from tileset_analyzer.entities.layer_info import LayerInfo
 from tileset_analyzer.entities.level_size import LevelSize
+from tileset_analyzer.entities.tile_item import TileItem
 from tileset_analyzer.entities.tileset_analysis_result import LevelCount, TilesetAnalysisResult
 from tileset_analyzer.data_source.mbtiles.sql_queries import SQL_COUNT_TILES, SQL_COUNT_TILES_BY_Z, \
     SQL_SUM_TILE_SIZES_BY_Z, SQL_MIN_TILE_SIZES_BY_Z, SQL_MAX_TILE_SIZES_BY_Z, SQL_AVG_TILE_SIZES_BY_Z, \
-    SQL_LIST_TILE_SIZES_BY_Z
+    SQL_LIST_TILE_SIZES_BY_Z, SQL_ALL_TILES
 import pandas as pd
 from tileset_analyzer.entities.tileset_info import TilesetInfo
 import os
 from pathlib import Path
+import base64
+from tileset_analyzer.readers.vector_tile.engine import VectorTile
+import gzip
+import multiprocessing
+from multiprocessing.pool import ThreadPool as Pool
 
 
 class MBTileSource(TileSource):
@@ -56,6 +63,15 @@ class MBTileSource(TileSource):
         result: List[LevelSize] = []
         for row in rows:
             result.append(LevelSize(row[0], row[1]))
+        return result
+
+    def _get_all_tiles(self) -> List[TileItem]:
+        cur = self.conn.cursor()
+        cur.execute(SQL_ALL_TILES)
+        rows = cur.fetchall()
+        result: List[LevelSize] = []
+        for row in rows:
+            result.append(TileItem(row[0], row[1], row[2], row[3]))
         return result
 
     def _set_tilesize_z_dataframe(self):
@@ -122,6 +138,37 @@ class MBTileSource(TileSource):
         tileset_info.set_scheme(self.scheme)
         tileset_info.set_location(str(Path(self.src_path).parent.absolute()))
         tileset_info.set_ds_type('mbtiles')
+
+        attr_info = {}
+        tiles = self._get_all_tiles()
+
+        def process_tile(tile):
+            if tile.z not in attr_info:
+                attr_info[tile.z] = {}
+
+            zoom_level_info = attr_info[tile.z]
+
+            data = gzip.decompress(tile.data)
+            vt = VectorTile(data)
+            for layer in vt.layers:
+                if layer.name not in zoom_level_info:
+                    zoom_level_info[layer.name] = LayerInfo(layer.name, tile.z)
+
+                layer_info = zoom_level_info[layer.name]
+                for feature in layer.features:
+                    layer_info.add_feature(feature.attributes.get())
+
+        with Pool(processes=multiprocessing.cpu_count()) as pool:
+            pool.map(process_tile, tiles)
+
+        # get all layer infos
+        all_layers = []
+        for zoom_level in sorted(attr_info.keys()):
+            layer_dict = attr_info[zoom_level]
+            for layer_name in sorted(layer_dict.keys()):
+                layer = layer_dict[layer_name]
+                all_layers.append(layer)
+        tileset_info.set_layer_info(all_layers)
         return tileset_info
 
     def analyze(self) -> TilesetAnalysisResult:

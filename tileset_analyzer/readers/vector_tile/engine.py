@@ -1354,7 +1354,7 @@ class Layer(object):
 
 class VectorTile(object):
 
-    def __init__(self, tile = None):
+    def __init__(self, tile=None):
         self._layers = []
         if tile:
             if (isinstance(tile,str)) or (isinstance(tile,other_str)):

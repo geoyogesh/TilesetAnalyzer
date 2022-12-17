@@ -101,3 +101,6 @@ https://github.com/tmcw/awesome-geojson
 
 Python 
 https://github.com/mapbox/vector-tile-base
+
+tms and xyz scheme
+https://gist.github.com/tmcw/4954720

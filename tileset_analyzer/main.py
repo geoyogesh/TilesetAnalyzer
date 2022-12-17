@@ -6,23 +6,29 @@ import os
 import argparse
 
 
-def execute(src_path, scheme, temp_folder):
+def execute(src_path, scheme, temp_folder, actions):
+    print('started...')
     print('src_path:', src_path)
     print('scheme:', scheme)
     print('temp_folder:', temp_folder)
-    print('processing started')
+    print('actions', actions)
 
-    data_source = TilesetSourceFactory.get_tileset_source(src_path, scheme)
-    result = data_source.analyze()
+    if 'process' in actions:
+        print('processing started')
+        data_source = TilesetSourceFactory.get_tileset_source(src_path, scheme)
+        result = data_source.analyze()
 
-    output_json = os.path.join(temp_folder, 'analysis_result.json')
+        output_json = os.path.join(temp_folder, 'analysis_result.json')
 
-    write_json_file(result.get_json(), output_json)
-    print('processing completed')
+        write_json_file(result.get_json(), output_json)
+        print('processing completed')
 
-    print('Web UI started')
-    start_api(temp_folder)
-    print('Web UI stopped')
+    if 'serve' in actions:
+        print('Web UI started')
+        start_api(temp_folder)
+        print('Web UI stopped')
+
+    print('completed')
 
 
 def get_arg(param):
@@ -36,8 +42,10 @@ def cli():
     parser.add_argument('--source', help='source', required=True)
     parser.add_argument('--scheme', help='scheme', default='XYZ')
     parser.add_argument('--temp_folder', help='temp_folder', required=True)
+    parser.add_argument('--actions', help='actions', default='process,serve')
     args = parser.parse_args()
-    execute(args.source, args.scheme, args.temp_folder)
+    actions = args.actions.split(',')
+    execute(args.source, args.scheme, args.temp_folder, actions)
 
 
 '''
