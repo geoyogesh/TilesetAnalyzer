@@ -8,7 +8,7 @@ from tileset_analyzer.entities.tileset_info import TilesetInfo
 class CustomEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, set):
-            return list(o).sort()
+            return sorted(o)
         return o.__dict__
 
 

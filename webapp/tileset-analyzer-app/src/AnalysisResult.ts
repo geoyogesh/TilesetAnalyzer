@@ -25,9 +25,21 @@ export interface TilesSizeAggByZ {
 
 
 export interface TilesetInfo {
-    name:   string;
-    scheme: string;
-    size:   number;
-    location: string;
-    ds_type: string;
+    ds_type:          string;
+    layer_info_items: LayerInfoItem[];
+    location:         string;
+    name:             string;
+    scheme:           string;
+    size:             number;
 }
+
+export interface LayerInfoItem {
+    attributes:                string[];
+    attributes_numeric_domain: { [key: string]: number[] };
+    attributes_sample_values:  { [key: string]: any[] };
+    attributes_types:          { [key: string]: string[] };
+    count:                     number;
+    name:                      string;
+    zoom_level:                number;
+}
+

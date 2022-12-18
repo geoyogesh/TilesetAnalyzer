@@ -56,7 +56,7 @@ const LayoutPage: FC = () => {
               items={navItems}
             />
           </Sider>
-          <Layout style={{ padding: '0 24px 24px' }}>
+          <Layout style={{ padding: '0 24px 24px', height:"calc(100vh - 70px)" }}>
             <CustomBreadcrumb/>
             <Content
               className="site-layout-background"
