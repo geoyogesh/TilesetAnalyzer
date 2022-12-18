@@ -48,10 +48,6 @@ export const bytesConverted = (input_bytes: number, targetUnit : string, si = fa
     let bytes = input_bytes;
     const thresh = si ? 1000 : 1024;
 
-    if (Math.abs(bytes) < thresh) {
-        return bytes;
-    }
-
     let targetUnitIndex = -1;
     if (Units.indexOf(targetUnit) !== -1) {
         targetUnitIndex = Units.indexOf(targetUnit);

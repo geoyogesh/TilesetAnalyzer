@@ -1,5 +1,5 @@
 export const CHART_STYLE = {
-    height: "400px"
+    height: "600px"
 };
 
 
@@ -7,7 +7,7 @@ export const BASE_CHART_CONFIG = {
     tooltip: {
         trigger: 'item'
     },
-    grid: { top: 20, right: 10, bottom: 20, left: 40, containLabel: true},
+    grid: { top: 80, right: 40, bottom: 20, left: 40, containLabel: true },
     xAxis: {
         nameLocation: 'middle',
         nameGap: 30
@@ -15,5 +15,21 @@ export const BASE_CHART_CONFIG = {
     yAxis: {
         nameLocation: 'middle',
         nameGap: 60,
-    }
+    },
+    toolbox: {
+        show: true,
+        orient: 'vertical',
+        left: 'right',
+        top: 'center',
+        feature: {
+            dataZoom: {
+                yAxisIndex: 'none'
+            },
+            mark: { show: true },
+            dataView: { show: true, readOnly: false },
+            magicType: { show: true, type: ['line', 'bar', 'stack'] },
+            restore: { show: true },
+            saveAsImage: { show: true }
+        }
+    },
 };

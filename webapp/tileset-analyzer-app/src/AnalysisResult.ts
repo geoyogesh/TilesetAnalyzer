@@ -11,6 +11,13 @@ export interface AnalysisResult {
     tiles_size_agg_95p_by_z: TilesSizeAggByZ[];
     tiles_size_agg_99p_by_z: TilesSizeAggByZ[];
     tileset_info:            TilesetInfo;
+    tiles_size_agg_sum_by_z_layer: TilesSizeAggSumByZLayer[];
+}
+
+export interface TilesSizeAggSumByZLayer {
+    layers: {[layer_name: string]: number};
+    size:   number;
+    z:      number;
 }
 
 export interface CountTilesByZ {

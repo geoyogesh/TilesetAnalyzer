@@ -1,5 +1,7 @@
 from typing import List
 import json
+
+from tileset_analyzer.entities.layer_level_size import LayerLevelSize
 from tileset_analyzer.entities.level_count import LevelCount
 from tileset_analyzer.entities.level_size import LevelSize
 from tileset_analyzer.entities.tileset_info import TilesetInfo
@@ -63,6 +65,9 @@ class TilesetAnalysisResult:
 
     def set_tileset_info(self, tileset_info: TilesetInfo):
         self.tileset_info = tileset_info
+
+    def set_tiles_size_agg_sum_by_z_layer(self, level_sizes: List[LayerLevelSize]):
+        self.tiles_size_agg_sum_by_z_layer = level_sizes
 
     def get_json(self):
         return json.dumps(

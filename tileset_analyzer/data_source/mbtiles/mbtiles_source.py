@@ -5,6 +5,7 @@ from typing import List
 from tileset_analyzer.data_source.mbtiles.sqllite_utils import create_connection
 from tileset_analyzer.data_source.tile_source import TileSource
 from tileset_analyzer.entities.layer_info import LayerInfo
+from tileset_analyzer.entities.layer_level_size import LayerLevelSize, TileItemSize
 from tileset_analyzer.entities.level_size import LevelSize
 from tileset_analyzer.entities.tile_item import TileItem
 from tileset_analyzer.entities.tileset_analysis_result import LevelCount, TilesetAnalysisResult
@@ -20,9 +21,10 @@ from tileset_analyzer.readers.vector_tile.engine import VectorTile
 import gzip
 import multiprocessing
 from multiprocessing.pool import ThreadPool as Pool
-
+import sys
 
 class MBTileSource(TileSource):
+
     def __init__(self, src_path: str, scheme: str):
         self.conn = create_connection(src_path)
         self.tiles_size_z_df = None
@@ -171,6 +173,54 @@ class MBTileSource(TileSource):
         tileset_info.set_layer_info(all_layers)
         return tileset_info
 
+    def tiles_size_agg_sum_by_z_layer(self) -> List[LayerLevelSize]:
+        all_tile_sizes: dict[str, List[TileItemSize]] = {}
+        tiles = self._get_all_tiles()
+
+        def normalize_tile_sizes(total: int, layers: dict[str, int]) -> dict[str, int]:
+            final = {}
+            layer_sum = sum([layer_size for layer_size in layers.values()])
+            for layer_name, layer_size in layers.items():
+                final[layer_name] = round((layer_size / layer_sum) * total)
+            return final
+
+        def process_tile(tile):
+            if tile.z not in all_tile_sizes:
+                all_tile_sizes[tile.z] = []
+
+            level_tile_sizes = all_tile_sizes[tile.z]
+
+            data = gzip.decompress(tile.data)
+            size = sys.getsizeof(tile.data)
+            vt = VectorTile(data)
+            tile_all_layers_size = {}
+            for layer in vt.layers:
+                tile_layer_size = 0
+                for feature in layer.features:
+                    attr = feature.attributes.get()
+                    geom = feature.get_geometry()
+                    tile_layer_size += (sys.getsizeof(attr) + sys.getsizeof(geom))
+                tile_all_layers_size[layer.name] = tile_layer_size
+            tile_all_layers_size = normalize_tile_sizes(size, tile_all_layers_size)
+            level_tile_sizes.append(TileItemSize(tile.x, tile.y, tile.z, size, tile_all_layers_size))
+
+        with Pool(processes=multiprocessing.cpu_count()) as pool:
+            pool.map(process_tile, tiles)
+
+        result: List[LayerLevelSize] = []
+        for z in sorted(all_tile_sizes.keys()):
+            tiles = all_tile_sizes[z]
+            total = sum([tile.size for tile in tiles])
+            layer_sizes = {}
+            for item in tiles:
+                for layer_name, layer_size in item.layers.items():
+                    if layer_name not in layer_sizes:
+                        layer_sizes[layer_name] = 0
+                    layer_sizes[layer_name] += layer_size
+            result.append(LayerLevelSize(z, total, layer_sizes))
+
+        return result
+
     def analyze(self) -> TilesetAnalysisResult:
         result = TilesetAnalysisResult()
         result.set_count_tiles_total(self.count_tiles())
@@ -189,6 +239,8 @@ class MBTileSource(TileSource):
         self._clear_tilesize_z_dataframe()
 
         result.set_tileset_info(self.tileset_info())
+
+        result.set_tiles_size_agg_sum_by_z_layer(self.tiles_size_agg_sum_by_z_layer())
 
         return result
 

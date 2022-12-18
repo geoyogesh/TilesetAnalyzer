@@ -36,6 +36,11 @@ const LayoutPage: FC = () => {
         key: '/tile-size',
         label: 'Tile Size',
         onClick: () => navigate('/tile-size')
+      },
+      {
+        key: '/tile-layer-size',
+        label: 'Tile Layer Size',
+        onClick: () => navigate('/tile-layer-size')
       }]
     }
   ];

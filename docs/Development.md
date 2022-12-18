@@ -104,3 +104,4 @@ https://github.com/mapbox/vector-tile-base
 
 tms and xyz scheme
 https://gist.github.com/tmcw/4954720
+https://stackabuse.com/encoding-and-decoding-base64-strings-in-python/

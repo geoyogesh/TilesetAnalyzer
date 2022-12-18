@@ -12,6 +12,7 @@ import 'antd/dist/reset.css';
 import './App.css';
 import React, { FC } from 'react';
 import TilesetInfo from "./Info/TilesetInfo";
+import LayerTileSize from "./Metrics/LayerTileSizePage";
 
 const App: FC = () => {
     const router = createBrowserRouter([
@@ -35,6 +36,10 @@ const App: FC = () => {
                 {
                     path: "/tile-count",
                     element: <TileCount />,
+                },
+                {
+                    path: "/tile-layer-size",
+                    element: <LayerTileSize />,
                 },
             ],
         },

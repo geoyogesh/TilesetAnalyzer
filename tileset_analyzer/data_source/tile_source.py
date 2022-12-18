@@ -1,6 +1,8 @@
 import abc
 from sqlite3 import Connection
 from typing import List
+
+from tileset_analyzer.entities.layer_level_size import LayerLevelSize
 from tileset_analyzer.entities.level_count import LevelCount
 from tileset_analyzer.entities.level_size import LevelSize
 from tileset_analyzer.entities.tileset_analysis_result import TilesetAnalysisResult
@@ -58,6 +60,10 @@ class TileSource(abc.ABC):
 
     @abc.abstractmethod
     def tileset_info(self) -> TilesetInfo:
+        pass
+
+    @abc.abstractmethod
+    def tiles_size_agg_sum_by_z_layer(self) -> List[LayerLevelSize]:
         pass
 
     @abc.abstractmethod
