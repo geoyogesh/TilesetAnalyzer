@@ -13,6 +13,7 @@ import './App.css';
 import React, { FC } from 'react';
 import TilesetInfo from "./Info/TilesetInfo";
 import LayerTileSize from "./Metrics/LayerTileSizePage";
+import LayerSizeTree from "./Metrics/LayerSizeTreePage";
 
 const App: FC = () => {
     const router = createBrowserRouter([
@@ -40,6 +41,10 @@ const App: FC = () => {
                 {
                     path: "/tile-layer-size",
                     element: <LayerTileSize />,
+                },
+                {
+                    path: "/tile-layer-size-tree-map",
+                    element: <LayerSizeTree />,
                 },
             ],
         },

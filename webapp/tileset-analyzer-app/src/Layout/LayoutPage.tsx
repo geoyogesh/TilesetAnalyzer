@@ -41,6 +41,11 @@ const LayoutPage: FC = () => {
         key: '/tile-layer-size',
         label: 'Tile Layer Size',
         onClick: () => navigate('/tile-layer-size')
+      },
+      {
+        key: '/tile-layer-size-tree-map',
+        label: 'Tile Layer Size (TreeMap)',
+        onClick: () => navigate('/tile-layer-size-tree-map')
       }]
     }
   ];
@@ -52,7 +57,7 @@ const LayoutPage: FC = () => {
           <img className="logo" src="/logo.png" />
         </Header>
         <Layout>
-          <Sider width={200} className="site-layout-background">
+          <Sider width={250} className="site-layout-background">
             <Menu
               mode="inline"
               selectedKeys={[location.pathname]}
