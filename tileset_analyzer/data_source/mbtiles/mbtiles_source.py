@@ -23,6 +23,9 @@ import multiprocessing
 from multiprocessing.pool import ThreadPool as Pool
 import sys
 
+from tileset_analyzer.utilities.moniter import timeit
+
+
 class MBTileSource(TileSource):
 
     def __init__(self, src_path: str, scheme: str):
@@ -133,6 +136,7 @@ class MBTileSource(TileSource):
     def tiles_size_agg_99p_by_z(self) -> List[LevelSize]:
         return self._get_agg_tile_size_percentiles_z('99p')
 
+    @timeit
     def tileset_info(self) -> TilesetInfo:
         tileset_info = TilesetInfo()
         tileset_info.set_name((self.src_path.split('/')[-1]).split('.')[0])
@@ -173,6 +177,7 @@ class MBTileSource(TileSource):
         tileset_info.set_layer_info(all_layers)
         return tileset_info
 
+    @timeit
     def tiles_size_agg_sum_by_z_layer(self) -> List[LayerLevelSize]:
         all_tile_sizes: dict[str, List[TileItemSize]] = {}
         tiles = self._get_all_tiles()
