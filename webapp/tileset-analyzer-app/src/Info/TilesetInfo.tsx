@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { AnalysisResult, LayerInfoItem, TilesetInfo } from "../AnalysisResult";
 import { Skeleton, Space, Typography, Table, Card, Divider, Modal } from 'antd';
 import { bytesToString } from "../Metrics/SizeConversions";
-import { ColumnsType } from "antd/es/table";
+import { ColumnsType, TableProps } from "antd/es/table";
 import LayerInfo from "./LayerInfo";
 
 const { Title, Paragraph, Text } = Typography;
@@ -36,6 +36,10 @@ const TileSetInfo: FC = () => {
     const handleCancel = () => {
         setIsModalOpen(false);
     };
+
+    const onChange: TableProps<DataType>['onChange'] = (pagination, filters, sorter, extra) => {
+        console.log('params', pagination, filters, sorter, extra);
+      };
 
 
     useEffect(() => {
@@ -80,7 +84,7 @@ const TileSetInfo: FC = () => {
                         width: 150,
                         defaultSortOrder: 'ascend',
                         filters: Array.from(nameItems).sort((a, b) => a.localeCompare(b)).map(item => ({ text: item, value: item })),
-                        onFilter: (value: any, record) => record.layer_name === value,
+                        onFilter: (value: any, record) => record.layer_name.indexOf(value) === 0,
                         sorter: (a, b) => a.layer_name.localeCompare(b.layer_name),
                     },
                     {
@@ -127,7 +131,8 @@ const TileSetInfo: FC = () => {
             {tableData != null ? <Table size="small" style={{ 'flexGrow': 1 }}
                 columns={columns}
                 dataSource={tableData}
-                pagination={{ pageSize: 50 }}
+                pagination={{ defaultPageSize: 10, showSizeChanger: true }}
+                onChange={onChange}
                 scroll={{ y: 400 }} /> : <Skeleton />}
             <Modal 
                 title={`${currentRecord?.layer_info_item?.name} Layer Attributes`} 

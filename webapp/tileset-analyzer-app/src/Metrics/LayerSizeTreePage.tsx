@@ -32,7 +32,7 @@ const LayerSizeTree: FC = () => {
 
 
                     const currentSeries: any = {
-                        name: 'Disk Usage',
+                        name: 'Tileset',
                         type: 'treemap',
                         label: {
                             show: true,
@@ -94,7 +94,7 @@ const LayerSizeTree: FC = () => {
                               }
                               return [
                                 '<div class="tooltip-title">' +
-                                  treePath.join('/') +
+                                  treePath.join(' / ') +
                                   '</div>',
                                 'Disk Usage: ' + bytesToString(value, true)
                               ].join('');

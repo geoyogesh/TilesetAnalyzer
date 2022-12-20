@@ -1,8 +1,8 @@
 import { Avatar, Col, List, Row, Skeleton, Tag, Typography } from "antd";
-import { FC, useEffect, useState } from "react";
+import { CSSProperties, FC, useEffect, useState } from "react";
 import { LayerInfoItem } from "../AnalysisResult";
 
-const { Title } = Typography;
+const { Text } = Typography;
 
 interface LayerInfoProps {
     layer: LayerInfoItem;
@@ -18,6 +18,8 @@ interface AttributeInfo {
 const LayerInfo: FC<LayerInfoProps> = ({ layer }) => {
     const [data, setData] = useState<AttributeInfo[] | null>(null);
     const [selectedField, setSelectedField] = useState<string | null>(null);
+
+    const listStyle: CSSProperties = { 'height': 400, 'overflowY': 'auto' };
 
     useEffect(() => {
         const attributes: AttributeInfo[] = [];
@@ -48,7 +50,7 @@ const LayerInfo: FC<LayerInfoProps> = ({ layer }) => {
                         <List
                             bordered
                             dataSource={data}
-                            style={{ 'minHeight': 400 }}
+                            style={listStyle}
                             renderItem={(item) => (
                                 <List.Item key={item.name} onClick={() => { setSelectedField(item.name) }} style={{ 'cursor': 'pointer' }}>
                                     <List.Item.Meta
@@ -75,10 +77,10 @@ const LayerInfo: FC<LayerInfoProps> = ({ layer }) => {
                     </Col>
                     <Col span={12}>
                         {selectedField !== null ? <List size="small"
-                            header={`100 distinct values for ${selectedField}`}
+                            header={<Text strong>100 distinct values for {selectedField}</Text>}
                             bordered
                             dataSource={layer.attributes_sample_values[selectedField]}
-                            style={{ 'height': 400, 'overflowY': 'auto'}}
+                            style={listStyle}
                             renderItem={(item) => (
                                 <List.Item key={item}>
                                     <div>{item}</div>
