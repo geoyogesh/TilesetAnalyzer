@@ -245,6 +245,8 @@ class MBTileSource(TileSource):
             layer_sizes = {}
             for item in tiles:
                 for layer_name, layer_size in item.layers.items():
+                    if layer_size == 0:
+                        continue
                     if layer_name not in layer_sizes:
                         layer_sizes[layer_name] = []
                     layer_sizes[layer_name].append(layer_size)
