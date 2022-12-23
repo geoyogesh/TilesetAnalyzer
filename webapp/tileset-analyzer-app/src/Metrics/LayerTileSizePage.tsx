@@ -65,22 +65,8 @@ const LayerTileSize: FC = () => {
                                 }
                             },
                             emphasis: {
-                                focus: 'self',
-                                label: {
-                                    show: true,
-                                    align: 'right',
-                                    formatter: function (param: any) {
-                                        // console.log(param);
-                                        const layer_name = param.seriesName;
-                                        const dataIndex: number = param.dataIndex;
-                                        const total = bytesConverted((totals.get(dataIndex) as number), unit, true, 0)
-                                        const percent = Math.round(param.value * 100 / total);
-                                        // console.log(layer_name, dataIndex, total, percent);
-                                        return `${layer_name}: ${param.value} ${unit} (${percent}%)`;
-                                    },
-                                    position: 'top'
-                                }
-                            },
+                                focus: 'series',
+                            }
                         });
                     }
                     const options: EChartsOption = {
@@ -108,9 +94,18 @@ const LayerTileSize: FC = () => {
                             series: currentSeries,
                             tooltip: {
                                 trigger: 'item',
-                                show: false,
+                                show: true,
                                 axisPointer: {
                                     type: 'shadow',
+                                },
+                                formatter: (params: any) => {
+                                    // console.log(params);
+                                    const layer_name = params.seriesName;
+                                    const dataIndex: number = params.dataIndex;
+                                    const total = bytesConverted((totals.get(dataIndex) as number), unit, true, 0)
+                                    const percent = Math.round(params.value * 100 / total);
+                                    // console.log(layer_name, dataIndex, total, percent);
+                                    return `${params.marker} ${layer_name}: ${params.value} ${unit} (${percent}%)`;
                                 },
                             },
                         },
