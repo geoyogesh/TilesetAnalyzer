@@ -45,13 +45,13 @@ const LayerTileSize: FC = () => {
                     }
 
                     const maxValue = Math.max(...values);
-                    
-                    
+
+
                     const unit = bytesUnit(maxValue, true, 0);
 
                     const currentSeries = [];
                     for (const layer_name of Array.from(allLayers).sort()) {
-                        const seriesData = (res as any)[agg_metric].map((item: TilesSizeAggSumByZLayer) => item.layers[layer_name] ? bytesConverted(item.layers[layer_name], unit, true, 0): null);
+                        const seriesData = (res as any)[agg_metric].map((item: TilesSizeAggSumByZLayer) => item.layers[layer_name] ? bytesConverted(item.layers[layer_name], unit, true, 0) : null);
                         //console.log(layer_name, seriesData);
                         currentSeries.push({
                             data: seriesData,
@@ -60,7 +60,26 @@ const LayerTileSize: FC = () => {
                             name: layer_name,
                             stack: 'Size',
                             tooltip: {
-                                valueFormatter: (value: number) => value ? `${value} ${unit}`: ' - ' 
+                                valueFormatter: (value: number) => {
+                                    return value ? `${value} ${unit}` : ' - ';
+                                }
+                            },
+                            emphasis: {
+                                focus: 'self',
+                                label: {
+                                    show: true,
+                                    align: 'right',
+                                    formatter: function (param: any) {
+                                        console.log(param);
+                                        const layer_name = param.seriesName;
+                                        const dataIndex: number = param.dataIndex;
+                                        const total = bytesConverted((totals.get(dataIndex) as number), unit, true, 0)
+                                        const percent = Math.round(param.value * 100 / total);
+                                        console.log(layer_name, dataIndex, total, percent);
+                                        return `${layer_name}: ${param.value} ${unit} (${percent}%)`;
+                                    },
+                                    position: 'top'
+                                }
                             },
                         });
                     }
@@ -79,14 +98,21 @@ const LayerTileSize: FC = () => {
                                 ...BASE_CHART_CONFIG.yAxis,
                                 ...{
                                     type: "value",
-                                    name: `${aggOptions.filter(item => item.value === aggType)[0].label} of Tile Layer Size (in ${unit})`,
+                                    name: `${aggOptions.filter(item => item.value === aggType)[0].label} Tile Layer Size (in ${unit})`,
                                     nameGap: 40,
                                 },
                             },
                             legend: {
                                 data: Array.from(allLayers).sort()
                             },
-                            series: currentSeries
+                            series: currentSeries,
+                            tooltip: {
+                                trigger: 'item',
+                                show: false,
+                                axisPointer: {
+                                    type: 'shadow',
+                                },
+                            },
                         },
                     }
                     tileSizeAggOptions[aggType] = options;

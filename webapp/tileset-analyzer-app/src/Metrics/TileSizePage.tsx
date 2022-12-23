@@ -91,7 +91,7 @@ const TileSize: FC = () => {
                                 ...BASE_CHART_CONFIG.yAxis,
                                 ...{
                                     type: "value",
-                                    name: `${aggOptions.filter(item => item.value === aggType)[0].label} of Tile Size (in ${unit})`,
+                                    name: `${aggOptions.filter(item => item.value === aggType)[0].label} Tile Size (in ${unit})`,
                                     nameGap: 40
                                 },
                             },
@@ -100,7 +100,7 @@ const TileSize: FC = () => {
                                     data: convertedValues,
                                     type: "bar",
                                     smooth: true,
-                                    name: `${aggOptions.filter(item => item.value === aggType)[0].label} of Tile Size: `,
+                                    name: `${aggOptions.filter(item => item.value === aggType)[0].label} Tile Size: `,
                                     tooltip: {
                                         valueFormatter: (value: number) => value ? `${value} ${unit}`: ' - ' 
                                     },
