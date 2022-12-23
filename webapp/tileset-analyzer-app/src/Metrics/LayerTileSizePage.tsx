@@ -4,6 +4,7 @@ import { AnalysisResult, TilesSizeAggSumByZLayer } from "../AnalysisResult";
 import ReactEcharts, { EChartsOption } from "echarts-for-react"
 import { BASE_CHART_CONFIG, CHART_STYLE } from "./ChartProps";
 import { bytesConverted, bytesToString, bytesUnit } from "./SizeConversions";
+import internal from "stream";
 
 const LayerTileSize: FC = () => {
     const [tilesSizeAggbyZLayer, setTilesSizeAggbyZLayer] = useState<{ [agg_type: string]: any } | null>(null);
@@ -25,16 +26,19 @@ const LayerTileSize: FC = () => {
                     ['SUM', 'tiles_size_agg_sum_by_z_layer'],
                 ]
 
-                const tileSizeAggOptions: { [agg_type: string]: any } = {}
+                const tileSizeAggOptions: { [agg_type: string]: any } = {};
+                const totals = new Map<number, number>();
 
                 for (const [aggType, agg_metric] of aggTypes) {
                     const items: TilesSizeAggSumByZLayer[] = (res as any)[agg_metric].map((item: TilesSizeAggSumByZLayer) => item);
                     const allLayers = new Set<string>();
                     const values = []
                     for (const item of items) {
+                        totals.set(item.z, 0);
                         for (const [layer_name, size] of Object.entries(item.layers)) {
                             if (size !== null) {
                                 values.push(size);
+                                totals.set(item.z, (totals.get(item.z) as number) + size);
                             }
                             allLayers.add(layer_name);
                         }
@@ -54,7 +58,10 @@ const LayerTileSize: FC = () => {
                             type: "bar",
                             smooth: true,
                             name: layer_name,
-                            stack: 'Size'
+                            stack: 'Size',
+                            tooltip: {
+                                valueFormatter: (value: number) => value ? `${value} ${unit}`: ' - ' 
+                            },
                         });
                     }
                     const options: EChartsOption = {
@@ -65,28 +72,22 @@ const LayerTileSize: FC = () => {
                                 ...{
                                     type: "category",
                                     data: (res as any)[agg_metric].map((item: TilesSizeAggSumByZLayer) => item.z),
-                                    name: 'Zoom Level'
+                                    name: 'Zoom Level',
                                 }
                             },
                             yAxis: {
                                 ...BASE_CHART_CONFIG.yAxis,
                                 ...{
                                     type: "value",
-                                    name: `Tile Size (in ${unit})`,
+                                    name: `${aggOptions.filter(item => item.value === aggType)[0].label} of Tile Layer Size (in ${unit})`,
                                     nameGap: 40,
                                 },
                             },
                             legend: {
                                 data: Array.from(allLayers).sort()
                             },
-                            /*
-                            formatter: (params: any) => {
-                                var val = bytesConversion(params[0].value, true, 0);
-                                return val;
-                            },
-                            */
                             series: currentSeries
-                        }
+                        },
                     }
                     tileSizeAggOptions[aggType] = options;
                 }

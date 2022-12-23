@@ -84,29 +84,26 @@ const TileSize: FC = () => {
                                 ...{
                                     type: "category",
                                     data: (res as any)[agg_metric].map((item: TilesSizeAggByZ) => item.z),
-                                    name: 'Zoom Level'
+                                    name: 'Zoom Level',
                                 }
                             },
                             yAxis: {
                                 ...BASE_CHART_CONFIG.yAxis,
                                 ...{
                                     type: "value",
-                                    name: `Tile Size (in ${unit})`,
-                                    nameGap: 40,
+                                    name: `${aggOptions.filter(item => item.value === aggType)[0].label} of Tile Size (in ${unit})`,
+                                    nameGap: 40
                                 },
                             },
-                            /*
-                            formatter: (params: any) => {
-                                var val = bytesConversion(params[0].value, true, 0);
-                                return val;
-                            },
-                            */
                             series: [
                                 {
                                     data: convertedValues,
                                     type: "bar",
                                     smooth: true,
-                                    name: 'Tile Size',
+                                    name: `${aggOptions.filter(item => item.value === aggType)[0].label} of Tile Size: `,
+                                    tooltip: {
+                                        valueFormatter: (value: number) => value ? `${value} ${unit}`: ' - ' 
+                                    },
                                     label: {
                                         show: true,
                                         position: 'top',

@@ -5,12 +5,18 @@ export const CHART_STYLE = {
 
 export const BASE_CHART_CONFIG = {
     tooltip: {
-        trigger: 'item'
+        trigger: 'axis',
+        axisPointer: {
+            type: 'shadow',
+        },
     },
     grid: { top: 80, right: 40, bottom: 20, left: 40, containLabel: true },
     xAxis: {
         nameLocation: 'middle',
-        nameGap: 30
+        nameGap: 30,
+        axisTick: {
+            alignWithLabel: true
+        }
     },
     yAxis: {
         nameLocation: 'middle',

@@ -77,7 +77,7 @@ const LayerSizeTree: FC = () => {
                         }
                         currentSeries.data.push(series);
                     }
-                    console.log(currentSeries);
+                    // console.log(currentSeries);
                     const options: EChartsOption = {
                         ...BASE_CHART_CONFIG,
                         ...{
