@@ -67,5 +67,37 @@ class TileSource(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def tiles_size_agg_min_by_z_layer(self) -> List[LayerLevelSize]:
+        pass
+
+    @abc.abstractmethod
+    def tiles_size_agg_max_by_z_layer(self) -> List[LayerLevelSize]:
+        pass
+
+    @abc.abstractmethod
+    def tiles_size_agg_avg_by_z_layer(self) -> List[LayerLevelSize]:
+        pass
+
+    @abc.abstractmethod
+    def tiles_size_agg_50p_by_z_layer(self) -> List[LayerLevelSize]:
+        pass
+
+    @abc.abstractmethod
+    def tiles_size_agg_85p_by_z_layer(self) -> List[LayerLevelSize]:
+        pass
+
+    @abc.abstractmethod
+    def tiles_size_agg_90p_by_z_layer(self) -> List[LayerLevelSize]:
+        pass
+
+    @abc.abstractmethod
+    def tiles_size_agg_95p_by_z_layer(self) -> List[LayerLevelSize]:
+        pass
+
+    @abc.abstractmethod
+    def tiles_size_agg_99p_by_z_layer(self) -> List[LayerLevelSize]:
+        pass
+
+    @abc.abstractmethod
     def analyze(self) -> TilesetAnalysisResult:
         pass

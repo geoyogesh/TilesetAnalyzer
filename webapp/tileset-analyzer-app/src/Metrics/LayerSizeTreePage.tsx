@@ -1,6 +1,6 @@
 import { Card, Select, Skeleton, Space } from "antd";
 import { FC, useEffect, useState } from "react";
-import { AnalysisResult, TilesSizeAggSumByZLayer } from "../AnalysisResult";
+import { AnalysisResult, TilesSizeAggByZLayer } from "../AnalysisResult";
 import ReactEcharts, { EChartsOption } from "echarts-for-react"
 import { BASE_CHART_CONFIG, CHART_STYLE } from "./ChartProps";
 import { bytesConverted, bytesToString, bytesUnit } from "./SizeConversions";
@@ -15,6 +15,38 @@ const LayerSizeTree: FC = () => {
             value: 'SUM',
             label: 'Sum',
         },
+        {
+            value: 'MIN',
+            label: 'Minimum',
+        },
+        {
+            value: 'MAX',
+            label: 'Maximum',
+        },
+        {
+            value: 'AVG',
+            label: 'Average',
+        },
+        {
+            value: '50p',
+            label: '50th Percentile',
+        },
+        {
+            value: '85p',
+            label: '85th Percentile',
+        },
+        {
+            value: '90p',
+            label: '90th Percentile',
+        },
+        {
+            value: '95p',
+            label: '95th Percentile',
+        },
+        {
+            value: '99p',
+            label: '99th Percentile',
+        }
     ];
 
     useEffect(() => {
@@ -23,7 +55,15 @@ const LayerSizeTree: FC = () => {
             .then((res: AnalysisResult) => {
 
                 const aggTypes = [
+                    ['MIN', 'tiles_size_agg_min_by_z_layer'],
+                    ['MAX', 'tiles_size_agg_max_by_z_layer'],
+                    ['AVG', 'tiles_size_agg_avg_by_z_layer'],
                     ['SUM', 'tiles_size_agg_sum_by_z_layer'],
+                    ['50p', 'tiles_size_agg_50p_by_z_layer'],
+                    ['85p', 'tiles_size_agg_85p_by_z_layer'],
+                    ['90p', 'tiles_size_agg_90p_by_z_layer'],
+                    ['95p', 'tiles_size_agg_95p_by_z_layer'],
+                    ['99p', 'tiles_size_agg_99p_by_z_layer']
                 ]
 
                 const tileSizeAggOptions: { [agg_type: string]: any } = {}
@@ -63,7 +103,7 @@ const LayerSizeTree: FC = () => {
                         ],
                         data: []
                     };
-                    const metrics: TilesSizeAggSumByZLayer[] = (res as any)[agg_metric];
+                    const metrics: TilesSizeAggByZLayer[] = (res as any)[agg_metric];
                     for (const { layers, z, size } of metrics) {
                         const series = {
                             value: size,
@@ -130,7 +170,12 @@ const LayerSizeTree: FC = () => {
 
     return (<Space direction="vertical" size="middle" style={{ display: 'flex' }}>
 
-        <Card size="small" title={`Tile Layer Size (TreeMap)`}>
+        <Card size="small" title={`Tile Layer Size (TreeMap)`} extra={<Select
+            defaultValue={aggSelection}
+            style={{ width: 160 }}
+            onChange={handleChange}
+            options={aggOptions}
+        />}>
             {tilesSizeAggbyZLayer !== null ? <ReactEcharts option={tilesSizeAggbyZLayer[aggSelection]} style={CHART_STYLE}></ReactEcharts> : <Skeleton />}
         </Card>
 

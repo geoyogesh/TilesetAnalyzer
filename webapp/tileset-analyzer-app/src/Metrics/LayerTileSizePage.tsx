@@ -1,6 +1,6 @@
 import { Card, Select, Skeleton, Space } from "antd";
 import { FC, useEffect, useState } from "react";
-import { AnalysisResult, TilesSizeAggSumByZLayer } from "../AnalysisResult";
+import { AnalysisResult, TilesSizeAggByZLayer } from "../AnalysisResult";
 import ReactEcharts, { EChartsOption } from "echarts-for-react"
 import { BASE_CHART_CONFIG, CHART_STYLE } from "./ChartProps";
 import { bytesConverted, bytesToString, bytesUnit } from "./SizeConversions";
@@ -15,6 +15,38 @@ const LayerTileSize: FC = () => {
             value: 'SUM',
             label: 'Sum',
         },
+        {
+            value: 'MIN',
+            label: 'Minimum',
+        },
+        {
+            value: 'MAX',
+            label: 'Maximum',
+        },
+        {
+            value: 'AVG',
+            label: 'Average',
+        },
+        {
+            value: '50p',
+            label: '50th Percentile',
+        },
+        {
+            value: '85p',
+            label: '85th Percentile',
+        },
+        {
+            value: '90p',
+            label: '90th Percentile',
+        },
+        {
+            value: '95p',
+            label: '95th Percentile',
+        },
+        {
+            value: '99p',
+            label: '99th Percentile',
+        }
     ];
 
     useEffect(() => {
@@ -23,14 +55,22 @@ const LayerTileSize: FC = () => {
             .then((res: AnalysisResult) => {
 
                 const aggTypes = [
+                    ['MIN', 'tiles_size_agg_min_by_z_layer'],
+                    ['MAX', 'tiles_size_agg_max_by_z_layer'],
+                    ['AVG', 'tiles_size_agg_avg_by_z_layer'],
                     ['SUM', 'tiles_size_agg_sum_by_z_layer'],
+                    ['50p', 'tiles_size_agg_50p_by_z_layer'],
+                    ['85p', 'tiles_size_agg_85p_by_z_layer'],
+                    ['90p', 'tiles_size_agg_90p_by_z_layer'],
+                    ['95p', 'tiles_size_agg_95p_by_z_layer'],
+                    ['99p', 'tiles_size_agg_99p_by_z_layer']
                 ]
 
                 const tileSizeAggOptions: { [agg_type: string]: any } = {};
                 const totals = new Map<number, number>();
 
                 for (const [aggType, agg_metric] of aggTypes) {
-                    const items: TilesSizeAggSumByZLayer[] = (res as any)[agg_metric].map((item: TilesSizeAggSumByZLayer) => item);
+                    const items: TilesSizeAggByZLayer[] = (res as any)[agg_metric].map((item: TilesSizeAggByZLayer) => item);
                     const allLayers = new Set<string>();
                     const values = []
                     for (const item of items) {
@@ -51,7 +91,7 @@ const LayerTileSize: FC = () => {
 
                     const currentSeries = [];
                     for (const layer_name of Array.from(allLayers).sort()) {
-                        const seriesData = (res as any)[agg_metric].map((item: TilesSizeAggSumByZLayer) => item.layers[layer_name] ? bytesConverted(item.layers[layer_name], unit, true, 0) : null);
+                        const seriesData = (res as any)[agg_metric].map((item: TilesSizeAggByZLayer) => item.layers[layer_name] ? bytesConverted(item.layers[layer_name], unit, true, 0) : null);
                         //console.log(layer_name, seriesData);
                         currentSeries.push({
                             data: seriesData,
@@ -76,7 +116,7 @@ const LayerTileSize: FC = () => {
                                 ...BASE_CHART_CONFIG.xAxis,
                                 ...{
                                     type: "category",
-                                    data: (res as any)[agg_metric].map((item: TilesSizeAggSumByZLayer) => item.z),
+                                    data: (res as any)[agg_metric].map((item: TilesSizeAggByZLayer) => item.z),
                                     name: 'Zoom Level',
                                 }
                             },

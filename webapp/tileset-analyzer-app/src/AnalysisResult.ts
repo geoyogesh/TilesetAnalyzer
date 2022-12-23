@@ -1,20 +1,28 @@
 export interface AnalysisResult {
     count_tiles_by_z:        CountTilesByZ[];
     count_tiles_total:       number;
-    tiles_size_agg_avg_by_z: TilesSizeAggByZ[];
-    tiles_size_agg_max_by_z: TilesSizeAggByZ[];
-    tiles_size_agg_min_by_z: TilesSizeAggByZ[];
-    tiles_size_agg_sum_by_z: TilesSizeAggByZ[];
-    tiles_size_agg_50p_by_z: TilesSizeAggByZ[];
-    tiles_size_agg_85p_by_z: TilesSizeAggByZ[];
-    tiles_size_agg_90p_by_z: TilesSizeAggByZ[];
-    tiles_size_agg_95p_by_z: TilesSizeAggByZ[];
-    tiles_size_agg_99p_by_z: TilesSizeAggByZ[];
     tileset_info:            TilesetInfo;
-    tiles_size_agg_sum_by_z_layer: TilesSizeAggSumByZLayer[];
+    tiles_size_agg_50p_by_z:       TilesSizeAggByZ[];
+    tiles_size_agg_50p_by_z_layer: TilesSizeAggByZLayer[];
+    tiles_size_agg_85p_by_z:       TilesSizeAggByZ[];
+    tiles_size_agg_85p_by_z_layer: TilesSizeAggByZLayer[];
+    tiles_size_agg_90p_by_z:       TilesSizeAggByZ[];
+    tiles_size_agg_90p_by_z_layer: TilesSizeAggByZLayer[];
+    tiles_size_agg_95p_by_z:       TilesSizeAggByZ[];
+    tiles_size_agg_95p_by_z_layer: TilesSizeAggByZLayer[];
+    tiles_size_agg_99p_by_z:       TilesSizeAggByZ[];
+    tiles_size_agg_99p_by_z_layer: TilesSizeAggByZLayer[];
+    tiles_size_agg_avg_by_z:       TilesSizeAggByZ[];
+    tiles_size_agg_avg_by_z_layer: TilesSizeAggByZLayer[];
+    tiles_size_agg_max_by_z:       TilesSizeAggByZ[];
+    tiles_size_agg_max_by_z_layer: TilesSizeAggByZLayer[];
+    tiles_size_agg_min_by_z:       TilesSizeAggByZ[];
+    tiles_size_agg_min_by_z_layer: TilesSizeAggByZLayer[];
+    tiles_size_agg_sum_by_z:       TilesSizeAggByZ[];
+    tiles_size_agg_sum_by_z_layer: TilesSizeAggByZLayer[];
 }
 
-export interface TilesSizeAggSumByZLayer {
+export interface TilesSizeAggByZLayer {
     layers: {[layer_name: string]: number};
     size:   number;
     z:      number;
