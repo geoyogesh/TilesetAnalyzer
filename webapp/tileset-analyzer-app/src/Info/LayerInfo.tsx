@@ -42,6 +42,16 @@ const LayerInfo: FC<LayerInfoProps> = ({ layer }) => {
         return (<>Domain: {domain[0]} - {domain[1]}</>)
     }
 
+    const headerContent = (selectedField: string, attrValues: string[] | undefined) => {
+        if (!attrValues) {
+            return <Text strong>no value(s) found for {selectedField}</Text>
+        }
+        if (attrValues.length === 100) {
+            return <Text strong>contains 100+ distinct values for {selectedField}. truncated to first 100 values.</Text>
+        }
+        return <Text strong>{attrValues.length} distinct value(s) for {selectedField}</Text>
+    }
+
     return (
         <>
             {data !== null ?
@@ -77,7 +87,7 @@ const LayerInfo: FC<LayerInfoProps> = ({ layer }) => {
                     </Col>
                     <Col span={12}>
                         {selectedField !== null ? <List size="small"
-                            header={<Text strong>100 distinct values for {selectedField}</Text>}
+                            header={headerContent(selectedField, layer.attributes_sample_values[selectedField])}
                             bordered
                             dataSource={layer.attributes_sample_values[selectedField]}
                             style={listStyle}

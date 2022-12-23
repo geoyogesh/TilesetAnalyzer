@@ -45,6 +45,7 @@ export interface LayerInfoItem {
     attributes_numeric_domain: { [key: string]: number[] };
     attributes_sample_values:  { [key: string]: any[] };
     attributes_types:          { [key: string]: string[] };
+    geometry_types:            string[];
     count:                     number;
     name:                      string;
     zoom_level:                number;

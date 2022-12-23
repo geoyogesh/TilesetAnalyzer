@@ -162,7 +162,7 @@ class MBTileSource(TileSource):
 
                 layer_info = zoom_level_info[layer.name]
                 for feature in layer.features:
-                    layer_info.add_feature(feature.attributes.get())
+                    layer_info.add_feature(feature.attributes.get(), feature.type)
 
         with Pool(processes=multiprocessing.cpu_count()) as pool:
             pool.map(process_tile, tiles)

@@ -13,6 +13,7 @@ interface DataType {
     layer_name: string,
     features_count: number;
     layer_info_item: LayerInfoItem;
+    geometry_type: string[];
 }
 
 
@@ -50,7 +51,7 @@ const TileSetInfo: FC = () => {
 
                 const zoomItems = new Set<number>();
                 const nameItems = new Set<string>();
-
+                const geometryTypeItems = new Set<string>();
                 const layers = res.tileset_info.layer_info_items;
                 const data: DataType[] = [];
                 for (let i = 0; i < layers.length; i++) {
@@ -60,11 +61,15 @@ const TileSetInfo: FC = () => {
                         zoom: layer.zoom_level,
                         layer_name: layer.name,
                         features_count: layer.count,
-                        layer_info_item: layer
+                        layer_info_item: layer,
+                        geometry_type: layer.geometry_types
                     });
 
                     zoomItems.add(layer.zoom_level);
                     nameItems.add(layer.name);
+                    for (const geometry_type of layer.geometry_types) {
+                        geometryTypeItems.add(geometry_type);
+                    }
 
                 }
 
@@ -86,6 +91,21 @@ const TileSetInfo: FC = () => {
                         filters: Array.from(nameItems).sort((a, b) => a.localeCompare(b)).map(item => ({ text: item, value: item })),
                         onFilter: (value: any, record) => record.layer_name.indexOf(value) === 0,
                         sorter: (a, b) => a.layer_name.localeCompare(b.layer_name),
+                    },
+                    {
+                        title: 'Geometry Type',
+                        dataIndex: 'geometry_type',
+                        width: 150,
+                        defaultSortOrder: 'ascend',
+                        filters: Array.from(geometryTypeItems).sort((a, b) => a.localeCompare(b)).map(item => ({ text: item, value: item })),
+                        onFilter: (value: any, record) => record.geometry_type.indexOf(value) === 0,
+                        sorter: (a: any, b: any) => {
+                            const aClone = [...a.geometry_type];
+                            aClone.sort();
+                            const bClone = [...b.geometry_type];
+                            bClone.sort();
+                            return JSON.stringify(aClone).localeCompare(JSON.stringify(bClone))
+                        },
                     },
                     {
                         title: 'Features Count',

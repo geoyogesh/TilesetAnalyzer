@@ -11,9 +11,15 @@ class LayerInfo:
         self.attributes_types = {}
         self.attributes_numeric_domain = {}
         self.zoom_level = zoom_level
+        self.geometry_types = set()
 
-    def add_feature(self, attributes: dict):
+    def add_feature(self, attributes: dict, geometry_type: str):
         self.count += 1
+
+        # add geometry type
+        if geometry_type not in self.geometry_types:
+            self.geometry_types.add(geometry_type)
+
         for key, value in attributes.items():
             if key not in self.attributes:
                 self.attributes.add(key)
