@@ -70,12 +70,12 @@ const LayerTileSize: FC = () => {
                                     show: true,
                                     align: 'right',
                                     formatter: function (param: any) {
-                                        console.log(param);
+                                        // console.log(param);
                                         const layer_name = param.seriesName;
                                         const dataIndex: number = param.dataIndex;
                                         const total = bytesConverted((totals.get(dataIndex) as number), unit, true, 0)
                                         const percent = Math.round(param.value * 100 / total);
-                                        console.log(layer_name, dataIndex, total, percent);
+                                        // console.log(layer_name, dataIndex, total, percent);
                                         return `${layer_name}: ${param.value} ${unit} (${percent}%)`;
                                     },
                                     position: 'top'
