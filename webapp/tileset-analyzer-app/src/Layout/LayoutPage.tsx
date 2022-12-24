@@ -21,6 +21,11 @@ const LayoutPage: FC = () => {
         key: '/tileset-info',
         label: 'Tileset Info',
         onClick: () => navigate('/tileset-info')
+      },
+      {
+        key: '/map-view',
+        label: 'Map View',
+        onClick: () => navigate('/map-view')
       }]
     },
     {
