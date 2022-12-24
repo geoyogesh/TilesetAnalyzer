@@ -1,7 +1,7 @@
 import abc
-from sqlite3 import Connection
 from typing import List
 
+from tileset_analyzer.entities.job_param import JobParam
 from tileset_analyzer.entities.layer_level_size import LayerLevelSize
 from tileset_analyzer.entities.level_count import LevelCount
 from tileset_analyzer.entities.level_size import LevelSize
@@ -11,7 +11,7 @@ from tileset_analyzer.entities.tileset_info import TilesetInfo
 
 class TileSource(abc.ABC):
     @abc.abstractmethod
-    def __init__(self, src_path: str, scheme: str):
+    def __init__(self, job_param: JobParam):
         pass
 
     @abc.abstractmethod

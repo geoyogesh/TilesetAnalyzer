@@ -9,6 +9,8 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import RedirectResponse, FileResponse
 
+from tileset_analyzer.entities.job_param import JobParam
+
 UI_PATH = f'{Path(os.path.dirname(__file__)).parent}/static/ui'
 
 
@@ -21,7 +23,7 @@ class MyStatics(StaticFiles):
         return False
 
 
-def start_api(temp_folder):
+def start_api(job_param: JobParam):
     app = FastAPI()
     app.add_middleware(
         CORSMiddleware,
@@ -31,7 +33,7 @@ def start_api(temp_folder):
         allow_headers=["*"],
     )
 
-    app.mount("/api", app=MyStatics(directory=temp_folder), name="api")
+    app.mount("/api", app=MyStatics(directory=job_param.temp_folder), name="api")
 
     @app.get("/")
     async def index():

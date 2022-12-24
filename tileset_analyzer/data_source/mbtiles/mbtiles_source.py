@@ -7,6 +7,7 @@ import numpy as np
 
 from tileset_analyzer.data_source.mbtiles.sqllite_utils import create_connection
 from tileset_analyzer.data_source.tile_source import TileSource
+from tileset_analyzer.entities.job_param import JobParam
 from tileset_analyzer.entities.layer_info import LayerInfo
 from tileset_analyzer.entities.layer_level_size import LayerLevelSize, TileItemSize
 from tileset_analyzer.entities.level_size import LevelSize
@@ -30,11 +31,10 @@ from tileset_analyzer.utilities.moniter import timeit
 
 
 class MBTileSource(TileSource):
-    def __init__(self, src_path: str, scheme: str):
-        self.conn = create_connection(src_path)
+    def __init__(self, job_param: JobParam):
+        self.job_param = job_param
+        self.conn = create_connection(job_param.source)
         self.tiles_size_z_df = None
-        self.src_path = src_path
-        self.scheme = scheme
         self.all_tile_sizes = None
 
     def count_tiles(self) -> int:
@@ -142,10 +142,10 @@ class MBTileSource(TileSource):
     @timeit
     def tileset_info(self) -> TilesetInfo:
         tileset_info = TilesetInfo()
-        tileset_info.set_name((self.src_path.split('/')[-1]).split('.')[0])
-        tileset_info.set_size(os.stat(self.src_path).st_size)
-        tileset_info.set_scheme(self.scheme)
-        tileset_info.set_location(str(Path(self.src_path).parent.absolute()))
+        tileset_info.set_name((self.job_param.source.split('/')[-1]).split('.')[0])
+        tileset_info.set_size(os.stat(self.job_param.source).st_size)
+        tileset_info.set_scheme(self.job_param.scheme)
+        tileset_info.set_location(str(Path(self.job_param.source).parent.absolute()))
         tileset_info.set_ds_type('mbtiles')
 
         attr_info = {}
