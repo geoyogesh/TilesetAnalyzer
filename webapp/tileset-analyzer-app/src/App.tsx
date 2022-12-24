@@ -9,7 +9,7 @@ import Layout from "./Layout/LayoutPage";
 import TileCount from "./Metrics/TileCountPage";
 import TileSize from "./Metrics/TileSizePage";
 import 'antd/dist/reset.css';
-import './App.css';
+import './App.scss';
 import React, { FC } from 'react';
 import TilesetInfo from "./Info/TilesetInfo";
 import LayerTileSize from "./Metrics/LayerTileSizePage";
