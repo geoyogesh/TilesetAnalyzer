@@ -11,7 +11,7 @@ CLASSIFIERS = [
 
 setup(
     name='tileset_analyzer',
-    version='0.0.42',
+    version='0.0.43',
     url='https://github.com/geoyogesh/tileset_analyzer',
     license='MIT',
     author='Yogesh Dhanapal',
@@ -25,5 +25,5 @@ setup(
     zip_safe=False,
     classifiers=CLASSIFIERS,
     include_package_data=True,
-    install_requires=["fastapi", "uvicorn[standard]", "pandas", "protobuf"]
+    install_requires=["fastapi", "uvicorn[standard]", "pandas", "protobuf<=3.20.3"]
 )
