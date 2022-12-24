@@ -2,8 +2,8 @@ import { Card, Select, Skeleton, Space } from "antd";
 import { FC, useEffect, useState } from "react";
 import { AnalysisResult, TilesSizeAggByZLayer } from "../AnalysisResult";
 import ReactEcharts, { EChartsOption } from "echarts-for-react"
-import { BASE_CHART_CONFIG, CHART_STYLE } from "./ChartProps";
-import { bytesConverted, bytesToString, bytesUnit } from "./SizeConversions";
+import { BASE_CHART_CONFIG, CHART_STYLE } from "./Support/ChartProps";
+import { bytesConverted, bytesToString, bytesUnit } from "./Support/SizeConversions";
 
 
 const LayerSizeTree: FC = () => {
@@ -105,8 +105,9 @@ const LayerSizeTree: FC = () => {
                     };
                     const metrics: TilesSizeAggByZLayer[] = (res as any)[agg_metric];
                     for (const { layers, z, size } of metrics) {
+                        const total = Object.values(layers).reduce((partialSum, a) => partialSum + a, 0);
                         const series = {
-                            value: size,
+                            value: total,
                             name: `Zoom ${z}`,
                             path: `Zoom ${z}`,
                             children: Object.entries(layers).map(([k, v]) => ({

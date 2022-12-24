@@ -47,8 +47,10 @@ def cli():
     parser.add_argument('--scheme', help='scheme', default='XYZ')
     parser.add_argument('--temp_folder', help='temp_folder', required=True)
     parser.add_argument('--actions', help='actions', default='process,serve')
+    parser.add_argument("--verbose", help="increase output verbosity", action="store_true")
     args = parser.parse_args()
     actions = args.actions.split(',')
+    print('now verbose', args.verbose)
     execute(args.source, args.scheme, args.temp_folder, actions)
 
 

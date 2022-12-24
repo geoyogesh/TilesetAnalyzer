@@ -2,8 +2,8 @@ import { Card, Select, Skeleton, Space } from "antd";
 import { FC, useEffect, useState } from "react";
 import { AnalysisResult, TilesSizeAggByZLayer } from "../AnalysisResult";
 import ReactEcharts, { EChartsOption } from "echarts-for-react"
-import { BASE_CHART_CONFIG, CHART_STYLE } from "./ChartProps";
-import { bytesConverted, bytesToString, bytesUnit } from "./SizeConversions";
+import { BASE_CHART_CONFIG, CHART_STYLE } from "./Support/ChartProps";
+import { bytesConverted, bytesToString, bytesUnit } from "./Support/SizeConversions";
 import internal from "stream";
 
 const LayerTileSize: FC = () => {
@@ -67,9 +67,10 @@ const LayerTileSize: FC = () => {
                 ]
 
                 const tileSizeAggOptions: { [agg_type: string]: any } = {};
-                const totals = new Map<number, number>();
+                
 
                 for (const [aggType, agg_metric] of aggTypes) {
+                    const totals = new Map<number, number>();
                     const items: TilesSizeAggByZLayer[] = (res as any)[agg_metric].map((item: TilesSizeAggByZLayer) => item);
                     const allLayers = new Set<string>();
                     const values = []
@@ -142,9 +143,9 @@ const LayerTileSize: FC = () => {
                                     // console.log(params);
                                     const layer_name = params.seriesName;
                                     const dataIndex: number = params.dataIndex;
-                                    const total = bytesConverted((totals.get(dataIndex) as number), unit, true, 0)
+                                    const total = bytesConverted((totals.get(dataIndex) as number), unit, true, 1)
                                     const percent = Math.round(params.value * 100 / total);
-                                    // console.log(layer_name, dataIndex, total, percent);
+                                    //console.log(layer_name, dataIndex, total, percent);
                                     return `${params.marker} ${layer_name}: ${params.value} ${unit} (${percent}%)`;
                                 },
                             },

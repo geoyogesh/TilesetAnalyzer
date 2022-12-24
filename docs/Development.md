@@ -22,7 +22,9 @@ execute command local
 /usr/bin/python3 tileset_analyzer --source data/maptiler-osm-2017-07-03-v3.6.1-us_virginia.mbtiles
 
 
-/usr/bin/python3 tileset_analyzer/__main__.py --source data/maptiler-osm-2017-07-03-v3.6.1-us_virginia.mbtiles
+/usr/bin/python3 tileset_analyzer/main.py --source data/maptiler-osm-2017-07-03-v3.6.1-us_virginia.mbtiles --temp_folder output/analysis_result.json --actions serve
+
+tileset_analyzer --source /Users/yogeshdhanapal/Desktop/GitHub/tileset_analyzer/data/maptiler-osm-2017-07-03-v3.6.1-us_virginia.mbtiles --temp_folder /Users/yogeshdhanapal/Desktop/GitHub/tileset_analyzer/output/ --actions serve
 ```
 
 debug by running __debug__.py

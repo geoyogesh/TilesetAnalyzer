@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { AnalysisResult, LayerInfoItem, TilesetInfo } from "../AnalysisResult";
-import { Skeleton, Space, Typography, Table, Card, Divider, Modal } from 'antd';
-import { bytesToString } from "../Metrics/SizeConversions";
+import { Skeleton, Space, Typography, Table, Card, Divider, Modal, Tag } from 'antd';
+import { bytesToString } from "../Metrics/Support/SizeConversions";
 import { ColumnsType, TableProps } from "antd/es/table";
 import LayerInfo from "./LayerInfo";
 
@@ -40,7 +40,7 @@ const TileSetInfo: FC = () => {
 
     const onChange: TableProps<DataType>['onChange'] = (pagination, filters, sorter, extra) => {
         console.log('params', pagination, filters, sorter, extra);
-      };
+    };
 
 
     useEffect(() => {
@@ -93,7 +93,7 @@ const TileSetInfo: FC = () => {
                         sorter: (a, b) => a.layer_name.localeCompare(b.layer_name),
                     },
                     {
-                        title: 'Geometry Type',
+                        title: 'Geometry Types',
                         dataIndex: 'geometry_type',
                         width: 150,
                         defaultSortOrder: 'ascend',
@@ -106,6 +106,17 @@ const TileSetInfo: FC = () => {
                             bClone.sort();
                             return JSON.stringify(aClone).localeCompare(JSON.stringify(bClone))
                         },
+                        render: (_, { geometry_type }) => (
+                            <>
+                                {geometry_type.map((tag) => {
+                                    return (
+                                        <Tag color={'green'} key={tag}>
+                                            {tag.toUpperCase()}
+                                        </Tag>
+                                    );
+                                })}
+                            </>
+                        ),
                     },
                     {
                         title: 'Features Count',
@@ -154,14 +165,14 @@ const TileSetInfo: FC = () => {
                 pagination={{ defaultPageSize: 10, showSizeChanger: true }}
                 onChange={onChange}
                 scroll={{ y: 400 }} /> : <Skeleton />}
-            <Modal 
-                title={`${currentRecord?.layer_info_item?.name} Layer Attributes`} 
-                open={isModalOpen} 
-                onOk={handleOk} 
+            <Modal
+                title={`${currentRecord?.layer_info_item?.name} Layer Attributes`}
+                open={isModalOpen}
+                onOk={handleOk}
                 onCancel={handleCancel}
                 width={1000}
                 centered
-                >
+            >
                 {currentRecord != null ? <LayerInfo layer={currentRecord.layer_info_item}></LayerInfo> : <Skeleton />}
             </Modal>
 

@@ -2,8 +2,8 @@ import { Card, Select, Skeleton, Space } from "antd";
 import { FC, useEffect, useState } from "react";
 import { AnalysisResult, TilesSizeAggByZ } from "../AnalysisResult";
 import ReactEcharts, { EChartsOption } from "echarts-for-react"
-import { BASE_CHART_CONFIG, CHART_STYLE } from "./ChartProps";
-import { bytesConverted, bytesToString, bytesUnit } from "./SizeConversions";
+import { BASE_CHART_CONFIG, CHART_STYLE } from "./Support/ChartProps";
+import { bytesConverted, bytesToString, bytesUnit } from "./Support/SizeConversions";
 
 const TileSize: FC = () => {
     const [tilesSizeAggbyZ, setTilesSizeAggbyZ] = useState<{ [agg_type: string]: any } | null>(null);
