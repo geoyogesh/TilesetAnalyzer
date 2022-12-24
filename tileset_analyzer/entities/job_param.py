@@ -10,7 +10,7 @@ class JobParam:
                  verbose: str = False):
         self.source: str = source
         self.scheme: str = scheme
-        self.temp_folder: int = temp_folder
+        self.temp_folder: str = temp_folder
         self.actions: List[str] = actions
         self.verbose: bool = verbose
 
