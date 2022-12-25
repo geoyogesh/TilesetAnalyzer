@@ -32,70 +32,78 @@ export default class MapCanvas extends React.PureComponent<IProps, IState> {
         };
     }
 
-    getLayerStyle(layerInfoItem: LayerInfoItem): any[] {
-        const layerStyles: any[] = [];
+    getLayerStyle(layer_name: string, geometry_type: string): any {
         const color = `#${(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0')}`;
-        //console.log(layerInfoItem);
-        for (const geometry_type of layerInfoItem.geometry_types) {
-            if (geometry_type === 'line_string') {
-                layerStyles.push({
-                    'id': `${layerInfoItem.name}_${layerInfoItem.zoom_level}_${geometry_type}`,
-                    'type': 'line',
-                    'source': 'vt',
-                    'source-layer': layerInfoItem.name,
-                    'filter': ["==", "$type", "LineString"],
-                    'layout': {
-                        'line-join': 'round',
-                        'line-cap': 'round'
-                    },
-                    'paint': {
-                        'line-color': color,
-                        'line-width': 1,
-                        'line-opacity': 0.75
-                    },
-                    'minzoom': layerInfoItem.zoom_level,
-                    'maxzoom': layerInfoItem.zoom_level
-                });
-            }
-            else if (geometry_type === 'polygon') {
-                layerStyles.push({
-                    'id': `${layerInfoItem.name}_${layerInfoItem.zoom_level}_${geometry_type}`,
-                    'type': 'fill',
-                    'source': 'vt',
-                    'source-layer': layerInfoItem.name,
-                    'filter': ["==", "$type", "Polygon"],
-                    'layout': {
-                    },
-                    'paint': {
-                        'fill-color': color,
-                        'fill-opacity': 0.1
-                    },
-                    'minzoom': layerInfoItem.zoom_level,
-                    'maxzoom': layerInfoItem.zoom_level
-                });
-            }
-            else if (geometry_type === 'point') {
-                layerStyles.push({
-                    'id': `${layerInfoItem.name}_${layerInfoItem.zoom_level}`,
-                    'type': 'circle',
-                    'source': 'vt',
-                    'source-layer': layerInfoItem.name,
-                    'filter': ["==", "$type", "Point"],
-                    'paint': {
-                        'circle-color': color,
-                        'circle-radius': 2.5,
-                        'circle-opacity': 0.75
-                    },
-                    'minzoom': layerInfoItem.zoom_level,
-                    'maxzoom': layerInfoItem.zoom_level
-                });
-            }
-            else {
-                console.log('unhandled geometry type');
-            }
+        
+        if (geometry_type === 'line_string') {
+            return {
+                'id': `${layer_name}_${geometry_type}`,
+                'type': 'line',
+                'source': 'vt',
+                'source-layer': layer_name,
+                'filter': ["==", "$type", "LineString"],
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-color': color,
+                    'line-width': 1,
+                    'line-opacity': 0.75
+                }
+            };
         }
-
-        return layerStyles;
+        else if (geometry_type === 'polygon') {
+            return {
+                'id': `${layer_name}_${geometry_type}`,
+                'type': 'line',
+                'source': 'vt',
+                'source-layer': layer_name,
+                'filter': ["==", "$type", "Polygon"],
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-color': color,
+                    'line-width': 1,
+                    'line-opacity': 0.75
+                }
+            };
+            /*
+            return {
+                'id': `${layer_name}_${geometry_type}`,
+                'type': 'fill',
+                'source': 'vt',
+                'source-layer': layer_name,
+                'filter': ["==", "$type", "Polygon"],
+                'layout': {
+                },
+                'paint': {
+                    'fill-color': color,
+                    'fill-opacity': 0.1
+                }
+            };
+            */
+        }
+        else if (geometry_type === 'point') {
+            return {
+                'id': `${layer_name}_${geometry_type}`,
+                'type': 'circle',
+                'source': 'vt',
+                'source-layer': layer_name,
+                'filter': ["==", "$type", "Point"],
+                'paint': {
+                    'circle-color': color,
+                    'circle-radius': 2.5,
+                    'circle-opacity': 0.75
+                }
+            };
+        }
+        else {
+            console.log('unhandled geometry type');
+        }
+        return null;
     }
 
     async componentDidMount() {
@@ -105,6 +113,19 @@ export default class MapCanvas extends React.PureComponent<IProps, IState> {
         const layerInfoItems = (await response.json() as AnalysisResult).tileset_info.layer_info_items;
         //console.log(layerInfoItems);
         const zItems = new Set(layerInfoItems.map(item => item.zoom_level));
+        const layerGeometryTypes = new Map<string, Set<string>>();
+        for (const layerInfoItem of layerInfoItems) {
+            if (!(layerInfoItem.name in layerGeometryTypes)) {
+                layerGeometryTypes.set(layerInfoItem.name, new Set()) 
+            }
+
+            const layerGeometryType = layerGeometryTypes.get(layerInfoItem.name) as Set<string>;
+            for (const geometryType of layerInfoItem.geometry_types) {
+                if (!layerGeometryType.has(geometryType)) {
+                    layerGeometryType.add(geometryType);
+                }
+            }
+        }
         const styleJson: any = {
             version: 8,
             sources: {
@@ -112,34 +133,48 @@ export default class MapCanvas extends React.PureComponent<IProps, IState> {
                     type: 'raster',
                     tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
                     tileSize: 256,
-                    attribution: 'Map tiles by <a target="_top" rel="noopener" href="https://tile.openstreetmap.org/">OpenStreetMap tile servers</a>, under the <a target="_top" rel="noopener" href="https://operations.osmfoundation.org/policies/tiles/">tile usage policy</a>. Data by <a target="_top" rel="noopener" href="http://openstreetmap.org">OpenStreetMap</a>'
+                    attribution: 'Map tiles by <a target="_top" rel="noopener" href="https://tile.openstreetmap.org/">OpenStreetMap tile servers</a>, under the <a target="_top" rel="noopener" href="https://operations.osmfoundation.org/policies/tiles/">tile usage policy</a>. Data by <a target="_top" rel="noopener" href="http://openstreetmap.org">OpenStreetMap</a>',
+                    minzoom: Math.min(...Array.from(zItems)),
+                    maxzoom: Math.max(...Array.from(zItems))
                 },
                 vt: {
                     type: 'vector',
                     tiles: ["http://0.0.0.0:8080/tileset/{z}/{x}/{y}.mvt"],
                     minzoom: Math.min(...Array.from(zItems)),
-                    maxzoom: Math.max(...Array.from(zItems))
+                    maxzoom: Math.max(...Array.from(zItems)),
+                    tileSize: 512,
                 }
             },
-            layers: [{
-                id: 'osm',
-                type: 'raster',
-                source: 'osm',
-            }],
+            layers: [
+                {
+                    id: 'osm',
+                    type: 'raster',
+                    source: 'osm',
+                }
+                
+            ],
         };
 
 
-        for (const layerInfoItem of layerInfoItems) {
-            const layerStyles = this.getLayerStyle(layerInfoItem);
-            for (const layerStyle of layerStyles) {
-                styleJson['layers'].push(layerStyle);
+        const geometryOrder = ['point', 'line_string', 'polygon'];
+
+        for (const orderGeometry of geometryOrder) {
+            for (let [layer_name, geometryTypes] of layerGeometryTypes) {
+                if (geometryTypes.has(orderGeometry)) {
+                    styleJson.layers.push(this.getLayerStyle(layer_name, orderGeometry));
+                }
             }
         }
+        
+
+        //console.log(styleJson);
         this.map = new maplibregl.Map({
             container: this.mapContainer.current!,
             style: styleJson,
             center: [loc.lng, loc.lat],
-            zoom: loc.zoom
+            zoom: loc.zoom,
+            minZoom: Math.min(...Array.from(zItems)),
+            maxZoom: Math.max(...Array.from(zItems))
         });
 
         this.map.addControl(new maplibregl.NavigationControl({
