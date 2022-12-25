@@ -153,6 +153,7 @@ class MBTileSource(TileSource):
         tileset_info.set_scheme(self.job_param.scheme)
         tileset_info.set_location(str(Path(self.job_param.source).parent.absolute()))
         tileset_info.set_ds_type('mbtiles')
+        tileset_info.set_compression(self.job_param.compressed, self.job_param.compression_type)
 
         attr_info = {}
         tiles = self._get_all_tiles()

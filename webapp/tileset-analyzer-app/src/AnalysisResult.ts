@@ -46,6 +46,8 @@ export interface TilesetInfo {
     name:             string;
     scheme:           string;
     size:             number;
+    compressed: boolean;
+    compression_type: string;
 }
 
 export interface LayerInfoItem {

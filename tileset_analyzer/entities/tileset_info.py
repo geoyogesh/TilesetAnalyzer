@@ -11,6 +11,8 @@ class TilesetInfo:
         self.location: str = None
         self.ds_type: str = None
         self.layer_info_items = None
+        self.compressed = None
+        self.compression_type = None
 
     def set_name(self, name: str):
         self.name = name
@@ -29,3 +31,8 @@ class TilesetInfo:
 
     def set_layer_info(self, layer_info_items: List[LayerInfo]):
         self.layer_info_items = layer_info_items
+
+    def set_compression(self, compressed: bool, compression_type: str):
+        self.compressed = compressed
+        self.compression_type = compression_type
+
