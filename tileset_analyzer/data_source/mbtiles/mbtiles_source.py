@@ -139,6 +139,12 @@ class MBTileSource(TileSource):
     def tiles_size_agg_99p_by_z(self) -> List[LevelSize]:
         return self._get_agg_tile_size_percentiles_z('99p')
 
+    def _processed_data(self, data):
+        if self.job_param.compressed is False:
+            return data
+
+        return gzip.decompress(data)
+
     @timeit
     def tileset_info(self) -> TilesetInfo:
         tileset_info = TilesetInfo()
@@ -157,7 +163,7 @@ class MBTileSource(TileSource):
 
             zoom_level_info = attr_info[tile.z]
 
-            data = gzip.decompress(tile.data)
+            data = self._processed_data(tile.data)
             vt = VectorTile(data)
             for layer in vt.layers:
                 if layer.name not in zoom_level_info:
@@ -198,7 +204,7 @@ class MBTileSource(TileSource):
 
             level_tile_sizes = all_tile_sizes[tile.z]
 
-            data = gzip.decompress(tile.data)
+            data = self._processed_data(tile.data)
             size = sys.getsizeof(tile.data)
             vt = VectorTile(data)
             tile_all_layers_size = {}

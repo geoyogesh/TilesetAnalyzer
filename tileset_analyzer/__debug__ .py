@@ -6,5 +6,15 @@ if __name__ == "__main__":
     temp_folder = 'tileset_analyzer/static/data'
     scheme = 'TMS'
     actions = ['process', 'serve']
-    job_param = JobParam(src_path, scheme, temp_folder, actions, False)
+    compressed = True
+    compression_type = 'gzip'
+    job_param = JobParam(
+                        source=src_path,
+                        scheme=scheme,
+                        temp_folder=temp_folder,
+                        actions=actions,
+                        verbose=False,
+                        compressed=compressed,
+                        compression_type=compression_type
+    )
     execute(job_param)

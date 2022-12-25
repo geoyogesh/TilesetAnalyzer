@@ -1,3 +1,5 @@
+import sqlite3
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 import uvicorn
@@ -7,15 +9,19 @@ from pathlib import Path
 from starlette.datastructures import Headers
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
-from starlette.responses import RedirectResponse, FileResponse
+from starlette.responses import RedirectResponse, FileResponse, Response
 
+from tileset_analyzer.data_source.mbtiles.sqllite_utils import create_connection
 from tileset_analyzer.entities.job_param import JobParam
 
 UI_PATH = f'{Path(os.path.dirname(__file__)).parent}/static/ui'
 
+job_param: JobParam = None
+conn = None
+
 
 # https://stackoverflow.com/questions/66093397/how-to-disable-starlette-static-files-caching
-class MyStatics(StaticFiles):
+class NoCacheStaticFiles(StaticFiles):
     def is_not_modified(
             self, response_headers: Headers, request_headers: Headers
     ) -> bool:
@@ -23,7 +29,25 @@ class MyStatics(StaticFiles):
         return False
 
 
-def start_api(job_param: JobParam):
+def get_tile_data(z: int, x: int, y: int):
+    global conn
+
+    if conn is None:
+        conn = create_connection(job_param.source)
+
+    cur = conn.cursor()
+    cur.execute(f'select tile_data from tiles where zoom_level = {z} and tile_row = {x} and tile_column = {y}')
+    row = cur.fetchone()
+
+    if row:
+        return row[0]
+    return row
+
+
+def start_api(_job_param: JobParam):
+    global job_param
+    job_param = _job_param
+
     app = FastAPI()
     app.add_middleware(
         CORSMiddleware,
@@ -33,13 +57,38 @@ def start_api(job_param: JobParam):
         allow_headers=["*"],
     )
 
-    app.mount("/api", app=MyStatics(directory=job_param.temp_folder), name="api")
+    app.mount("/api", app=NoCacheStaticFiles(directory=job_param.temp_folder), name="api")
+
+    @app.get("/tileset/{z}/{x}/{y}.mvt")
+    async def get_tile(z: int, x: int, y: int):
+        data = None
+        if job_param.scheme == 'TMS':
+            y = (1 << z) - 1 - y
+            data = get_tile_data(z, y, x)
+        elif job_param.scheme == 'XYZ':
+            data = get_tile_data(z, x, y)
+
+        if not data:
+            return Response(status_code=404)
+
+        if job_param.compressed:
+            headers = {
+                "content-encoding": job_param.compression_type,
+                "content-type": "application/vnd.mapbox-vector-tile",
+                "Cache-Control": 'no-cache, no-store'
+            }
+        else:
+            headers = {
+                "content-type": "application/vnd.mapbox-vector-tile",
+                "Cache-Control": 'no-cache, no-store'
+            }
+        return Response(content=data, headers=headers)
 
     @app.get("/")
     async def index():
         return FileResponse(f'{UI_PATH}/index.html')
 
-    app.mount("/static", app=MyStatics(directory=f'{UI_PATH}/static'), name="ui")
+    app.mount("/static", app=NoCacheStaticFiles(directory=f'{UI_PATH}/static'), name="ui")
 
     @app.get("/{file_name}.{file_path}")
     async def root_files(file_name: str, file_path: str):

@@ -47,13 +47,22 @@ def cli():
     parser = argparse.ArgumentParser(prog='tileset_analyzer')
     parser.add_argument('--source', help='source', required=True)
     parser.add_argument('--scheme', help='scheme', default='XYZ')
+    parser.add_argument('--compressed', help='compressed', default="store_false")
+    parser.add_argument('--compression_type', help='compression_type', default="gzip")
     parser.add_argument('--temp_folder', help='temp_folder', required=True)
     parser.add_argument('--actions', help='actions', default='process,serve')
     parser.add_argument("--verbose", help="increase output verbosity", action="store_false")
     args = parser.parse_args()
     actions = args.actions.split(',')
 
-    job_param = JobParam(args.source, args.scheme, args.temp_folder, actions)
+    job_param = JobParam(
+        source=args.source,
+        scheme=args.scheme,
+        temp_folder=args.temp_folder,
+        actions=actions,
+        verbose=args.verbose,
+        compressed=args.compressed,
+        compression_type=args.compression_type)
     execute(job_param)
 
 

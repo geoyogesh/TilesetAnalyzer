@@ -7,10 +7,14 @@ class JobParam:
                  scheme: str = None,
                  temp_folder: str = None,
                  actions: List[str] = None,
+                 compressed: bool = False,
+                 compression_type: str = 'gzip',
                  verbose: str = False):
-        self.source: str = source
-        self.scheme: str = scheme
-        self.temp_folder: str = temp_folder
-        self.actions: List[str] = actions
-        self.verbose: bool = verbose
+        self.source = source
+        self.scheme = scheme
+        self.temp_folder = temp_folder
+        self.actions = actions
+        self.compressed = compressed
+        self.compression_type = compression_type
+        self.verbose = verbose
 
