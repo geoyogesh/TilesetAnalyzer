@@ -107,3 +107,10 @@ https://github.com/mapbox/vector-tile-base
 tms and xyz scheme
 https://gist.github.com/tmcw/4954720
 https://stackabuse.com/encoding-and-decoding-base64-strings-in-python/
+
+
+generating exploded dataset (https://github.com/mapbox/mbutil)
+conda install easy_install
+conda install -c anaconda setuptools
+easy_install mbutil
+mb-util -h

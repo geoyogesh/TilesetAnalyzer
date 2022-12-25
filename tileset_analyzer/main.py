@@ -1,6 +1,6 @@
 from tileset_analyzer.api.main_api import start_api
 from tileset_analyzer.data_source.tile_source_factory import TilesetSourceFactory
-from tileset_analyzer.entities.job_param import JobParam
+from tileset_analyzer.entities.job_param import JobParam, CompressionType, TileScheme, JobAction
 from tileset_analyzer.utilities.moniter import timeit
 from tileset_analyzer.utils.json_utils import write_json_file
 import sys
@@ -46,11 +46,11 @@ def get_arg(param):
 def cli():
     parser = argparse.ArgumentParser(prog='tileset_analyzer')
     parser.add_argument('--source', help='source', required=True)
-    parser.add_argument('--scheme', help='scheme', default='XYZ')
+    parser.add_argument('--scheme', help='scheme', default=TileScheme.XYZ)
     parser.add_argument('--compressed', help='compressed', default="store_false")
-    parser.add_argument('--compression_type', help='compression_type', default="gzip")
+    parser.add_argument('--compression_type', help='compression_type', default=CompressionType.GZIP)
     parser.add_argument('--temp_folder', help='temp_folder', required=True)
-    parser.add_argument('--actions', help='actions', default='process,serve')
+    parser.add_argument('--actions', help='actions', default=[JobAction.PROCESS, JobAction.SERVE])
     parser.add_argument("--verbose", help="increase output verbosity", action="store_false")
     args = parser.parse_args()
     actions = args.actions.split(',')

@@ -12,7 +12,7 @@ from starlette.requests import Request
 from starlette.responses import RedirectResponse, FileResponse, Response
 
 from tileset_analyzer.data_source.mbtiles.sqllite_utils import create_connection
-from tileset_analyzer.entities.job_param import JobParam
+from tileset_analyzer.entities.job_param import JobParam, TileScheme
 
 UI_PATH = f'{Path(os.path.dirname(__file__)).parent}/static/ui'
 
@@ -62,10 +62,10 @@ def start_api(_job_param: JobParam):
     @app.get("/tileset/{z}/{x}/{y}.mvt")
     async def get_tile(z: int, x: int, y: int):
         data = None
-        if job_param.scheme == 'TMS':
+        if job_param.scheme == TileScheme.TMS:
             y = (1 << z) - 1 - y
             data = get_tile_data(z, y, x)
-        elif job_param.scheme == 'XYZ':
+        elif job_param.scheme == TileScheme.XYZ:
             data = get_tile_data(z, x, y)
 
         if not data:

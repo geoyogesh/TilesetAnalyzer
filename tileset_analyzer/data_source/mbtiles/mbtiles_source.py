@@ -7,7 +7,7 @@ import numpy as np
 
 from tileset_analyzer.data_source.mbtiles.sqllite_utils import create_connection
 from tileset_analyzer.data_source.tile_source import TileSource
-from tileset_analyzer.entities.job_param import JobParam
+from tileset_analyzer.entities.job_param import JobParam, CompressionType
 from tileset_analyzer.entities.layer_info import LayerInfo
 from tileset_analyzer.entities.layer_level_size import LayerLevelSize, TileItemSize
 from tileset_analyzer.entities.level_size import LevelSize
@@ -143,7 +143,10 @@ class MBTileSource(TileSource):
         if self.job_param.compressed is False:
             return data
 
-        return gzip.decompress(data)
+        if self.job_param.compression_type == CompressionType.GZIP:
+            return gzip.decompress(data)
+
+        raise f'UNSUPPORTED COMPRESSION TYPE {self.job_param.compression_type}'
 
     @timeit
     def tileset_info(self) -> TilesetInfo:
