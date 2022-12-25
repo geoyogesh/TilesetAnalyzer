@@ -1,9 +1,11 @@
 import React from 'react';
-import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './../../map.scss';
-import { Map as MapLibreGlMap } from 'maplibre-gl'
+import { Map as MapLibreGlMap, NavigationControl, PointLike, Popup } from 'maplibre-gl'
 import { AnalysisResult, LayerInfoItem } from '../../AnalysisResult';
+import { features } from 'process';
+import { type } from 'os';
+import { renderPopup } from './RenderPopup';
 
 
 interface Location {
@@ -22,6 +24,11 @@ interface IState {
 
 export default class MapCanvas extends React.PureComponent<IProps, IState> {
     mapContainer = React.createRef<HTMLDivElement>();
+    showPopup = true;
+    popup = new Popup({
+        closeButton: false,
+        closeOnClick: false
+    });
     map: MapLibreGlMap | null = null
     constructor(props: any) {
         super(props);
@@ -168,7 +175,7 @@ export default class MapCanvas extends React.PureComponent<IProps, IState> {
         
 
         //console.log(styleJson);
-        this.map = new maplibregl.Map({
+        this.map = new MapLibreGlMap({
             container: this.mapContainer.current!,
             style: styleJson,
             center: [loc.lng, loc.lat],
@@ -177,7 +184,7 @@ export default class MapCanvas extends React.PureComponent<IProps, IState> {
             maxZoom: Math.max(...Array.from(zItems))
         });
 
-        this.map.addControl(new maplibregl.NavigationControl({
+        this.map.addControl(new NavigationControl({
             showCompass: true,
             showZoom: true,
             visualizePitch: true
@@ -195,6 +202,32 @@ export default class MapCanvas extends React.PureComponent<IProps, IState> {
                     }
                 }
             });
+        });
+
+
+        this.map.on('mousemove', (e) => {
+            if (!this.map) return;
+
+            const threshold = 3;
+            const queryBox:  [PointLike, PointLike] = [
+                [
+                    e.point.x - threshold,
+                    e.point.y + threshold
+                ],
+                [
+                    e.point.x + threshold,
+                    e.point.y - threshold
+                ]
+            ];
+            const features = this.map.queryRenderedFeatures(queryBox);
+            this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+
+            if (!features.length || !this.showPopup) {
+                this.popup.remove();
+            } else {
+                this.popup.setLngLat(e.lngLat).setHTML(renderPopup(features)).addTo(this.map);
+            }
+
         });
     }
 

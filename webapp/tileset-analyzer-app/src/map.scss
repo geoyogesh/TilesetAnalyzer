@@ -42,3 +42,34 @@
     margin: 12px;
     border-radius: 4px;
 }
+
+
+/*popup*/
+.mbview-popup {
+    color: #333;
+    display: table;
+    font-size: 10px;
+}
+
+.mbview_feature:not(:last-child) {
+    border-bottom: 1px solid #ccc;
+}
+
+.mbview_layer:before {
+    content: '#';
+}
+
+.mbview_layer {
+    display: block;
+    font-weight: bold;
+}
+.mbview_property {
+    display: table-row;
+}
+.mbview_property-value {
+    display: table-cell;
+}
+.mbview_property-name {
+    display: table-cell;
+    padding-right: 10px;
+}
