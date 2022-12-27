@@ -27,7 +27,8 @@ export default class MapCanvas extends React.PureComponent<IProps, IState> {
     showPopup = true;
     popup = new Popup({
         closeButton: false,
-        closeOnClick: false
+        closeOnClick: false,
+        maxWidth: '300px'
     });
     map: MapLibreGlMap | null = null
     constructor(props: any) {
