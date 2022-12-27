@@ -5,6 +5,7 @@ from typing import List
 
 import numpy as np
 
+from tileset_analyzer.data_source.ds_utils import get_attr
 from tileset_analyzer.data_source.mbtiles.sqllite_utils import create_connection
 from tileset_analyzer.data_source.tile_source import TileSource
 from tileset_analyzer.entities.job_param import JobParam, CompressionType
@@ -158,35 +159,8 @@ class MBTilesSource(TileSource):
         tileset_info.set_ds_type('mbtiles')
         tileset_info.set_compression(self.job_param.compressed, self.job_param.compression_type)
 
-        attr_info = {}
         tiles = self._get_all_tiles()
-
-        def process_tile(tile):
-            if tile.z not in attr_info:
-                attr_info[tile.z] = {}
-
-            zoom_level_info = attr_info[tile.z]
-
-            data = self._processed_data(tile.data)
-            vt = VectorTile(data)
-            for layer in vt.layers:
-                if layer.name not in zoom_level_info:
-                    zoom_level_info[layer.name] = LayerInfo(layer.name, tile.z)
-
-                layer_info = zoom_level_info[layer.name]
-                for feature in layer.features:
-                    layer_info.add_feature(feature.attributes.get(), feature.type)
-
-        with Pool(processes=multiprocessing.cpu_count()) as pool:
-            pool.map(process_tile, tiles)
-
-        # get all layer infos
-        all_layers = []
-        for zoom_level in sorted(attr_info.keys()):
-            layer_dict = attr_info[zoom_level]
-            for layer_name in sorted(layer_dict.keys()):
-                layer = layer_dict[layer_name]
-                all_layers.append(layer)
+        all_layers = get_attr(tiles, self.job_param.compressed, self.job_param.compression_type)
         tileset_info.set_layer_info(all_layers)
         return tileset_info
 

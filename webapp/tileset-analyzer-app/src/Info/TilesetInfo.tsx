@@ -153,7 +153,7 @@ const TileSetInfo: FC = () => {
                         <Text>DataSource Type: {tilesetInfo.ds_type}</Text>
                         <Text>Scheme: {tilesetInfo.scheme}</Text>
                         <Text>Size: {bytesToString(tilesetInfo.size, true)}</Text>
-                        <Text>Compressed: {tilesetInfo.compressed ? 'True' : 'False'} {tilesetInfo.compressed && <Text>({tilesetInfo.compression_type}</Text>})</Text>
+                        <Text>Compressed: {tilesetInfo.compressed ? 'True' : 'False'} {tilesetInfo.compressed && <Text>({tilesetInfo.compression_type})</Text>}</Text>
                         
                     </Space>
                 </Card>
