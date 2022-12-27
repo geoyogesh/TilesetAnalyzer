@@ -114,3 +114,11 @@ conda install easy_install
 conda install -c anaconda setuptools
 easy_install mbutil
 mb-util -h
+
+
+https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html
+conda install -c conda-forge gdal
+
+rm -r ./data/tiles
+ogr2ogr -progress -f MVT ./data/tiles ./data/cb_2021_us_all_500k/cb_2021_us_bg_500k/cb_2021_us_bg_500k.shp -dsco MINZOOM=0 -dsco MAXZOOM=5 -dsco COMPRESS=NO
+

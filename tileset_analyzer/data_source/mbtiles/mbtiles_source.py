@@ -30,7 +30,7 @@ import sys
 from tileset_analyzer.utilities.moniter import timeit
 
 
-class MBTileSource(TileSource):
+class MBTilesSource(TileSource):
     def __init__(self, job_param: JobParam):
         self.job_param = job_param
         self.conn = create_connection(job_param.source)
