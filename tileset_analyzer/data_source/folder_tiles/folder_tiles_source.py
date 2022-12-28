@@ -14,6 +14,7 @@ from tileset_analyzer.entities.tile_item import TileItem
 from tileset_analyzer.entities.tileset_analysis_result import TilesetAnalysisResult
 from tileset_analyzer.entities.tileset_info import TilesetInfo
 import re
+import numpy as np
 import gzip
 import multiprocessing
 from multiprocessing.pool import ThreadPool as Pool
@@ -23,39 +24,78 @@ from tileset_analyzer.readers.vector_tile.engine import VectorTile
 class FolderTilesSource(TileSource):
     def __init__(self, job_param: JobParam):
         self.job_param = job_param
+        self.tiles: List[TileItem] = None
 
     def count_tiles(self) -> int:
-        pass
+        return len(self.tiles)
 
     def count_tiles_by_z(self) -> List[LevelCount]:
-        pass
+        z_count = dict()
+        for tile in self.tiles:
+            if tile.z not in z_count:
+                z_count[tile.z] = 0
+            z_count[tile.z] += 1
+
+        result: List[LevelCount] = []
+        for z in sorted(z_count.keys()):
+            result.append(LevelCount(z, z_count[z]))
+        return result
+
+    def _tiles_size_agg(self, agg_type: str) -> List[LevelSize]:
+        z_size = dict()
+        for tile in self.tiles:
+            if tile.z not in z_size:
+                z_size[tile.z] = []
+            z_size[tile.z].append(len(tile.data))
+
+        result: List[LevelSize] = []
+        for z in sorted(z_size.keys()):
+            if agg_type == 'SUM':
+                result.append(LevelSize(z, float(np.array(z_size[z]).sum())))
+            elif agg_type == 'MIN':
+                result.append(LevelSize(z, float(np.array(z_size[z]).min())))
+            elif agg_type == 'MAX':
+                result.append(LevelSize(z, float(np.array(z_size[z]).max())))
+            elif agg_type == 'AVG':
+                result.append(LevelSize(z, float(np.array(z_size[z]).mean())))
+            elif agg_type == '50p':
+                result.append(LevelSize(z, float(np.quantile(np.array(z_size[z]), 0.50))))
+            elif agg_type == '85p':
+                result.append(LevelSize(z, float(np.quantile(np.array(z_size[z]), 0.85))))
+            elif agg_type == '90p':
+                result.append(LevelSize(z, float(np.quantile(np.array(z_size[z]), 0.90))))
+            elif agg_type == '95p':
+                result.append(LevelSize(z, float(np.quantile(np.array(z_size[z]), 0.95))))
+            elif agg_type == '99p':
+                result.append(LevelSize(z, float(np.quantile(np.array(z_size[z]), 0.99))))
+        return result
 
     def tiles_size_agg_sum_by_z(self) -> List[LevelSize]:
-        pass
+        return self._tiles_size_agg('SUM')
 
     def tiles_size_agg_min_by_z(self) -> List[LevelSize]:
-        pass
+        return self._tiles_size_agg('MIN')
 
     def tiles_size_agg_max_by_z(self) -> List[LevelSize]:
-        pass
+        return self._tiles_size_agg('MAX')
 
     def tiles_size_agg_avg_by_z(self) -> List[LevelSize]:
-        pass
+        return self._tiles_size_agg('AVG')
 
     def tiles_size_agg_50p_by_z(self) -> List[LevelSize]:
-        pass
+        return self._tiles_size_agg('50p')
 
     def tiles_size_agg_85p_by_z(self) -> List[LevelSize]:
-        pass
+        return self._tiles_size_agg('85p')
 
     def tiles_size_agg_90p_by_z(self) -> List[LevelSize]:
-        pass
+        return self._tiles_size_agg('90p')
 
     def tiles_size_agg_95p_by_z(self) -> List[LevelSize]:
-        pass
+        return self._tiles_size_agg('95p')
 
     def tiles_size_agg_99p_by_z(self) -> List[LevelSize]:
-        pass
+        return self._tiles_size_agg('99p')
 
     def _get_all_tiles(self) -> List[TileItem]:
         files = list_files_dir(self.job_param.source, ['*.pbf', '*.mvt'])
@@ -64,6 +104,9 @@ class FolderTilesSource(TileSource):
             g = re.match("(\d+)/(\d+)/(\d+).pbf", file).groups()
             result.append(TileItem(int(g[1]), int(g[2]), int(g[0]), data))
         return result
+
+    def _clear_all_tiles(self):
+        self.tiles = None
 
     def tileset_info(self) -> TilesetInfo:
         tileset_info = TilesetInfo()
@@ -76,8 +119,8 @@ class FolderTilesSource(TileSource):
         tileset_info.set_ds_type('folder')
         tileset_info.set_compression(self.job_param.compressed, self.job_param.compression_type)
 
-        tiles = self._get_all_tiles()
-        all_layers = get_attr(tiles, self.job_param.compressed, self.job_param.compression_type)
+        self.tiles = self._get_all_tiles()
+        all_layers = get_attr(self.tiles, self.job_param.compressed, self.job_param.compression_type)
         tileset_info.set_layer_info(all_layers)
         return tileset_info
 
@@ -111,4 +154,17 @@ class FolderTilesSource(TileSource):
     def analyze(self) -> TilesetAnalysisResult:
         result = TilesetAnalysisResult()
         result.set_tileset_info(self.tileset_info())
+        result.set_count_tiles_total(self.count_tiles())
+        result.set_count_tiles_by_z(self.count_tiles_by_z())
+        result.set_tiles_size_agg_sum_by_z(self.tiles_size_agg_sum_by_z())
+        result.set_tiles_size_agg_min_by_z(self.tiles_size_agg_min_by_z())
+        result.set_tiles_size_agg_max_by_z(self.tiles_size_agg_max_by_z())
+        result.set_tiles_size_agg_avg_by_z(self.tiles_size_agg_avg_by_z())
+        result.set_tiles_size_agg_50p_by_z(self.tiles_size_agg_50p_by_z())
+        result.set_tiles_size_agg_85p_by_z(self.tiles_size_agg_85p_by_z())
+        result.set_tiles_size_agg_90p_by_z(self.tiles_size_agg_90p_by_z())
+        result.set_tiles_size_agg_95p_by_z(self.tiles_size_agg_95p_by_z())
+        result.set_tiles_size_agg_99p_by_z(self.tiles_size_agg_99p_by_z())
+
+        self._clear_all_tiles()
         return result
