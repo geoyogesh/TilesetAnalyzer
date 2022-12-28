@@ -120,5 +120,5 @@ https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-bo
 conda install -c conda-forge gdal
 
 rm -r ./data/tiles
-ogr2ogr -progress -f MVT ./data/tiles ./data/cb_2021_us_all_500k/cb_2021_us_bg_500k/cb_2021_us_bg_500k.shp -dsco MINZOOM=0 -dsco MAXZOOM=5 -dsco COMPRESS=NO
+ogr2ogr -progress -f MVT ./data/tiles ./data/cb_2021_us_all_500k/cb_2021_us_bg_500k/cb_2021_us_bg_500k.shp -dsco MINZOOM=0 -dsco MAXZOOM=5 -dsco COMPRESS=NO -dsco MAX_FEATURES=20000000 -dsco MAX_SIZE=500000000
 
