@@ -1,13 +1,14 @@
 import os
+import sys
 from pathlib import Path
 from typing import List
 
-from tileset_analyzer.data_source.ds_utils import get_attr
+from tileset_analyzer.data_source.ds_utils import get_attr, _processed_data
 from tileset_analyzer.data_source.folder_tiles.folder_utils import get_folder_size, list_files_dir
 from tileset_analyzer.data_source.tile_source import TileSource
 from tileset_analyzer.entities.job_param import JobParam, CompressionType
 from tileset_analyzer.entities.layer_info import LayerInfo
-from tileset_analyzer.entities.layer_level_size import LayerLevelSize
+from tileset_analyzer.entities.layer_level_size import LayerLevelSize, TileItemSize
 from tileset_analyzer.entities.level_count import LevelCount
 from tileset_analyzer.entities.level_size import LevelSize
 from tileset_analyzer.entities.tile_item import TileItem
@@ -19,12 +20,14 @@ import gzip
 import multiprocessing
 from multiprocessing.pool import ThreadPool as Pool
 from tileset_analyzer.readers.vector_tile.engine import VectorTile
+from tileset_analyzer.utilities.moniter import timeit
 
 
 class FolderTilesSource(TileSource):
     def __init__(self, job_param: JobParam):
         self.job_param = job_param
         self.tiles: List[TileItem] = None
+        self.all_tile_sizes = None
 
     def count_tiles(self) -> int:
         return len(self.tiles)
@@ -59,15 +62,15 @@ class FolderTilesSource(TileSource):
             elif agg_type == 'AVG':
                 result.append(LevelSize(z, float(np.array(z_size[z]).mean())))
             elif agg_type == '50p':
-                result.append(LevelSize(z, float(np.quantile(np.array(z_size[z]), 0.50))))
+                result.append(LevelSize(z, float(np.percentile(np.array(z_size[z]), 50))))
             elif agg_type == '85p':
-                result.append(LevelSize(z, float(np.quantile(np.array(z_size[z]), 0.85))))
+                result.append(LevelSize(z, float(np.percentile(np.array(z_size[z]), 85))))
             elif agg_type == '90p':
-                result.append(LevelSize(z, float(np.quantile(np.array(z_size[z]), 0.90))))
+                result.append(LevelSize(z, float(np.percentile(np.array(z_size[z]), 90))))
             elif agg_type == '95p':
-                result.append(LevelSize(z, float(np.quantile(np.array(z_size[z]), 0.95))))
+                result.append(LevelSize(z, float(np.percentile(np.array(z_size[z]), 95))))
             elif agg_type == '99p':
-                result.append(LevelSize(z, float(np.quantile(np.array(z_size[z]), 0.99))))
+                result.append(LevelSize(z, float(np.percentile(np.array(z_size[z]), 99))))
         return result
 
     def tiles_size_agg_sum_by_z(self) -> List[LevelSize]:
@@ -124,32 +127,231 @@ class FolderTilesSource(TileSource):
         tileset_info.set_layer_info(all_layers)
         return tileset_info
 
+    @timeit
     def tiles_size_agg_sum_by_z_layer(self) -> List[LayerLevelSize]:
-        pass
+        result: List[LayerLevelSize] = []
+        for z in sorted(self.all_tile_sizes.keys()):
+            tiles = self.all_tile_sizes[z]
+            total = sum([tile.size for tile in tiles])
+            layer_sizes = {}
+            for item in tiles:
+                for layer_name, layer_size in item.layers.items():
+                    if layer_name not in layer_sizes:
+                        layer_sizes[layer_name] = 0
+                    layer_sizes[layer_name] += layer_size
+            result.append(LayerLevelSize(z, total, layer_sizes))
 
+        return result
+
+    @timeit
     def tiles_size_agg_min_by_z_layer(self) -> List[LayerLevelSize]:
-        pass
+        result: List[LayerLevelSize] = []
+        for z in sorted(self.all_tile_sizes.keys()):
+            tiles = self.all_tile_sizes[z]
+            total = 0
+            layer_sizes = {}
+            for item in tiles:
+                for layer_name, layer_size in item.layers.items():
+                    if layer_size == 0:
+                        continue
+                    if layer_name not in layer_sizes:
+                        layer_sizes[layer_name] = []
+                    layer_sizes[layer_name].append(layer_size)
+            for layer_name in layer_sizes.keys():
+                arr = np.array(layer_sizes[layer_name])
+                tile_size = int(np.min(arr))
+                layer_sizes[layer_name] = tile_size
+                total += tile_size
+            result.append(LayerLevelSize(z, total, layer_sizes))
 
+        return result
+
+    @timeit
     def tiles_size_agg_max_by_z_layer(self) -> List[LayerLevelSize]:
-        pass
+        result: List[LayerLevelSize] = []
+        for z in sorted(self.all_tile_sizes.keys()):
+            tiles = self.all_tile_sizes[z]
+            total = 0
+            layer_sizes = {}
+            for item in tiles:
+                for layer_name, layer_size in item.layers.items():
+                    if layer_name not in layer_sizes:
+                        layer_sizes[layer_name] = []
+                    layer_sizes[layer_name].append(layer_size)
+            for layer_name in layer_sizes.keys():
+                arr = np.array(layer_sizes[layer_name])
+                tile_size = int(np.max(arr))
+                layer_sizes[layer_name] = tile_size
+                total += tile_size
+            result.append(LayerLevelSize(z, total, layer_sizes))
 
+        return result
+
+    @timeit
     def tiles_size_agg_avg_by_z_layer(self) -> List[LayerLevelSize]:
-        pass
+        result: List[LayerLevelSize] = []
+        for z in sorted(self.all_tile_sizes.keys()):
+            tiles = self.all_tile_sizes[z]
+            total = 0
+            layer_sizes = {}
+            for item in tiles:
+                for layer_name, layer_size in item.layers.items():
+                    if layer_name not in layer_sizes:
+                        layer_sizes[layer_name] = []
+                    layer_sizes[layer_name].append(layer_size)
+            for layer_name in layer_sizes.keys():
+                arr = np.array(layer_sizes[layer_name])
+                tile_size = int(np.average(arr))
+                layer_sizes[layer_name] = tile_size
+                total += tile_size
+            result.append(LayerLevelSize(z, total, layer_sizes))
 
+        return result
+
+    @timeit
     def tiles_size_agg_50p_by_z_layer(self) -> List[LayerLevelSize]:
-        pass
+        result: List[LayerLevelSize] = []
+        for z in sorted(self.all_tile_sizes.keys()):
+            tiles = self.all_tile_sizes[z]
+            total = 0
+            layer_sizes = {}
+            for item in tiles:
+                for layer_name, layer_size in item.layers.items():
+                    if layer_name not in layer_sizes:
+                        layer_sizes[layer_name] = []
+                    layer_sizes[layer_name].append(layer_size)
+            for layer_name in layer_sizes.keys():
+                arr = np.array(layer_sizes[layer_name])
+                tile_size = int(np.percentile(arr, 50))
+                layer_sizes[layer_name] = tile_size
+                total += tile_size
+            result.append(LayerLevelSize(z, total, layer_sizes))
 
+        return result
+
+    @timeit
     def tiles_size_agg_85p_by_z_layer(self) -> List[LayerLevelSize]:
-        pass
+        result: List[LayerLevelSize] = []
+        for z in sorted(self.all_tile_sizes.keys()):
+            tiles = self.all_tile_sizes[z]
+            total = 0
+            layer_sizes = {}
+            for item in tiles:
+                for layer_name, layer_size in item.layers.items():
+                    if layer_name not in layer_sizes:
+                        layer_sizes[layer_name] = []
+                    layer_sizes[layer_name].append(layer_size)
+            for layer_name in layer_sizes.keys():
+                arr = np.array(layer_sizes[layer_name])
+                tile_size = int(np.percentile(arr, 85))
+                layer_sizes[layer_name] = tile_size
+                total += tile_size
+            result.append(LayerLevelSize(z, total, layer_sizes))
 
+        return result
+
+    @timeit
     def tiles_size_agg_90p_by_z_layer(self) -> List[LayerLevelSize]:
-        pass
+        result: List[LayerLevelSize] = []
+        for z in sorted(self.all_tile_sizes.keys()):
+            tiles = self.all_tile_sizes[z]
+            total = 0
+            layer_sizes = {}
+            for item in tiles:
+                for layer_name, layer_size in item.layers.items():
+                    if layer_name not in layer_sizes:
+                        layer_sizes[layer_name] = []
+                    layer_sizes[layer_name].append(layer_size)
+            for layer_name in layer_sizes.keys():
+                arr = np.array(layer_sizes[layer_name])
+                tile_size = int(np.percentile(arr, 90))
+                layer_sizes[layer_name] = tile_size
+                total += tile_size
+            result.append(LayerLevelSize(z, total, layer_sizes))
 
+        return result
+
+    @timeit
     def tiles_size_agg_95p_by_z_layer(self) -> List[LayerLevelSize]:
-        pass
+        result: List[LayerLevelSize] = []
+        for z in sorted(self.all_tile_sizes.keys()):
+            tiles = self.all_tile_sizes[z]
+            total = 0
+            layer_sizes = {}
+            for item in tiles:
+                for layer_name, layer_size in item.layers.items():
+                    if layer_name not in layer_sizes:
+                        layer_sizes[layer_name] = []
+                    layer_sizes[layer_name].append(layer_size)
+            for layer_name in layer_sizes.keys():
+                arr = np.array(layer_sizes[layer_name])
+                tile_size = int(np.percentile(arr, 95))
+                layer_sizes[layer_name] = tile_size
+                total += tile_size
+            result.append(LayerLevelSize(z, total, layer_sizes))
 
+        return result
+
+    @timeit
     def tiles_size_agg_99p_by_z_layer(self) -> List[LayerLevelSize]:
-        pass
+        result: List[LayerLevelSize] = []
+        for z in sorted(self.all_tile_sizes.keys()):
+            tiles = self.all_tile_sizes[z]
+            total = 0
+            layer_sizes = {}
+            for item in tiles:
+                for layer_name, layer_size in item.layers.items():
+                    if layer_name not in layer_sizes:
+                        layer_sizes[layer_name] = []
+                    layer_sizes[layer_name].append(layer_size)
+            for layer_name in layer_sizes.keys():
+                arr = np.array(layer_sizes[layer_name])
+                tile_size = int(np.percentile(arr, 99))
+                layer_sizes[layer_name] = tile_size
+                total += tile_size
+            result.append(LayerLevelSize(z, total, layer_sizes))
+
+        return result
+
+    @timeit
+    def _preprocess_tile_layer_sizes(self):
+        all_tile_sizes: dict[str, List[TileItemSize]] = {}
+        tiles = self.tiles
+
+        def normalize_tile_sizes(total: int, layers: dict[str, int]) -> dict[str, int]:
+            final = {}
+            layer_sum = sum([layer_size for layer_size in layers.values()])
+            for layer_name, layer_size in layers.items():
+                final[layer_name] = round((layer_size / layer_sum) * total)
+            return final
+
+        def process_tile(tile):
+            if tile.z not in all_tile_sizes:
+                all_tile_sizes[tile.z] = []
+
+            level_tile_sizes = all_tile_sizes[tile.z]
+
+            data = _processed_data(tile.data, self.job_param.compressed, self.job_param.compression_type)
+            size = sys.getsizeof(tile.data)
+            vt = VectorTile(data)
+            tile_all_layers_size = {}
+            for layer in vt.layers:
+                tile_layer_size = 0
+                for feature in layer.features:
+                    attr = feature.attributes.get()
+                    geom = feature.get_geometry()
+                    tile_layer_size += (sys.getsizeof(attr) + sys.getsizeof(geom))
+                tile_all_layers_size[layer.name] = tile_layer_size
+            tile_all_layers_size = normalize_tile_sizes(size, tile_all_layers_size)
+            level_tile_sizes.append(TileItemSize(tile.x, tile.y, tile.z, size, tile_all_layers_size))
+
+        with Pool(processes=multiprocessing.cpu_count()) as pool:
+            pool.map(process_tile, tiles)
+
+        self.all_tile_sizes = all_tile_sizes
+
+    def _preprocess_tile_layer_sizes_clear(self):
+        self.all_tile_sizes = None
 
     def analyze(self) -> TilesetAnalysisResult:
         result = TilesetAnalysisResult()
@@ -165,6 +367,18 @@ class FolderTilesSource(TileSource):
         result.set_tiles_size_agg_90p_by_z(self.tiles_size_agg_90p_by_z())
         result.set_tiles_size_agg_95p_by_z(self.tiles_size_agg_95p_by_z())
         result.set_tiles_size_agg_99p_by_z(self.tiles_size_agg_99p_by_z())
+
+        self._preprocess_tile_layer_sizes()
+        result.set_tiles_size_agg_sum_by_z_layer(self.tiles_size_agg_sum_by_z_layer())
+        result.set_tiles_size_agg_min_by_z_layer(self.tiles_size_agg_min_by_z_layer())
+        result.set_tiles_size_agg_max_by_z_layer(self.tiles_size_agg_max_by_z_layer())
+        result.set_tiles_size_agg_avg_by_z_layer(self.tiles_size_agg_avg_by_z_layer())
+        result.set_tiles_size_agg_50p_by_z_layer(self.tiles_size_agg_50p_by_z_layer())
+        result.set_tiles_size_agg_85p_by_z_layer(self.tiles_size_agg_85p_by_z_layer())
+        result.set_tiles_size_agg_90p_by_z_layer(self.tiles_size_agg_90p_by_z_layer())
+        result.set_tiles_size_agg_95p_by_z_layer(self.tiles_size_agg_95p_by_z_layer())
+        result.set_tiles_size_agg_99p_by_z_layer(self.tiles_size_agg_99p_by_z_layer())
+        self._preprocess_tile_layer_sizes_clear()
 
         self._clear_all_tiles()
         return result
