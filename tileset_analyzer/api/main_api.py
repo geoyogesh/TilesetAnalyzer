@@ -11,13 +11,13 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import RedirectResponse, FileResponse, Response
 
+from tileset_analyzer.api.tile_serve_source.tile_serve_source_repository import TileServeSourceFactory
 from tileset_analyzer.data_source.mbtiles.sqllite_utils import create_connection
 from tileset_analyzer.entities.job_param import JobParam, TileScheme
 
 UI_PATH = f'{Path(os.path.dirname(__file__)).parent}/static/ui'
 
 job_param: JobParam = None
-conn = None
 
 
 # https://stackoverflow.com/questions/66093397/how-to-disable-starlette-static-files-caching
@@ -27,21 +27,6 @@ class NoCacheStaticFiles(StaticFiles):
     ) -> bool:
         # your own cache rules goes here...
         return False
-
-
-def get_tile_data(z: int, x: int, y: int):
-    global conn
-
-    if conn is None:
-        conn = create_connection(job_param.source)
-
-    cur = conn.cursor()
-    cur.execute(f'select tile_data from tiles where zoom_level = {z} and tile_row = {x} and tile_column = {y}')
-    row = cur.fetchone()
-
-    if row:
-        return row[0]
-    return row
 
 
 def start_api(_job_param: JobParam):
@@ -64,9 +49,9 @@ def start_api(_job_param: JobParam):
         data = None
         if job_param.scheme == TileScheme.TMS:
             y = (1 << z) - 1 - y
-            data = get_tile_data(z, y, x)
+            data = TileServeSourceFactory.get_tile(job_param, z, y, x)
         elif job_param.scheme == TileScheme.XYZ:
-            data = get_tile_data(z, x, y)
+            data = TileServeSourceFactory.get_tile(job_param, z, x, y)
 
         if not data:
             return Response(status_code=404)
