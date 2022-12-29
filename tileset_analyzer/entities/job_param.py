@@ -49,11 +49,11 @@ class JobParam:
         source_type = None
         if os.path.isdir(self.source):
             source_type = TileSourceType.FOLDER
-        elif os.path.isfile(self.source) and self.source.endswith('pmtiles'):
+        elif os.path.isfile(self.source) and self.source.endswith('.pmtiles'):
             source_type = TileSourceType.PMTiles
-        elif os.path.isfile(self.source) and self.source.endswith('comtiles'):
+        elif os.path.isfile(self.source) and self.source.endswith('.comtiles'):
             source_type = TileSourceType.COMTILES
-        elif os.path.isfile(self.source) or self.source.endswith('mbtiles'):
+        elif os.path.isfile(self.source) or self.source.endswith('.mbtiles'):
             source_type = TileSourceType.MBTiles
 
         if source_type is None:
