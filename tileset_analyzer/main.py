@@ -12,6 +12,8 @@ def execute(job_param: JobParam):
     print('started...')
     print('src_path:', job_param.source)
     print('scheme:', job_param.scheme)
+    print('compressed:', job_param.compressed)
+    print('compression_type:', job_param.compression_type)
     print('temp_folder:', job_param.temp_folder)
     print('actions', job_param.actions)
     print('verbose', job_param.verbose)
