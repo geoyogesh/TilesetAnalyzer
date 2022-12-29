@@ -1,7 +1,7 @@
 import React from 'react';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './../../map.scss';
-import { Map as MapLibreGlMap, NavigationControl, PointLike, Popup } from 'maplibre-gl'
+import { FullscreenControl, Map as MapLibreGlMap, NavigationControl, PointLike, Popup } from 'maplibre-gl'
 import { AnalysisResult, LayerInfoItem } from '../../AnalysisResult';
 import { features } from 'process';
 import { type } from 'os';
@@ -40,9 +40,18 @@ export default class MapCanvas extends React.PureComponent<IProps, IState> {
         };
     }
 
-    getLayerStyle(layer_name: string, geometry_type: string): any {
-        const color = `#${(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0')}`;
-        
+    getColor(i: number) {
+        /*
+        const colors = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'];
+        if (i < colors.length) {
+            return colors[i]
+        }
+        */
+
+        return `#${(Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0')}`;
+    }
+
+    getLayerStyle(color: string, layer_name: string, geometry_type: string): any {
         if (geometry_type === 'line_string') {
             return {
                 'id': `${layer_name}_${geometry_type}`,
@@ -166,12 +175,15 @@ export default class MapCanvas extends React.PureComponent<IProps, IState> {
 
         const geometryOrder = ['point', 'line_string', 'polygon'];
 
+        let layerIndex = 0
         for (const orderGeometry of geometryOrder) {
+            const color = this.getColor(layerIndex);
             for (let [layer_name, geometryTypes] of layerGeometryTypes) {
                 if (geometryTypes.has(orderGeometry)) {
-                    styleJson.layers.push(this.getLayerStyle(layer_name, orderGeometry));
+                    styleJson.layers.push(this.getLayerStyle(color, layer_name, orderGeometry));
                 }
             }
+            layerIndex += 1
         }
         
 
@@ -190,6 +202,8 @@ export default class MapCanvas extends React.PureComponent<IProps, IState> {
             showZoom: true,
             visualizePitch: true
         }), 'top-right');
+
+        this.map.addControl(new FullscreenControl({}));
 
 
         this.map.on('move', () => {
