@@ -32,7 +32,8 @@ class JobParam:
                  actions: List[JobAction] = None,
                  compressed: bool = False,
                  compression_type: CompressionType = CompressionType.GZIP,
-                 verbose: str = False):
+                 verbose: str = False,
+                 folder_path_scheme: str = None):
         self.source = source
         self.scheme = scheme
         self.temp_folder = temp_folder
@@ -40,6 +41,8 @@ class JobParam:
         self.compressed = compressed
         self.compression_type = compression_type
         self.verbose = verbose
+        self.folder_path_scheme = folder_path_scheme
+
         self._source_type: TileSourceType = None
 
     def get_source_type(self) -> TileSourceType:

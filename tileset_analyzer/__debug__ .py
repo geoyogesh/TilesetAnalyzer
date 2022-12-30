@@ -35,14 +35,15 @@ def folder_tiles_analyze(actions):
         actions=actions,
         verbose=False,
         compressed=compressed,
-        compression_type=compression_type
+        compression_type=compression_type,
+        folder_path_scheme='{z}/{x}/{y}.pbf'
     )
     execute(job_param)
 
 
 if __name__ == "__main__":
-    run_mbtiles_analyze([JobAction.PROCESS, JobAction.SERVE])
-    #folder_tiles_analyze([JobAction.PROCESS, JobAction.SERVE])
+    # run_mbtiles_analyze([JobAction.SERVE])
+    folder_tiles_analyze([JobAction.PROCESS, JobAction.SERVE])
 
 
 

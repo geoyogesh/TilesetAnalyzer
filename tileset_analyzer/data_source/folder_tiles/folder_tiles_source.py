@@ -21,6 +21,7 @@ import multiprocessing
 from multiprocessing.pool import ThreadPool as Pool
 from tileset_analyzer.readers.vector_tile.engine import VectorTile
 from tileset_analyzer.utilities.moniter import timeit
+from parse import compile
 
 
 class FolderTilesSource(TileSource):
@@ -28,6 +29,7 @@ class FolderTilesSource(TileSource):
         self.job_param = job_param
         self.tiles: List[TileItem] = None
         self.all_tile_sizes = None
+        self.compiled_pattern = compile(job_param.folder_path_scheme)
 
     def count_tiles(self) -> int:
         return len(self.tiles)
@@ -104,8 +106,8 @@ class FolderTilesSource(TileSource):
         files = list_files_dir(self.job_param.source, ['*.pbf', '*.mvt'])
         result: List[LevelSize] = []
         for file, data in files:
-            g = re.match("(\d+)/(\d+)/(\d+).pbf", file).groups()
-            result.append(TileItem(int(g[1]), int(g[2]), int(g[0]), data))
+            parsed = self.compiled_pattern.parse(file)
+            result.append(TileItem(int(parsed['x']), int(parsed['y']), int(parsed['z']), data))
         return result
 
     def _clear_all_tiles(self):

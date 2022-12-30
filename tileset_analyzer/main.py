@@ -16,6 +16,7 @@ def execute(job_param: JobParam):
     print('compression_type:', job_param.compression_type)
     print('temp_folder:', job_param.temp_folder)
     print('actions', job_param.actions)
+    print('folder_path_scheme', job_param.folder_path_scheme)
     print('verbose', job_param.verbose)
 
     if 'process' in job_param.actions:
@@ -54,6 +55,8 @@ def cli():
     parser.add_argument('--temp_folder', help='temp_folder', required=True)
     parser.add_argument('--actions', help='actions', default=[JobAction.PROCESS, JobAction.SERVE])
     parser.add_argument("--verbose", help="increase output verbosity", action="store_false")
+    parser.add_argument('--folder_path_scheme', help='folder path scheme', default=None)
+
     args = parser.parse_args()
     actions = args.actions.split(',')
 
@@ -64,7 +67,8 @@ def cli():
         actions=actions,
         verbose=args.verbose,
         compressed=args.compressed,
-        compression_type=args.compression_type)
+        compression_type=args.compression_type,
+        folder_path_pattern = args.folder_path_scheme)
     execute(job_param)
 
 
