@@ -143,9 +143,9 @@ const LayerTileSize: FC = () => {
                                     // console.log(params);
                                     const layer_name = params.seriesName;
                                     const dataIndex: number = params.dataIndex;
-                                    const total = bytesConverted((totals.get(dataIndex) as number), unit, true, 1)
+                                    const total = Math.round(bytesConverted((totals.get(dataIndex) as number), unit, true, 1))
                                     const percent = Math.round(params.value * 100 / total);
-                                    //console.log(layer_name, dataIndex, total, percent);
+                                    // console.log(layer_name, dataIndex, params.value, total, percent);
                                     return `${params.marker} ${layer_name}: ${params.value} ${unit} (${percent}%)`;
                                 },
                             },
