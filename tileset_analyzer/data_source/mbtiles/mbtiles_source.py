@@ -1,15 +1,9 @@
-import abc
-from collections import namedtuple
-from sqlite3 import Connection
 from typing import List
-
 import numpy as np
-
 from tileset_analyzer.data_source.ds_utils import get_attr
 from tileset_analyzer.data_source.mbtiles.sqllite_utils import create_connection
 from tileset_analyzer.data_source.tile_source import TileSource
 from tileset_analyzer.entities.job_param import JobParam, CompressionType
-from tileset_analyzer.entities.layer_info import LayerInfo
 from tileset_analyzer.entities.layer_level_size import LayerLevelSize, TileItemSize
 from tileset_analyzer.entities.level_size import LevelSize
 from tileset_analyzer.entities.tile_item import TileItem
@@ -21,7 +15,6 @@ import pandas as pd
 from tileset_analyzer.entities.tileset_info import TilesetInfo
 import os
 from pathlib import Path
-import base64
 from tileset_analyzer.readers.vector_tile.engine import VectorTile
 import gzip
 import multiprocessing
@@ -54,7 +47,6 @@ class MBTilesSource(TileSource):
         return result
 
     def _get_agg_tile_size_z(self, agg_type: str) -> List[LevelSize]:
-        sql = None
         if agg_type == 'SUM':
             sql = SQL_SUM_TILE_SIZES_BY_Z
         elif agg_type == 'MIN':
@@ -78,7 +70,7 @@ class MBTilesSource(TileSource):
         cur = self.conn.cursor()
         cur.execute(SQL_ALL_TILES)
         rows = cur.fetchall()
-        result: List[LevelSize] = []
+        result: List[TileItem] = []
         for row in rows:
             result.append(TileItem(row[0], row[1], row[2], row[3]))
         return result
@@ -93,7 +85,6 @@ class MBTilesSource(TileSource):
         self.tiles_size_z_df = None
 
     def _get_agg_tile_size_percentiles_z(self, percentile_type: str) -> List[LevelSize]:
-        quantile = None
         if percentile_type == '50p':
             quantile = 0.5
         elif percentile_type == '85p':
@@ -422,4 +413,3 @@ class MBTilesSource(TileSource):
         self._preprocess_tile_layer_sizes_clear()
 
         return result
-

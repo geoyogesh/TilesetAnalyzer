@@ -68,7 +68,7 @@ def cli():
         verbose=args.verbose,
         compressed=args.compressed,
         compression_type=args.compression_type,
-        folder_path_pattern = args.folder_path_scheme)
+        folder_path_scheme=args.folder_path_scheme)
     execute(job_param)
 
 

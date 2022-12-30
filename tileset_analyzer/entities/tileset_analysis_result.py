@@ -15,29 +15,29 @@ class CustomEncoder(json.JSONEncoder):
 
 class TilesetAnalysisResult:
     def __init__(self):
-        self.count_tiles_total: int = None
-        self.count_tiles_by_z: List[LevelCount] = None
-        self.tiles_size_agg_sum_by_z: List[LevelSize] = None
-        self.tiles_size_agg_min_by_z: List[LevelSize] = None
-        self.tiles_size_agg_max_by_z: List[LevelSize] = None
-        self.tiles_size_agg_avg_by_z: List[LevelSize] = None
-        self.tiles_size_agg_50p_by_z: List[LevelSize] = None
-        self.tiles_size_agg_85p_by_z: List[LevelSize] = None
-        self.tiles_size_agg_90p_by_z: List[LevelSize] = None
-        self.tiles_size_agg_95p_by_z: List[LevelSize] = None
-        self.tiles_size_agg_99p_by_z: List[LevelSize] = None
+        self.count_tiles_total: int | None = None
+        self.count_tiles_by_z: List[LevelCount] | None = None
+        self.tiles_size_agg_sum_by_z: List[LevelSize] | None = None
+        self.tiles_size_agg_min_by_z: List[LevelSize] | None = None
+        self.tiles_size_agg_max_by_z: List[LevelSize] | None = None
+        self.tiles_size_agg_avg_by_z: List[LevelSize] | None = None
+        self.tiles_size_agg_50p_by_z: List[LevelSize] | None = None
+        self.tiles_size_agg_85p_by_z: List[LevelSize] | None = None
+        self.tiles_size_agg_90p_by_z: List[LevelSize] | None = None
+        self.tiles_size_agg_95p_by_z: List[LevelSize] | None = None
+        self.tiles_size_agg_99p_by_z: List[LevelSize] | None = None
 
-        self.tileset_info: TilesetInfo = None
+        self.tileset_info: TilesetInfo | None = None
 
-        self.tiles_size_agg_sum_by_z_layer = None
-        self.tiles_size_agg_min_by_z_layer = None
-        self.tiles_size_agg_max_by_z_layer = None
-        self.tiles_size_agg_avg_by_z_layer = None
-        self.tiles_size_agg_50p_by_z_layer = None
-        self.tiles_size_agg_85p_by_z_layer = None
-        self.tiles_size_agg_90p_by_z_layer = None
-        self.tiles_size_agg_95p_by_z_layer = None
-        self.tiles_size_agg_99p_by_z_layer = None
+        self.tiles_size_agg_sum_by_z_layer: List[LayerLevelSize] | None = None
+        self.tiles_size_agg_min_by_z_layer: List[LayerLevelSize] | None = None
+        self.tiles_size_agg_max_by_z_layer: List[LayerLevelSize] | None = None
+        self.tiles_size_agg_avg_by_z_layer: List[LayerLevelSize] | None = None
+        self.tiles_size_agg_50p_by_z_layer: List[LayerLevelSize] | None = None
+        self.tiles_size_agg_85p_by_z_layer: List[LayerLevelSize] | None = None
+        self.tiles_size_agg_90p_by_z_layer: List[LayerLevelSize] | None = None
+        self.tiles_size_agg_95p_by_z_layer: List[LayerLevelSize] | None = None
+        self.tiles_size_agg_99p_by_z_layer: List[LayerLevelSize] | None = None
 
     def set_count_tiles_total(self, num: int):
         self.count_tiles_total = num

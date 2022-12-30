@@ -1,23 +1,17 @@
-import sqlite3
-
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 import os
 from pathlib import Path
-
 from starlette.datastructures import Headers
 from starlette.middleware.cors import CORSMiddleware
-from starlette.requests import Request
-from starlette.responses import RedirectResponse, FileResponse, Response
-
+from starlette.responses import FileResponse, Response
 from tileset_analyzer.api.tile_serve_source.tile_serve_source_repository import TileServeSourceFactory
-from tileset_analyzer.data_source.mbtiles.sqllite_utils import create_connection
 from tileset_analyzer.entities.job_param import JobParam, TileScheme
 
 UI_PATH = f'{Path(os.path.dirname(__file__)).parent}/static/ui'
 
-job_param: JobParam = None
+job_param: JobParam | None = None
 
 
 # https://stackoverflow.com/questions/66093397/how-to-disable-starlette-static-files-caching
@@ -80,7 +74,7 @@ def start_api(_job_param: JobParam):
         return FileResponse(f'{UI_PATH}/{file_name}.{file_path}')
 
     @app.get("/{path_name:path}")
-    async def index_react_path(request: Request, path_name: str):
+    async def index_react_path():
         return FileResponse(f'{UI_PATH}/index.html')
     
     uvicorn.run(app, host="0.0.0.0", port=8080)

@@ -31,8 +31,8 @@ class JobParam:
                  temp_folder: str = None,
                  actions: List[JobAction] = None,
                  compressed: bool = False,
-                 compression_type: CompressionType = CompressionType.GZIP,
-                 verbose: str = False,
+                 compression_type: CompressionType | None = CompressionType.GZIP,
+                 verbose: bool = False,
                  folder_path_scheme: str = None):
         self.source = source
         self.scheme = scheme
@@ -43,7 +43,7 @@ class JobParam:
         self.verbose = verbose
         self.folder_path_scheme = folder_path_scheme
 
-        self._source_type: TileSourceType = None
+        self._source_type: TileSourceType | None = None
 
     def get_source_type(self) -> TileSourceType:
         if self._source_type is not None:
@@ -63,6 +63,3 @@ class JobParam:
             raise AssertionError("Tileset Type is not valid.")
 
         return source_type
-
-
-

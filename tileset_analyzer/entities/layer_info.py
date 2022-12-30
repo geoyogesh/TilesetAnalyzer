@@ -48,5 +48,3 @@ class LayerInfo:
                     attr_domain[0] = value
                 if value > attr_domain[1]:
                     attr_domain[1] = value
-
-

@@ -1,11 +1,11 @@
 from main import execute
-from tileset_analyzer.entities.job_param import JobParam, CompressionType, JobAction
+from tileset_analyzer.entities.job_param import JobParam, CompressionType, JobAction, TileScheme
 
 
 def run_mbtiles_analyze(actions):
     src_path = 'data/maptiler-osm-2017-07-03-v3.6.1-us_virginia.mbtiles'
     temp_folder = 'tileset_analyzer/static/data'
-    scheme = 'TMS'
+    scheme = TileScheme.TMS
     actions = actions
     compressed = True
     compression_type = CompressionType.GZIP
@@ -24,7 +24,7 @@ def run_mbtiles_analyze(actions):
 def folder_tiles_analyze(actions):
     src_path = 'data/tiles/'
     temp_folder = 'tileset_analyzer/static/data'
-    scheme = 'XYZ'
+    scheme = TileScheme.XYZ
     actions = actions
     compressed = False
     compression_type = None
@@ -42,11 +42,5 @@ def folder_tiles_analyze(actions):
 
 
 if __name__ == "__main__":
-    # run_mbtiles_analyze([JobAction.SERVE])
-    folder_tiles_analyze([JobAction.PROCESS, JobAction.SERVE])
-
-
-
-
-
-
+    run_mbtiles_analyze([JobAction.PROCESS, JobAction.SERVE])
+    # folder_tiles_analyze([JobAction.PROCESS, JobAction.SERVE])

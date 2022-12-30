@@ -5,14 +5,14 @@ from tileset_analyzer.entities.layer_info import LayerInfo
 
 class TilesetInfo:
     def __init__(self):
-        self.name: str = None
-        self.scheme: str = None
-        self.size: int = None
-        self.location: str = None
-        self.ds_type: str = None
-        self.layer_info_items = None
-        self.compressed = None
-        self.compression_type = None
+        self.name: str | None = None
+        self.scheme: str | None = None
+        self.size: int | None = None
+        self.location: str | None = None
+        self.ds_type: str | None = None
+        self.layer_info_items: List[LayerInfo] | None = None
+        self.compressed: bool | None = None
+        self.compression_type: str | None = None
 
     def set_name(self, name: str):
         self.name = name
@@ -35,4 +35,3 @@ class TilesetInfo:
     def set_compression(self, compressed: bool, compression_type: str):
         self.compressed = compressed
         self.compression_type = compression_type
-

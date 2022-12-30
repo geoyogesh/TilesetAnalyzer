@@ -17,4 +17,3 @@ def get_mbtiles_source(job_param: JobParam, z: int, x: int, y: int):
     if row:
         return row[0]
     return None
-

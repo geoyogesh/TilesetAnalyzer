@@ -9,4 +9,3 @@ def get_folder_serve_source(job_param: JobParam, z: int, x: int, y: int):
         return None
     with open(tile_file_path, mode="rb") as tile_file:
         return tile_file.read()
-

@@ -1,5 +1,4 @@
 from setuptools import setup, find_packages
-from importlib.metadata import entry_points
 
 CLASSIFIERS = [
     "Operating System :: OS Independent",
@@ -11,7 +10,7 @@ CLASSIFIERS = [
 
 setup(
     name='tileset_analyzer',
-    version='0.0.54',
+    version='0.0.55',
     url='https://github.com/geoyogesh/tileset_analyzer',
     license='MIT',
     author='Yogesh Dhanapal',

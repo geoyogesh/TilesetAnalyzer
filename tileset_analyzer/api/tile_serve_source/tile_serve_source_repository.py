@@ -12,4 +12,3 @@ class TileServeSourceFactory:
         elif tileset_source_type == TileSourceType.MBTiles:
             return get_mbtiles_source(job_param, z, x, y)
         raise AssertionError("Tileset Type not supported yet")
-

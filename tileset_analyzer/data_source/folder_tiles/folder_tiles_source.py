@@ -1,22 +1,17 @@
-import os
 import sys
 from pathlib import Path
 from typing import List
-
 from tileset_analyzer.data_source.ds_utils import get_attr, _processed_data
 from tileset_analyzer.data_source.folder_tiles.folder_utils import get_folder_size, list_files_dir
 from tileset_analyzer.data_source.tile_source import TileSource
-from tileset_analyzer.entities.job_param import JobParam, CompressionType
-from tileset_analyzer.entities.layer_info import LayerInfo
+from tileset_analyzer.entities.job_param import JobParam
 from tileset_analyzer.entities.layer_level_size import LayerLevelSize, TileItemSize
 from tileset_analyzer.entities.level_count import LevelCount
 from tileset_analyzer.entities.level_size import LevelSize
 from tileset_analyzer.entities.tile_item import TileItem
 from tileset_analyzer.entities.tileset_analysis_result import TilesetAnalysisResult
 from tileset_analyzer.entities.tileset_info import TilesetInfo
-import re
 import numpy as np
-import gzip
 import multiprocessing
 from multiprocessing.pool import ThreadPool as Pool
 from tileset_analyzer.readers.vector_tile.engine import VectorTile
@@ -27,7 +22,7 @@ from parse import compile
 class FolderTilesSource(TileSource):
     def __init__(self, job_param: JobParam):
         self.job_param = job_param
-        self.tiles: List[TileItem] = None
+        self.tiles: List[TileItem] | None = None
         self.all_tile_sizes = None
         self.compiled_pattern = compile(job_param.folder_path_scheme)
 
@@ -104,7 +99,7 @@ class FolderTilesSource(TileSource):
 
     def _get_all_tiles(self) -> List[TileItem]:
         files = list_files_dir(self.job_param.source, ['*.pbf', '*.mvt'])
-        result: List[LevelSize] = []
+        result: List[TileItem] = []
         for file, data in files:
             parsed = self.compiled_pattern.parse(file)
             result.append(TileItem(int(parsed['x']), int(parsed['y']), int(parsed['z']), data))
@@ -242,7 +237,7 @@ class FolderTilesSource(TileSource):
                 for layer_name, layer_size in item.layers.items():
                     if layer_name not in layer_sizes:
                         layer_sizes[layer_name] = []
-                    layer_sizes[layer_name].append(layer_size)
+                    layer_sizes.get(layer_name).append(layer_size)
             for layer_name in layer_sizes.keys():
                 arr = np.array(layer_sizes[layer_name])
                 tile_size = int(np.percentile(arr, 85))
