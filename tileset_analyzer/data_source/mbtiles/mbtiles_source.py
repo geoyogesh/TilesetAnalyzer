@@ -33,13 +33,29 @@ class MBTilesSource(TileSource):
 
     def count_tiles(self) -> int:
         cur = self.conn.cursor()
-        cur.execute(SQL_COUNT_TILES)
+        sql = SQL_COUNT_TILES.format(
+            **{
+                'tiles': self.job_param.mbtiles_tbl.tiles,
+                'tile_row': self.job_param.mbtiles_tbl.tile_row,
+                'tile_column': self.job_param.mbtiles_tbl.tile_column,
+                'zoom_level': self.job_param.mbtiles_tbl.zoom_level,
+                'tile_data': self.job_param.mbtiles_tbl.tile_data
+            })
+        cur.execute(sql)
         count = cur.fetchone()[0]
         return count
 
     def count_tiles_by_z(self) -> List[LevelCount]:
         cur = self.conn.cursor()
-        cur.execute(SQL_COUNT_TILES_BY_Z)
+        sql = SQL_COUNT_TILES_BY_Z.format(
+            **{
+                'tiles': self.job_param.mbtiles_tbl.tiles,
+                'tile_row': self.job_param.mbtiles_tbl.tile_row,
+                'tile_column': self.job_param.mbtiles_tbl.tile_column,
+                'zoom_level': self.job_param.mbtiles_tbl.zoom_level,
+                'tile_data': self.job_param.mbtiles_tbl.tile_data
+            })
+        cur.execute(sql)
         rows = cur.fetchall()
         result: List[LevelCount] = []
         for row in rows:
@@ -58,6 +74,14 @@ class MBTilesSource(TileSource):
         else:
             raise 'UNKNOWN AGG TYPE'
 
+        sql = sql.format(
+            **{
+                'tiles': self.job_param.mbtiles_tbl.tiles,
+                'tile_row': self.job_param.mbtiles_tbl.tile_row,
+                'tile_column': self.job_param.mbtiles_tbl.tile_column,
+                'zoom_level': self.job_param.mbtiles_tbl.zoom_level,
+                'tile_data': self.job_param.mbtiles_tbl.tile_data
+            })
         cur = self.conn.cursor()
         cur.execute(sql)
         rows = cur.fetchall()
@@ -68,7 +92,15 @@ class MBTilesSource(TileSource):
 
     def _get_all_tiles(self) -> List[TileItem]:
         cur = self.conn.cursor()
-        cur.execute(SQL_ALL_TILES)
+        sql = SQL_ALL_TILES.format(
+            **{
+                'tiles': self.job_param.mbtiles_tbl.tiles,
+                'tile_row': self.job_param.mbtiles_tbl.tile_row,
+                'tile_column': self.job_param.mbtiles_tbl.tile_column,
+                'zoom_level': self.job_param.mbtiles_tbl.zoom_level,
+                'tile_data': self.job_param.mbtiles_tbl.tile_data
+            })
+        cur.execute(sql)
         rows = cur.fetchall()
         result: List[TileItem] = []
         for row in rows:
@@ -76,7 +108,15 @@ class MBTilesSource(TileSource):
         return result
 
     def _set_tilesize_z_dataframe(self):
-        query = SQL_LIST_TILE_SIZES_BY_Z
+        sql = SQL_LIST_TILE_SIZES_BY_Z.format(
+            **{
+                'tiles': self.job_param.mbtiles_tbl.tiles,
+                'tile_row': self.job_param.mbtiles_tbl.tile_row,
+                'tile_column': self.job_param.mbtiles_tbl.tile_column,
+                'zoom_level': self.job_param.mbtiles_tbl.zoom_level,
+                'tile_data': self.job_param.mbtiles_tbl.tile_data
+            })
+        query = sql
         cur = self.conn.cursor()
         self.tiles_size_z_df = pd.read_sql(query, self.conn)
         cur.close()

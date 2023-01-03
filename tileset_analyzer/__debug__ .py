@@ -16,7 +16,8 @@ def run_mbtiles_analyze(actions):
         actions=actions,
         verbose=False,
         compressed=compressed,
-        compression_type=compression_type
+        compression_type=compression_type,
+        mbtiles_tbl='tiles,tile_row,tile_column,zoom_level,tile_data'
     )
     execute(job_param)
 
@@ -36,7 +37,8 @@ def folder_tiles_analyze(actions):
         verbose=False,
         compressed=compressed,
         compression_type=compression_type,
-        folder_path_scheme='{z}/{x}/{y}.pbf'
+        folder_path_scheme='{z}/{x}/{y}.pbf',
+        mbtiles_tbl=None
     )
     execute(job_param)
 

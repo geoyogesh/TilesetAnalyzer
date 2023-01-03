@@ -17,6 +17,7 @@ def execute(job_param: JobParam):
     print('temp_folder:', job_param.temp_folder)
     print('actions', job_param.actions)
     print('folder_path_scheme', job_param.folder_path_scheme)
+    print('mbtiles_tbl', job_param.mbtiles_tbl)
     print('verbose', job_param.verbose)
 
     if 'process' in job_param.actions:
@@ -56,6 +57,7 @@ def cli():
     parser.add_argument('--actions', help='actions', default=[JobAction.PROCESS, JobAction.SERVE])
     parser.add_argument("--verbose", help="increase output verbosity", action="store_false")
     parser.add_argument('--folder_path_scheme', help='folder path scheme', default=None)
+    parser.add_argument('--mbtiles_tbl', help='mbtiles tbl params', default='tiles,tile_row,tile_column,zoom_level,tile_data')
 
     args = parser.parse_args()
     actions = args.actions.split(',')
@@ -68,7 +70,8 @@ def cli():
         verbose=args.verbose,
         compressed=args.compressed,
         compression_type=args.compression_type,
-        folder_path_scheme=args.folder_path_scheme)
+        folder_path_scheme=args.folder_path_scheme,
+        mbtiles_tbl=args.mbtiles_tbl)
     execute(job_param)
 
 

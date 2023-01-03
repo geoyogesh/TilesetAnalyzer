@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import List
 import os
-
+from collections import namedtuple
 
 class JobAction(str, Enum):
     PROCESS = 'process'
@@ -24,6 +24,9 @@ class TileSourceType(str, Enum):
     COMTILES = 'COMTiles'
 
 
+MBTilesTBL = namedtuple('MBTilesTBL', ['tiles', 'tile_row', 'tile_column', 'zoom_level', 'tile_data'])
+
+
 class JobParam:
     def __init__(self,
                  source: str = None,
@@ -33,7 +36,8 @@ class JobParam:
                  compressed: bool = False,
                  compression_type: CompressionType | None = CompressionType.GZIP,
                  verbose: bool = False,
-                 folder_path_scheme: str = None):
+                 folder_path_scheme: str = None,
+                 mbtiles_tbl: str | None = 'tiles,tile_row,tile_column,zoom_level,tile_data'):
         self.source = source
         self.scheme = scheme
         self.temp_folder = temp_folder
@@ -42,6 +46,12 @@ class JobParam:
         self.compression_type = compression_type
         self.verbose = verbose
         self.folder_path_scheme = folder_path_scheme
+
+        if mbtiles_tbl is None:
+            self.mbtiles_tbl = None
+        else:
+            mbtiles_tbl_parts = mbtiles_tbl.split(',')
+            self.mbtiles_tbl: MBTilesTBL = MBTilesTBL(mbtiles_tbl_parts[0], mbtiles_tbl_parts[1], mbtiles_tbl_parts[2], mbtiles_tbl_parts[3], mbtiles_tbl_parts[4])
 
         self._source_type: TileSourceType | None = None
 
