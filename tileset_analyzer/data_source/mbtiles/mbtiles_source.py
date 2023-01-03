@@ -1,3 +1,4 @@
+import base64
 from typing import List
 import numpy as np
 from tileset_analyzer.data_source.ds_utils import get_attr
@@ -173,7 +174,7 @@ class MBTilesSource(TileSource):
 
     def _processed_data(self, data):
         if self.job_param.compressed is False:
-            return data
+            return base64.encodestring(data)
 
         if self.job_param.compression_type == CompressionType.GZIP:
             return gzip.decompress(data)
