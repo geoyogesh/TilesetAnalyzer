@@ -1,16 +1,16 @@
-import { Card, Select, Skeleton, Space } from "antd";
+import { Space } from "antd";
 import { FC, useEffect, useState } from "react";
 import { AnalysisResult, TilesSizeAggByZLayer } from "../AnalysisResult";
 import ReactEcharts, { EChartsOption } from "echarts-for-react"
 import { BASE_CHART_CONFIG, CHART_STYLE } from "./Support/ChartProps";
 import { bytesConverted, bytesToString, bytesUnit } from "./Support/SizeConversions";
-import internal from "stream";
+import { Container, Header, Spinner, Select } from "@cloudscape-design/components";
+import { OptionDefinition } from "@cloudscape-design/components/internal/components/option/interfaces";
 
 const LayerTileSize: FC = () => {
     const [tilesSizeAggbyZLayer, setTilesSizeAggbyZLayer] = useState<{ [agg_type: string]: any } | null>(null);
-    const [aggSelection, setAggSelection] = useState<string>('SUM');
 
-    const aggOptions = [
+    const aggOptions: OptionDefinition[] = [
         {
             value: 'SUM',
             label: 'Sum',
@@ -49,6 +49,9 @@ const LayerTileSize: FC = () => {
         }
     ];
 
+    const [aggSelection, setAggSelection] = useState<OptionDefinition>(aggOptions.find(item => item.value === 'SUM')!);
+
+
     useEffect(() => {
         fetch('http://0.0.0.0:8080/api/analysis_result.json')
             .then((res) => res.json())
@@ -67,7 +70,7 @@ const LayerTileSize: FC = () => {
                 ]
 
                 const tileSizeAggOptions: { [agg_type: string]: any } = {};
-                
+
 
                 for (const [aggType, agg_metric] of aggTypes) {
                     const totals = new Map<number, number>();
@@ -161,22 +164,29 @@ const LayerTileSize: FC = () => {
     }, []);
 
 
-    const handleChange = (value: string) => {
+    const handleChange = (value: OptionDefinition) => {
         setAggSelection(value);
     };
 
 
     return (<Space direction="vertical" size="middle" style={{ display: 'flex' }}>
-
-        <Card size="small" title={`Tile Layer Size ${aggOptions.filter(item => item.value === aggSelection)[0].label} by Zoom level`} extra={<Select
-            defaultValue={aggSelection}
-            style={{ width: 160 }}
-            onChange={handleChange}
-            options={aggOptions}
-        />}>
-            {tilesSizeAggbyZLayer !== null ? <ReactEcharts option={tilesSizeAggbyZLayer[aggSelection]} style={CHART_STYLE}></ReactEcharts> : <Skeleton />}
-        </Card>
-
+        <Container
+            header={
+                <Header variant="h3" actions={
+                    <Select
+                        selectedOption={aggSelection}
+                        onChange={({ detail }) =>
+                            handleChange(detail.selectedOption)
+                        }
+                        options={aggOptions}
+                    />
+                }>
+                    {`Tile Layer Size ${aggOptions.filter(item => item.value === aggSelection.value)[0].label} by Zoom level`}
+                </Header>
+            }
+        >
+            {tilesSizeAggbyZLayer !== null ? <ReactEcharts option={tilesSizeAggbyZLayer[aggSelection.value!]} style={CHART_STYLE}></ReactEcharts> : <Spinner />}
+        </Container>
     </Space>);
 }
 

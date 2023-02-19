@@ -4,6 +4,7 @@ import { Skeleton, Space, Typography, Table, Card, Divider, Modal, Tag } from 'a
 import { bytesToString } from "../Metrics/Support/SizeConversions";
 import { ColumnsType, TableProps } from "antd/es/table";
 import LayerInfo from "./LayerInfo";
+import { Container, Header, ColumnLayout, Box, StatusIndicator, Spinner } from "@cloudscape-design/components";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -143,43 +144,50 @@ const TileSetInfo: FC = () => {
     }, []);
 
     return (
-        <div style={{ 'height': '100%', 'display': 'flex', 'flexDirection': 'column', 'gap': 5 }}>
-            <Title level={4}>TileSet Info</Title>
-            {tilesetInfo !== null ?
-                <Card>
-                    <Space direction="vertical">
-                        <Text>Name: {tilesetInfo.name}</Text>
-                        <Text>Location: {tilesetInfo.location}</Text>
-                        <Text>DataSource Type: {tilesetInfo.ds_type}</Text>
-                        <Text>Scheme: {tilesetInfo.scheme}</Text>
-                        <Text>Size: {bytesToString(tilesetInfo.size, true)}</Text>
-                        <Text>Compressed: {tilesetInfo.compressed ? 'True' : 'False'} {tilesetInfo.compressed && <Text>({tilesetInfo.compression_type})</Text>}</Text>
-                        
-                    </Space>
-                </Card>
+        <>
+            <Container header={<Header variant="h2">TileSet Info</Header>}>
+                {tilesetInfo !== null ? <ColumnLayout columns={2} variant="text-grid">
+                    <div>
+                        <Box variant="awsui-key-label">Name</Box>
+                        <div>{tilesetInfo.name}</div>
+                        <Box variant="awsui-key-label">Location</Box>
+                        <div>{tilesetInfo.location}</div>
+                        <Box variant="awsui-key-label">DataSource Type</Box>
+                        <div>{tilesetInfo.ds_type}</div>
+                    </div>
+                    <div>
+                    <Box variant="awsui-key-label">Scheme</Box>
+                        <div>{tilesetInfo.scheme}</div>
+                        <Box variant="awsui-key-label">Size</Box>
+                        <div>{bytesToString(tilesetInfo.size, true)}</div>
+                        <Box variant="awsui-key-label">Compressed</Box>
+                        <div>{tilesetInfo.compressed ? 'True' : 'False'} {tilesetInfo.compressed && <Text>({tilesetInfo.compression_type})</Text>}</div>
+                    </div>
+                </ColumnLayout> : <Spinner /> }
+            </Container>
 
-                : <Skeleton />
-            }
-            <Divider orientation="left">Explore Attributes</Divider>
-            {tableData != null ? <Table size="small" style={{ 'flexGrow': 1 }}
-                columns={columns}
-                dataSource={tableData}
-                pagination={{ defaultPageSize: 10, showSizeChanger: true }}
-                onChange={onChange}
-                scroll={{ y: 400 }} /> : <Skeleton />}
-            <Modal
-                title={`${currentRecord?.layer_info_item?.name} Layer Attributes`}
-                open={isModalOpen}
-                onOk={handleOk}
-                onCancel={handleCancel}
-                width={1000}
-                centered
-            >
-                {currentRecord != null ? <LayerInfo layer={currentRecord.layer_info_item}></LayerInfo> : <Skeleton />}
-            </Modal>
+            <div style={{ 'height': '100%', 'display': 'flex', 'flexDirection': 'column', 'gap': 5 }}>
+                <Divider orientation="left">Explore Attributes</Divider>
+                {tableData != null ? <Table size="small" style={{ 'flexGrow': 1 }}
+                    columns={columns}
+                    dataSource={tableData}
+                    pagination={{ defaultPageSize: 10, showSizeChanger: true }}
+                    onChange={onChange}
+                    scroll={{ y: 400 }} /> : <Skeleton />}
+                <Modal
+                    title={`${currentRecord?.layer_info_item?.name} Layer Attributes`}
+                    open={isModalOpen}
+                    onOk={handleOk}
+                    onCancel={handleCancel}
+                    width={1000}
+                    centered
+                >
+                    {currentRecord != null ? <LayerInfo layer={currentRecord.layer_info_item}></LayerInfo> : <Skeleton />}
+                </Modal>
 
-        </div>
+            </div>
 
+        </>
     )
 }
 

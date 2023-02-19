@@ -1,4 +1,4 @@
-import { Breadcrumb } from "antd";
+import { BreadcrumbGroup } from "@cloudscape-design/components";
 import { FC, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -21,20 +21,26 @@ const CustomBreadcrumb: FC = () => {
                     setActive(result);
                 }
             } catch (error) {
-    
+
             }
-    
+
         }
 
         getCurrentComponent();
     }, [location.pathname])
-    
+
 
     return (
-        <Breadcrumb style={{ margin: '16px 0' }}>
-            <Breadcrumb.Item>Home</Breadcrumb.Item>
-            {active && <Breadcrumb.Item>{active}</Breadcrumb.Item>}
-        </Breadcrumb>
+        <div style={{ margin: '16px 0' }}>
+            <BreadcrumbGroup
+                items={[
+                    { text: "Home", href: '/' },
+                    ...(active ? [{ text: active!, href: "" }] : []),
+                ]}
+                ariaLabel="Breadcrumbs"
+            />
+        </div>
+
     )
 }
 

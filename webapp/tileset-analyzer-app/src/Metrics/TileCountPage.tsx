@@ -1,9 +1,10 @@
-import { Card, Skeleton, Space } from "antd";
+import { Space } from "antd";
 import { FC, useEffect, useState } from "react";
 import { AnalysisResult } from "../AnalysisResult";
 import ReactEcharts, { EChartsOption } from "echarts-for-react";
 import { BASE_CHART_CONFIG, CHART_STYLE } from "./Support/ChartProps";
 import { abbreviateNumber } from "./Support/NumberConverions";
+import { Container, Header, Spinner } from "@cloudscape-design/components";
 
 const TileCount: FC = () => {
     const [countTilesbyZ, setCountTilesbyZ] = useState<any>(null);
@@ -24,7 +25,7 @@ const TileCount: FC = () => {
                             }
                         },
                         yAxis: {
-                            ...BASE_CHART_CONFIG.yAxis, 
+                            ...BASE_CHART_CONFIG.yAxis,
                             ...{
                                 type: "value",
                                 name: "Tile Count",
@@ -40,9 +41,9 @@ const TileCount: FC = () => {
                                     show: true,
                                     position: 'top',
                                     valueAnimation: true,
-                                    formatter: (param: any) => { 
-                                        return `${abbreviateNumber(param.data)}`; 
-                                    } 
+                                    formatter: (param: any) => {
+                                        return `${abbreviateNumber(param.data)}`;
+                                    }
                                 }
                             }
                         ]
@@ -59,9 +60,15 @@ const TileCount: FC = () => {
 
     return (
         <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
-            <Card size="small" title="Tiles Count by Zoom Level">
-                {countTilesbyZ !== null ? <ReactEcharts option={countTilesbyZ} style={CHART_STYLE}></ReactEcharts> : <Skeleton />}
-            </Card>
+            <Container
+                header={
+                    <Header variant="h3">
+                        Tiles Count by Zoom Level
+                    </Header>
+                }
+            >
+                {countTilesbyZ !== null ? <ReactEcharts option={countTilesbyZ} style={CHART_STYLE}></ReactEcharts> : <Spinner />}
+            </Container>
         </Space>);
 }
 

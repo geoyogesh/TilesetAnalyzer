@@ -1,16 +1,17 @@
-import { Card, Select, Skeleton, Space } from "antd";
+import { Space } from "antd";
 import { FC, useEffect, useState } from "react";
 import { AnalysisResult, TilesSizeAggByZLayer } from "../AnalysisResult";
 import ReactEcharts, { EChartsOption } from "echarts-for-react"
 import { BASE_CHART_CONFIG, CHART_STYLE } from "./Support/ChartProps";
 import { bytesConverted, bytesToString, bytesUnit } from "./Support/SizeConversions";
+import { Container, Header, Spinner, Select } from "@cloudscape-design/components";
+import { OptionDefinition } from "@cloudscape-design/components/internal/components/option/interfaces";
 
 
 const LayerSizeTree: FC = () => {
     const [tilesSizeAggbyZLayer, setTilesSizeAggbyZLayer] = useState<{ [agg_type: string]: any } | null>(null);
-    const [aggSelection, setAggSelection] = useState<string>('SUM');
-
-    const aggOptions = [
+    
+    const aggOptions: OptionDefinition[] = [
         {
             value: 'SUM',
             label: 'Sum',
@@ -49,6 +50,9 @@ const LayerSizeTree: FC = () => {
         }
     ];
 
+    const [aggSelection, setAggSelection] = useState<OptionDefinition>(aggOptions.find(item => item.value === 'SUM')!);
+
+
     useEffect(() => {
         fetch('http://0.0.0.0:8080/api/analysis_result.json')
             .then((res) => res.json())
@@ -84,22 +88,22 @@ const LayerSizeTree: FC = () => {
                         levels: [
                             {
                                 itemStyle: {
-                                  borderWidth: 0,
-                                  gapWidth: 5
+                                    borderWidth: 0,
+                                    gapWidth: 5
                                 }
-                              },
-                              {
+                            },
+                            {
                                 itemStyle: {
-                                  gapWidth: 1
+                                    gapWidth: 1
                                 }
-                              },
-                              {
+                            },
+                            {
                                 colorSaturation: [0.35, 0.5],
                                 itemStyle: {
-                                  gapWidth: 1,
-                                  borderColorSaturation: 0.6
+                                    gapWidth: 1,
+                                    borderColorSaturation: 0.6
                                 }
-                              }
+                            }
                         ],
                         data: []
                     };
@@ -126,22 +130,22 @@ const LayerSizeTree: FC = () => {
                         },
                         tooltip: {
                             formatter: function (info: any) {
-                              var value = info.value;
-                              var name = info.name;
-                              var treePathInfo = info.treePathInfo;
-                              var treePath = [];
-                              for (var i = 1; i < treePathInfo.length; i++) {
-                                treePath.push(treePathInfo[i].name);
-                              }
-                              return [
-                                '<div class="tooltip-title">' +
-                                  treePath.join(' / ') +
-                                  '</div>',
-                                'Disk Usage: ' + bytesToString(value, true)
-                              ].join('');
+                                var value = info.value;
+                                var name = info.name;
+                                var treePathInfo = info.treePathInfo;
+                                var treePath = [];
+                                for (var i = 1; i < treePathInfo.length; i++) {
+                                    treePath.push(treePathInfo[i].name);
+                                }
+                                return [
+                                    '<div class="tooltip-title">' +
+                                    treePath.join(' / ') +
+                                    '</div>',
+                                    'Disk Usage: ' + bytesToString(value, true)
+                                ].join('');
                             }
-                          },
-                          toolbox: {
+                        },
+                        toolbox: {
                             show: true,
                             orient: 'vertical',
                             left: 'right',
@@ -164,22 +168,30 @@ const LayerSizeTree: FC = () => {
     }, []);
 
 
-    const handleChange = (value: string) => {
+    const handleChange = (value: OptionDefinition) => {
         setAggSelection(value);
     };
 
 
     return (<Space direction="vertical" size="middle" style={{ display: 'flex' }}>
 
-        <Card size="small" title={`Tile Layer Size (TreeMap)`} extra={<Select
-            defaultValue={aggSelection}
-            style={{ width: 160 }}
-            onChange={handleChange}
-            options={aggOptions}
-        />}>
-            {tilesSizeAggbyZLayer !== null ? <ReactEcharts option={tilesSizeAggbyZLayer[aggSelection]} style={CHART_STYLE}></ReactEcharts> : <Skeleton />}
-        </Card>
-
+        <Container
+            header={
+                <Header variant="h3" actions={
+                    <Select
+                        selectedOption={aggSelection}
+                        onChange={({ detail }) =>
+                            handleChange(detail.selectedOption)
+                        }
+                        options={aggOptions}
+                    />
+                }>
+                    {`Tile Layer Size (TreeMap)`}
+                </Header>
+            }
+        >
+            {tilesSizeAggbyZLayer !== null ? <ReactEcharts option={tilesSizeAggbyZLayer[aggSelection.value!]} style={CHART_STYLE}></ReactEcharts> : <Spinner />}
+        </Container>
     </Space>);
 }
 
