@@ -7,11 +7,9 @@ import {
     Badge,
     ColumnLayout
 } from "@cloudscape-design/components";
-import { Typography } from "antd";
 import { CSSProperties, FC, useEffect, useState } from "react";
 import { LayerInfoItem } from "../AnalysisResult";
 
-const { Text } = Typography;
 
 interface LayerInfoProps {
     layer: LayerInfoItem;
@@ -79,12 +77,12 @@ const LayerInfo: FC<LayerInfoProps> = ({ layer }) => {
 
     const headerContent = (selectedField: string, attrValues: string[] | undefined) => {
         if (!attrValues) {
-            return <Text strong>no value(s) found for {selectedField}</Text>
+            return <p><b>no value(s) found for {selectedField}</b></p>
         }
         if (attrValues.length === 100) {
-            return <Text strong>contains 100+ distinct values for {selectedField}. truncated to first 100 values.</Text>
+            return <p><b>contains 100+ distinct values for {selectedField}. truncated to first 100 values.</b></p>
         }
-        return <Text strong>{attrValues.length} distinct value(s) for {selectedField}</Text>
+        return <p><b>{attrValues.length} distinct value(s) for {selectedField}</b></p>
     }
 
     return (

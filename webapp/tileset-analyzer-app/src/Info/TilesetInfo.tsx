@@ -1,12 +1,11 @@
 import { FC, useEffect, useState } from "react";
 import { AnalysisResult, LayerInfoItem, TilesetInfo } from "../AnalysisResult";
-import { Skeleton, Space, Typography, Table, Card, Divider, Modal, Tag } from 'antd';
+import { Table } from 'antd';
 import { bytesToString } from "../Metrics/Support/SizeConversions";
 import { ColumnsType, TableProps } from "antd/es/table";
 import LayerInfo from "./LayerInfo";
-import { Container, Header, ColumnLayout, Box, StatusIndicator, Spinner } from "@cloudscape-design/components";
+import { Container, Header, ColumnLayout, Box, StatusIndicator, Spinner, Modal, Badge, SpaceBetween } from "@cloudscape-design/components";
 
-const { Title, Paragraph, Text } = Typography;
 
 interface DataType {
     key: React.Key;
@@ -27,17 +26,6 @@ const TileSetInfo: FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentRecord, setCurrentRecord] = useState<any>(null);
 
-    const showModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const handleOk = () => {
-        setIsModalOpen(false);
-    };
-
-    const handleCancel = () => {
-        setIsModalOpen(false);
-    };
 
     const onChange: TableProps<DataType>['onChange'] = (pagination, filters, sorter, extra) => {
         console.log('params', pagination, filters, sorter, extra);
@@ -111,9 +99,9 @@ const TileSetInfo: FC = () => {
                             <>
                                 {geometry_type.map((tag) => {
                                     return (
-                                        <Tag color={'green'} key={tag}>
+                                        <Badge color={'green'} key={tag}>
                                             {tag.toUpperCase()}
-                                        </Tag>
+                                        </Badge>
                                     );
                                 })}
                             </>
@@ -144,7 +132,7 @@ const TileSetInfo: FC = () => {
     }, []);
 
     return (
-        <>
+        <SpaceBetween size="m">
             <Container header={<Header variant="h2">TileSet Info</Header>}>
                 {tilesetInfo !== null ? <ColumnLayout columns={2} variant="text-grid">
                     <div>
@@ -156,38 +144,34 @@ const TileSetInfo: FC = () => {
                         <div>{tilesetInfo.ds_type}</div>
                     </div>
                     <div>
-                    <Box variant="awsui-key-label">Scheme</Box>
+                        <Box variant="awsui-key-label">Scheme</Box>
                         <div>{tilesetInfo.scheme}</div>
                         <Box variant="awsui-key-label">Size</Box>
                         <div>{bytesToString(tilesetInfo.size, true)}</div>
                         <Box variant="awsui-key-label">Compressed</Box>
-                        <div>{tilesetInfo.compressed ? 'True' : 'False'} {tilesetInfo.compressed && <Text>({tilesetInfo.compression_type})</Text>}</div>
+                        <div>{tilesetInfo.compressed ? 'True' : 'False'} {tilesetInfo.compressed && <p>({tilesetInfo.compression_type})</p>}</div>
                     </div>
-                </ColumnLayout> : <Spinner /> }
+                </ColumnLayout> : <Spinner />}
             </Container>
 
-            <div style={{ 'height': '100%', 'display': 'flex', 'flexDirection': 'column', 'gap': 5 }}>
-                <Divider orientation="left">Explore Attributes</Divider>
-                {tableData != null ? <Table size="small" style={{ 'flexGrow': 1 }}
-                    columns={columns}
-                    dataSource={tableData}
-                    pagination={{ defaultPageSize: 10, showSizeChanger: true }}
-                    onChange={onChange}
-                    scroll={{ y: 400 }} /> : <Skeleton />}
-                <Modal
-                    title={`${currentRecord?.layer_info_item?.name} Layer Attributes`}
-                    open={isModalOpen}
-                    onOk={handleOk}
-                    onCancel={handleCancel}
-                    width={1000}
-                    centered
-                >
-                    {currentRecord != null ? <LayerInfo layer={currentRecord.layer_info_item}></LayerInfo> : <Skeleton />}
-                </Modal>
+            <Container header={<Header variant="h2">Explore Attributes</Header>}>
+                    {tableData != null ? <Table size="small" style={{ 'flexGrow': 1 }}
+                        columns={columns}
+                        dataSource={tableData}
+                        pagination={{ defaultPageSize: 10, showSizeChanger: true }}
+                        onChange={onChange}
+                        scroll={{ y: 300 }} /> : <Spinner />}
+                    <Modal
+                        header={`${currentRecord?.layer_info_item?.name} Layer Attributes`}
+                        visible={isModalOpen}
+                        onDismiss={() => setIsModalOpen(false)}
+                        size="large"
+                    >
+                        {currentRecord != null ? <LayerInfo layer={currentRecord.layer_info_item}></LayerInfo> : <Spinner />}
+                    </Modal>
+                </Container>
 
-            </div>
-
-        </>
+        </SpaceBetween>
     )
 }
 

@@ -1,10 +1,9 @@
-import { Space } from "antd";
 import { FC, useEffect, useState } from "react";
 import { AnalysisResult, TilesSizeAggByZ } from "../AnalysisResult";
 import ReactEcharts, { EChartsOption } from "echarts-for-react"
 import { BASE_CHART_CONFIG, CHART_STYLE } from "./Support/ChartProps";
 import { bytesConverted, bytesToString, bytesUnit } from "./Support/SizeConversions";
-import { Container, Header, Select, Spinner } from "@cloudscape-design/components";
+import { Container, Header, Select, SpaceBetween, Spinner } from "@cloudscape-design/components";
 import { OptionDefinition } from "@cloudscape-design/components/internal/components/option/interfaces";
 
 const TileSize: FC = () => {
@@ -132,7 +131,7 @@ const TileSize: FC = () => {
     };
 
 
-    return (<Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+    return (<SpaceBetween direction="vertical" size="m">
 
         <Container
             header={
@@ -150,7 +149,7 @@ const TileSize: FC = () => {
             {tilesSizeAggbyZ !== null ? <ReactEcharts option={tilesSizeAggbyZ[aggSelection.value!]} style={CHART_STYLE}></ReactEcharts> : <Spinner />}
         </Container>
 
-    </Space>);
+    </SpaceBetween>);
 }
 
 export default TileSize;
