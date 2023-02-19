@@ -4,7 +4,7 @@ import { Table } from 'antd';
 import { bytesToString } from "../Metrics/Support/SizeConversions";
 import { ColumnsType, TableProps } from "antd/es/table";
 import LayerInfo from "./LayerInfo";
-import { Container, Header, ColumnLayout, Box, StatusIndicator, Spinner, Modal, Badge, SpaceBetween } from "@cloudscape-design/components";
+import { Container, Header, ColumnLayout, Box, StatusIndicator, Spinner, Modal, Badge, SpaceBetween, ContentLayout, Grid } from "@cloudscape-design/components";
 
 
 interface DataType {
@@ -132,29 +132,30 @@ const TileSetInfo: FC = () => {
     }, []);
 
     return (
-        <SpaceBetween size="m">
-            <Container header={<Header variant="h2">TileSet Info</Header>}>
-                {tilesetInfo !== null ? <ColumnLayout columns={2} variant="text-grid">
-                    <div>
-                        <Box variant="awsui-key-label">Name</Box>
-                        <div>{tilesetInfo.name}</div>
-                        <Box variant="awsui-key-label">Location</Box>
-                        <div>{tilesetInfo.location}</div>
-                        <Box variant="awsui-key-label">DataSource Type</Box>
-                        <div>{tilesetInfo.ds_type}</div>
-                    </div>
-                    <div>
-                        <Box variant="awsui-key-label">Scheme</Box>
-                        <div>{tilesetInfo.scheme}</div>
-                        <Box variant="awsui-key-label">Size</Box>
-                        <div>{bytesToString(tilesetInfo.size, true)}</div>
-                        <Box variant="awsui-key-label">Compressed</Box>
-                        <div>{tilesetInfo.compressed ? 'True' : 'False'} {tilesetInfo.compressed && <p>({tilesetInfo.compression_type})</p>}</div>
-                    </div>
-                </ColumnLayout> : <Spinner />}
-            </Container>
+        <ContentLayout>
+            <SpaceBetween size="m">
+                <Container header={<Header variant="h2">TileSet Info</Header>}>
+                    {tilesetInfo !== null ? <ColumnLayout columns={2} variant="text-grid">
+                        <div>
+                            <Box variant="awsui-key-label">Name</Box>
+                            <div>{tilesetInfo.name}</div>
+                            <Box variant="awsui-key-label">Location</Box>
+                            <div>{tilesetInfo.location}</div>
+                            <Box variant="awsui-key-label">DataSource Type</Box>
+                            <div>{tilesetInfo.ds_type}</div>
+                        </div>
+                        <div>
+                            <Box variant="awsui-key-label">Scheme</Box>
+                            <div>{tilesetInfo.scheme}</div>
+                            <Box variant="awsui-key-label">Size</Box>
+                            <div>{bytesToString(tilesetInfo.size, true)}</div>
+                            <Box variant="awsui-key-label">Compressed</Box>
+                            <div>{tilesetInfo.compressed ? 'True' : 'False'} {tilesetInfo.compressed && <p>({tilesetInfo.compression_type})</p>}</div>
+                        </div>
+                    </ColumnLayout> : <Spinner />}
+                </Container>
 
-            <Container header={<Header variant="h2">Explore Attributes</Header>}>
+                <Container header={<Header variant="h2">Explore Attributes</Header>}>
                     {tableData != null ? <Table size="small" style={{ 'flexGrow': 1 }}
                         columns={columns}
                         dataSource={tableData}
@@ -170,8 +171,10 @@ const TileSetInfo: FC = () => {
                         {currentRecord != null ? <LayerInfo layer={currentRecord.layer_info_item}></LayerInfo> : <Spinner />}
                     </Modal>
                 </Container>
+            </SpaceBetween>
 
-        </SpaceBetween>
+        </ContentLayout>
+
     )
 }
 

@@ -1,92 +1,82 @@
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { BarChartOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import { Layout, Menu, MenuProps } from 'antd';
 import CustomBreadcrumb from "./CustomBreadcrumb";
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
+import { AppLayout, Input, SideNavigation, TopNavigation } from "@cloudscape-design/components";
 
-const { Header, Content, Sider } = Layout;
-const { SubMenu } = Menu;
 
 
 const LayoutPage: FC = () => {
   const location = useLocation();
-  const navigate = useNavigate();
 
-  const navItems: MenuProps['items'] = [
+  const [active, setActive] = useState<string | undefined>(undefined);
+
+
+    useEffect(() => {
+      setActive(location.pathname);
+    }, [location.pathname])
+
+  const i18nStrings = {
+    searchIconAriaLabel: 'Search',
+    searchDismissIconAriaLabel: 'Close search',
+    overflowMenuTriggerText: 'More',
+    overflowMenuTitleText: 'All',
+    overflowMenuBackIconAriaLabel: 'Back',
+    overflowMenuDismissIconAriaLabel: 'Close menu',
+  };
+
+  const navItems: any[] = [
     {
-      key: '/info',
-      icon: React.createElement(InfoCircleOutlined),
-      label: `Infomation`,
-      children: [{
-        key: '/tileset-info',
-        label: 'Tileset Info',
-        onClick: () => navigate('/tileset-info')
-      },
-      {
-        key: '/map-view',
-        label: 'Map View',
-        onClick: () => navigate('/map-view')
-      }]
+      type: 'section',
+      text: 'Infomation',
+      items: [
+        { type: 'link', text: 'Tileset Info', href: '/tileset-info' },
+        { type: 'link', text: 'Map View', href: '/map-view' },
+      ],
     },
     {
-      key: '/',
-      icon: React.createElement(BarChartOutlined),
-      label: `Tileset Metrics`,
-      children: [{
-        key: '/tile-count',
-        label: 'Tile Count',
-        onClick: () => navigate('/tile-count')
-      },
-      {
-        key: '/tile-size',
-        label: 'Tile Size',
-        onClick: () => navigate('/tile-size')
-      },
-      {
-        key: '/tile-layer-size',
-        label: 'Tile Layer Size',
-        onClick: () => navigate('/tile-layer-size')
-      },
-      {
-        key: '/tile-layer-size-tree-map',
-        label: 'Tile Layer Size (TreeMap)',
-        onClick: () => navigate('/tile-layer-size-tree-map')
-      }]
-    }
+      type: 'section',
+      text: 'Tileset Metrics',
+      items: [
+        { type: 'link', text: 'Tile Count', href: '/tile-count' },
+        { type: 'link', text: 'Tile Size', href: '/tile-size' },
+        { type: 'link', text: 'Tile Layer Size', href: '/tile-layer-size' },
+        { type: 'link', text: 'Tile Layer Size (TreeMap)', href: '/tile-layer-size-tree-map' },
+      ],
+    },
   ];
-  
+
+
   return (
     <>
-      <Layout>
-        <Header className="header">
-          <img className="logo" src="/logo.png" />
-        </Header>
-        <Layout>
-          <Sider width={250} className="site-layout-background">
-            <Menu
-              mode="inline"
-              selectedKeys={[location.pathname]}
-              defaultOpenKeys={['/', '/info']}
-              style={{ height: '100%', borderRight: 0 }}
-              items={navItems}
-            />
-          </Sider>
-          <Layout style={{ padding: '0 24px 24px', height:"calc(100vh - 70px)" }}>
-            <CustomBreadcrumb/>
-            <Content
-              className="site-layout-background"
-              style={{
-                padding: 24,
-                margin: 0,
-                minHeight: 'calc(100vh - 145px)',
-              }}
-            >
-              <Outlet />
+      <TopNavigation
+        i18nStrings={i18nStrings}
+        identity={{
+          href: '#',
+          title: 'Tile Analyzer',
+          logo: { src: '/logo.png', alt: 'Tile Analyzer' },
+        }}
+        utilities={[
+          {
+            type: 'button',
+            iconName: 'notification',
+            ariaLabel: 'Notifications',
+            badge: true,
+            disableUtilityCollapse: true,
+          },
+          { type: 'button', iconName: 'settings', title: 'Settings', ariaLabel: 'Settings' },
+        ]}
+      />
 
-            </Content>
-          </Layout>
-        </Layout>
-      </Layout>
+      <AppLayout
+        stickyNotifications
+        toolsHide
+        headerSelector="#header"
+        ariaLabels={{ navigationClose: 'close' }}
+        navigation={<SideNavigation activeHref={active} items={navItems} />}
+        breadcrumbs={<CustomBreadcrumb />}
+        content={<Outlet />}
+        contentType="dashboard"
+      />
     </>
   );
 }
