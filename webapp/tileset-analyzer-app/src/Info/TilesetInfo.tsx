@@ -1,11 +1,14 @@
 import { FC, useEffect, useState } from "react";
 import { AnalysisResult, LayerInfoItem, TilesetInfo } from "../AnalysisResult";
-import { Table } from 'antd';
 import { bytesToString } from "../Metrics/Support/SizeConversions";
-import { ColumnsType, TableProps } from "antd/es/table";
 import LayerInfo from "./LayerInfo";
-import { Container, Header, ColumnLayout, Box, StatusIndicator, Spinner, Modal, Badge, SpaceBetween, ContentLayout, Grid } from "@cloudscape-design/components";
-
+import { Container, Header, ColumnLayout, Box, StatusIndicator, Spinner, Modal, Badge, SpaceBetween, ContentLayout, Grid, Table as CTable, Link, Pagination, TextFilter, PropertyFilter } from "@cloudscape-design/components";
+import {
+    useCollection
+} from "@cloudscape-design/collection-hooks";
+import { useLocalStorage } from "../Common/use-local-storage";
+import { TableEmptyState, TableNoMatchState } from "../Common/common-components";
+import { propertyFilterI18nStrings } from "../Common/property-filter";
 
 interface DataType {
     key: React.Key;
@@ -22,14 +25,9 @@ const TileSetInfo: FC = () => {
 
     const [tilesetInfo, setTilesetInfo] = useState<TilesetInfo | null>(null);
     const [tableData, setTableData] = useState<DataType[] | null>(null);
-    const [columns, setColumns] = useState<ColumnsType<DataType> | undefined>(undefined);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentRecord, setCurrentRecord] = useState<any>(null);
 
-
-    const onChange: TableProps<DataType>['onChange'] = (pagination, filters, sorter, extra) => {
-        console.log('params', pagination, filters, sorter, extra);
-    };
 
 
     useEffect(() => {
@@ -61,68 +59,6 @@ const TileSetInfo: FC = () => {
                     }
 
                 }
-
-                const columns: ColumnsType<DataType> = [
-                    {
-                        title: 'Zoom Level',
-                        dataIndex: 'zoom',
-                        width: 100,
-                        defaultSortOrder: 'ascend',
-                        filters: Array.from(zoomItems).sort((a, b) => a - b).map(item => ({ text: item, value: item })),
-                        onFilter: (value: any, record) => record.zoom === value,
-                        sorter: (a, b) => a.zoom - b.zoom,
-                    },
-                    {
-                        title: 'Layer Name',
-                        dataIndex: 'layer_name',
-                        width: 150,
-                        defaultSortOrder: 'ascend',
-                        filters: Array.from(nameItems).sort((a, b) => a.localeCompare(b)).map(item => ({ text: item, value: item })),
-                        onFilter: (value: any, record) => record.layer_name.indexOf(value) === 0,
-                        sorter: (a, b) => a.layer_name.localeCompare(b.layer_name),
-                    },
-                    {
-                        title: 'Geometry Types',
-                        dataIndex: 'geometry_type',
-                        width: 150,
-                        defaultSortOrder: 'ascend',
-                        filters: Array.from(geometryTypeItems).sort((a, b) => a.localeCompare(b)).map(item => ({ text: item, value: item })),
-                        onFilter: (value: any, record) => record.geometry_type.indexOf(value) === 0,
-                        sorter: (a: any, b: any) => {
-                            const aClone = [...a.geometry_type];
-                            aClone.sort();
-                            const bClone = [...b.geometry_type];
-                            bClone.sort();
-                            return JSON.stringify(aClone).localeCompare(JSON.stringify(bClone))
-                        },
-                        render: (_, { geometry_type }) => (
-                            <>
-                                {geometry_type.map((tag) => {
-                                    return (
-                                        <Badge color={'green'} key={tag}>
-                                            {tag.toUpperCase()}
-                                        </Badge>
-                                    );
-                                })}
-                            </>
-                        ),
-                    },
-                    {
-                        title: 'Features Count',
-                        dataIndex: 'features_count',
-                        width: 150,
-                        defaultSortOrder: 'ascend',
-                        sorter: (a, b) => a.features_count - b.features_count,
-                    },
-                    {
-                        title: 'Action',
-                        key: 'operation',
-                        fixed: 'right',
-                        width: 100,
-                        render: (item) => <a onClick={() => { setCurrentRecord(item); setIsModalOpen(true); }}>view</a>,
-                    },
-                ];
-                setColumns(columns);
                 setTableData(data);
 
             })
@@ -130,6 +66,102 @@ const TileSetInfo: FC = () => {
                 console.log(err.message);
             });
     }, []);
+
+    const CURRENT_COLUMN_DEFINITIONS = [
+        {
+            id: "zoom",
+            header: "Zoom",
+            cell: (e: DataType) => e.zoom,
+            sortingField: "zoom"
+        },
+        {
+            id: "layer_name",
+            header: "Layer Name",
+            cell: (e: DataType) => e.layer_name,
+            sortingField: "layer_name"
+        },
+        {
+            id: "geometry_type",
+            header: "Geometry Type",
+            cell: (e: DataType) => e.geometry_type.map((tag) => {
+                return (
+                    <Badge color={'green'} key={tag}>
+                        {tag.toUpperCase()}
+                    </Badge>
+                );
+            }),
+            sortingField: "geometry_type",
+        },
+        {
+            id: "features_count",
+            header: "Features Count",
+            cell: (e: DataType) => e.features_count,
+            sortingField: "features_count"
+        },
+        {
+            id: "action",
+            header: "Action",
+            cell: (e: DataType) => <Link onFollow={() => { setCurrentRecord(e); setIsModalOpen(true); }}>view</Link>,
+        }
+    ];
+
+    const DEFAULT_PREFERENCES = {
+        pageSize: 10,
+        visibleContent: ['zoom', 'layer_name', 'geometry_type', 'features_count', 'action'],
+        wrapLines: false,
+        stripedRows: false,
+    };
+
+    const [preferences, setPreferences] = useLocalStorage('React-DistributionsTable-Preferences', DEFAULT_PREFERENCES);
+
+    const FILTERING_PROPERTIES: any = [
+        {
+          propertyLabel: 'Zoom Level',
+          key: 'zoom',
+          groupValuesLabel: 'Zoom Level values',
+          operators: [':', '!:', '=', '!=', "<", "<=", ">", ">="],
+        },
+        {
+          propertyLabel: 'Layer Name',
+          key: 'layer_name',
+          groupValuesLabel: 'Layer Name Values',
+          operators: [':', '!:', '=', '!='],
+        },
+        {
+            propertyLabel: 'Geometry Type',
+            key: 'geometry_type',
+            groupValuesLabel: 'Geometry Type Values',
+            operators: [':', '!:', '=', '!='],
+          },
+          {
+            propertyLabel: 'Features Count',
+            key: 'features_count',
+            groupValuesLabel: 'Features Count Values',
+            operators: [':', '!:', '=', '!=', "<", "<=", ">", ">="],
+          },
+      ];
+    const { items, actions, filteredItemsCount, collectionProps, paginationProps, propertyFilterProps } = useCollection(
+        tableData === null ? [] : tableData,
+        {
+            propertyFiltering: {
+                filteringProperties: FILTERING_PROPERTIES,
+                empty: <TableEmptyState resourceName="Layer" />,
+                noMatch: <TableNoMatchState
+                    onClearFilter={() => {
+                        actions.setPropertyFiltering({ tokens: [], operation: 'and' });
+                    }}
+                />,
+            },
+            pagination: { pageSize: preferences.pageSize },
+            sorting: { defaultState: { sortingColumn: CURRENT_COLUMN_DEFINITIONS[0] } },
+            selection: {},
+        }
+    );
+    const [query, setQuery] = useState({
+        tokens: [],
+        operation: "and"
+    });
+    const getTextFilterCounterText = (count: number) => `${count} ${count === 1 ? 'match' : 'matches'}`;
 
     return (
         <ContentLayout>
@@ -156,12 +188,18 @@ const TileSetInfo: FC = () => {
                 </Container>
 
                 <Container header={<Header variant="h2">Explore Attributes</Header>}>
-                    {tableData != null ? <Table size="small" style={{ 'flexGrow': 1 }}
-                        columns={columns}
-                        dataSource={tableData}
-                        pagination={{ defaultPageSize: 10, showSizeChanger: true }}
-                        onChange={onChange}
-                        scroll={{ y: 300 }} /> : <Spinner />}
+                    {tableData != null ? <CTable
+                        {...collectionProps}
+                        pagination={<Pagination {...paginationProps} />}
+                        filter={
+                            <PropertyFilter
+                                {...propertyFilterProps}
+                                i18nStrings={propertyFilterI18nStrings}
+                                countText={getTextFilterCounterText(filteredItemsCount!)}
+                                expandToViewport={true}
+                            />
+                        }
+                        items={items} variant="embedded" columnDefinitions={CURRENT_COLUMN_DEFINITIONS} /> : <Spinner />}
                     <Modal
                         header={`${currentRecord?.layer_info_item?.name} Layer Attributes`}
                         visible={isModalOpen}

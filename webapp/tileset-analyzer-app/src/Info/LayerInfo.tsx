@@ -5,10 +5,16 @@ import {
     Box,
     SpaceBetween,
     Badge,
-    ColumnLayout
+    ColumnLayout,
+    Grid,
+    Pagination
 } from "@cloudscape-design/components";
+import {
+    useCollection
+} from "@cloudscape-design/collection-hooks";
 import { CSSProperties, FC, useEffect, useState } from "react";
 import { LayerInfoItem } from "../AnalysisResult";
+import { useLocalStorage } from "../Common/use-local-storage";
 
 
 interface LayerInfoProps {
@@ -26,13 +32,53 @@ interface AttributeInfo {
 const LayerInfo: FC<LayerInfoProps> = ({ layer }) => {
     const [data, setData] = useState<AttributeInfo[] | null>(null);
     const [selectedField, setSelectedField] = useState<string | null>(null);
+    const DEFAULT_PREFERENCES = {
+        pageSize: 5,
+        visibleContent: ['name', 'data_type', 'domain'],
+        wrapLines: false,
+        stripedRows: false,
+    };
 
-    const listStyle: CSSProperties = { 'height': 400, 'overflowY': 'auto' };
+    const [preferences, setPreferences] = useLocalStorage('React-DistributionsTable-Preferences', DEFAULT_PREFERENCES);
+    const CURRENT_COLUMN_DEFINITIONS = [
+        {
+            id: "name",
+            header: "Name",
+            cell: (e: AttributeInfo) => e.name,
+            sortingField: "name"
+        },
+        {
+            id: "data_type",
+            header: "Data Types",
+            cell: (e: AttributeInfo) => e.data_type,
+            sortingField: "data_type"
+        },
+        {
+            id: "domain",
+            header: "Domain",
+            cell: (e: AttributeInfo) => e.domain,
+            sortingField: "domain"
+        }
+    ];
+    const { items, actions, filteredItemsCount, collectionProps, filterProps, paginationProps } = useCollection(
+        data === null ? [] : data,
+        {
+            filtering: {
+                empty: <p>Empty</p>,
+                noMatch: <p>noMatch</p>,
+            },
+            pagination: { pageSize: preferences.pageSize },
+            sorting: { defaultState: { sortingColumn: CURRENT_COLUMN_DEFINITIONS[0] } },
+            selection: {},
+        }
+    );
 
     const [
         selectedItems,
         setSelectedItems
     ] = useState<any>([]);
+
+
 
     useEffect(() => {
         let firstAttr: any = null;
@@ -88,53 +134,40 @@ const LayerInfo: FC<LayerInfoProps> = ({ layer }) => {
     return (
         <>
             {data !== null ?
-                <ColumnLayout columns={2}>
-                    <Table
-                        onSelectionChange={({ detail }) =>
-                            attrSelection(detail.selectedItems)
-                        }
-                        selectedItems={selectedItems}
-                        columnDefinitions={[
-                            {
-                                id: "name",
-                                header: "Name",
-                                cell: (e: AttributeInfo) => e.name,
-                                sortingField: "name"
-                            },
-                            {
-                                id: "data_type",
-                                header: "Data Types",
-                                cell: (e: AttributeInfo) => e.data_type,
-                                sortingField: "data_type"
-                            },
-                            {
-                                id: "domain",
-                                header: "Domain",
-                                cell: (e: AttributeInfo) => e.domain,
-                                sortingField: "domain"
+                <Grid gridDefinition={[{ colspan: 8 }, { colspan: 4 }]}>
+                    <Container fitHeight>
+                        <Table
+                            {...collectionProps}
+                            variant="embedded"
+                            onSelectionChange={({ detail }) =>
+                                attrSelection(detail.selectedItems)
                             }
-                        ]}
-                        items={data}
-                        selectionType="single"
-                        trackBy="name"
-                        visibleColumns={[
-                            "name",
-                            "data_type",
-                            "domain"
-                        ]}
-                        empty={
-                            <Box textAlign="center" color="inherit">
-                                <b>No Attributes</b>
-                                <Box
-                                    padding={{ bottom: "s" }}
-                                    variant="p"
-                                    color="inherit"
-                                >
-                                    No Attributes to display.
+                            selectedItems={selectedItems}
+                            columnDefinitions={CURRENT_COLUMN_DEFINITIONS}
+                            items={items}
+                            selectionType="single"
+                            trackBy="name"
+                            visibleColumns={[
+                                "name",
+                                "data_type",
+                                "domain"
+                            ]}
+                            pagination={<Pagination {...paginationProps} />}
+                            empty={
+                                <Box textAlign="center" color="inherit">
+                                    <b>No Attributes</b>
+                                    <Box
+                                        padding={{ bottom: "s" }}
+                                        variant="p"
+                                        color="inherit"
+                                    >
+                                        No Attributes to display.
+                                    </Box>
                                 </Box>
-                            </Box>
-                        }
-                    />
+                            }
+                        />
+                    </Container>
+
                     {selectedField !== null ? <Container>
                         {headerContent(selectedField, layer.attributes_sample_values[selectedField])}
                         <ul style={{ listStyle: 'None', padding: 0, margin: 0, height: 340, overflow: 'auto' }}>
@@ -143,7 +176,7 @@ const LayerInfo: FC<LayerInfoProps> = ({ layer }) => {
                             })}
                         </ul>
                     </Container> : <Spinner />}
-                </ColumnLayout>
+                </Grid>
                 : <Spinner />}
         </>
 
