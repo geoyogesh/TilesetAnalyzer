@@ -1,4 +1,13 @@
-import { Avatar, Col, List, Row, Skeleton, Tag, Typography } from "antd";
+import {
+    Container,
+    Spinner,
+    Table,
+    Box,
+    SpaceBetween,
+    Badge,
+    ColumnLayout
+} from "@cloudscape-design/components";
+import { Typography } from "antd";
 import { CSSProperties, FC, useEffect, useState } from "react";
 import { LayerInfoItem } from "../AnalysisResult";
 
@@ -10,7 +19,8 @@ interface LayerInfoProps {
 
 interface AttributeInfo {
     name: string;
-    data_type: string[];
+    data_type: any;
+    domain: any;
 }
 
 
@@ -21,12 +31,22 @@ const LayerInfo: FC<LayerInfoProps> = ({ layer }) => {
 
     const listStyle: CSSProperties = { 'height': 400, 'overflowY': 'auto' };
 
+    const [
+        selectedItems,
+        setSelectedItems
+    ] = useState<any>([]);
+
     useEffect(() => {
+        let firstAttr: any = null;
         const attributes: AttributeInfo[] = [];
         for (const attribute_name of layer.attributes) {
+            if (firstAttr === null) {
+                firstAttr = attribute_name;
+            }
             const attributeInfo: AttributeInfo = {
                 name: attribute_name,
-                data_type: layer.attributes_types[attribute_name]
+                data_type: (<SpaceBetween direction="horizontal" size="xs"><Badge color="green">{layer.attributes_types[attribute_name].join(", ").toUpperCase()}</Badge></SpaceBetween>),
+                domain: renderDomain(layer.attributes_numeric_domain[attribute_name])
             }
             attributes.push(attributeInfo)
         }
@@ -34,12 +54,27 @@ const LayerInfo: FC<LayerInfoProps> = ({ layer }) => {
         if (attributes.length > 0) {
             setSelectedField(attributes[0].name);
         }
+
+        // updating the selection to first element
+        if (firstAttr !== null) {
+            setSelectedItems([{ name: firstAttr }] as any);
+        } else {
+            setSelectedItems([]);
+        }
+
     }, [layer])
+
+    const attrSelection = (items: any[]) => {
+        setSelectedItems(items);
+        if (items.length > 0) {
+            setSelectedField(items[0].name);
+        }
+    }
 
     const renderDomain = (domain: number[] | null | undefined) => {
         if (domain === null || domain === undefined) return;
 
-        return (<>Domain: {domain[0]} - {domain[1]}</>)
+        return (<>{domain[0]} - {domain[1]}</>)
     }
 
     const headerContent = (selectedField: string, attrValues: string[] | undefined) => {
@@ -55,51 +90,63 @@ const LayerInfo: FC<LayerInfoProps> = ({ layer }) => {
     return (
         <>
             {data !== null ?
-                <Row gutter={16}>
-                    <Col span={12}>
-                        <List
-                            bordered
-                            dataSource={data}
-                            style={listStyle}
-                            renderItem={(item) => (
-                                <List.Item key={item.name} onClick={() => { setSelectedField(item.name) }} style={{ 'cursor': 'pointer' }}>
-                                    <List.Item.Meta
-                                        title={item.name}
-                                        description={<>Data type: {<>
-                                            {item.data_type.map((tag) => {
-                                                let color = 'green';
-                                                return (
-                                                    <Tag color={color} key={tag}>
-                                                        {tag.toUpperCase()}
-                                                    </Tag>
-                                                );
-                                            })}
-                                        </>} 
-                                        {
-                                            renderDomain(layer.attributes_numeric_domain[item.name])
-                                        } </>}
-                                    />
-                                    <div>View Values</div>
-
-                                </List.Item>
-                            )}
-                        />
-                    </Col>
-                    <Col span={12}>
-                        {selectedField !== null ? <List size="small"
-                            header={headerContent(selectedField, layer.attributes_sample_values[selectedField])}
-                            bordered
-                            dataSource={layer.attributes_sample_values[selectedField]}
-                            style={listStyle}
-                            renderItem={(item) => (
-                                <List.Item key={item}>
-                                    <div>{item}</div>
-                                </List.Item>
-                            )}
-                        /> : <Skeleton />}
-                    </Col>
-                </Row>
-                : <Skeleton />}
+                <ColumnLayout columns={2}>
+                    <Table
+                        onSelectionChange={({ detail }) =>
+                            attrSelection(detail.selectedItems)
+                        }
+                        selectedItems={selectedItems}
+                        columnDefinitions={[
+                            {
+                                id: "name",
+                                header: "Name",
+                                cell: (e: AttributeInfo) => e.name,
+                                sortingField: "name"
+                            },
+                            {
+                                id: "data_type",
+                                header: "Data Types",
+                                cell: (e: AttributeInfo) => e.data_type,
+                                sortingField: "data_type"
+                            },
+                            {
+                                id: "domain",
+                                header: "Domain",
+                                cell: (e: AttributeInfo) => e.domain,
+                                sortingField: "domain"
+                            }
+                        ]}
+                        items={data}
+                        selectionType="single"
+                        trackBy="name"
+                        visibleColumns={[
+                            "name",
+                            "data_type",
+                            "domain"
+                        ]}
+                        empty={
+                            <Box textAlign="center" color="inherit">
+                                <b>No Attributes</b>
+                                <Box
+                                    padding={{ bottom: "s" }}
+                                    variant="p"
+                                    color="inherit"
+                                >
+                                    No Attributes to display.
+                                </Box>
+                            </Box>
+                        }
+                    />
+                    {selectedField !== null ? <Container>
+                        {headerContent(selectedField, layer.attributes_sample_values[selectedField])}
+                        <ul style={{ listStyle: 'None', padding: 0, margin: 0, height: 340, overflow: 'auto' }}>
+                            {layer.attributes_sample_values[selectedField] && layer.attributes_sample_values[selectedField].map((item, index) => {
+                                return <li style={{ padding: '8px 0px', borderBlockEnd: '1px solid rgba(5, 5, 5, 0.06)' }} key={index}>{item}</li>;
+                            })}
+                        </ul>
+                    </Container> : <Spinner />}
+                </ColumnLayout>
+                : <Spinner />}
         </>
 
     )
