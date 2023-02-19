@@ -56,19 +56,11 @@ const LayoutPage: FC = () => {
           logo: { src: '/logo.png', alt: 'Tile Analyzer' },
         }}
         utilities={[
-          {
-            type: 'button',
-            iconName: 'notification',
-            ariaLabel: 'Notifications',
-            badge: true,
-            disableUtilityCollapse: true,
-          },
           { type: 'button', iconName: 'settings', title: 'Settings', ariaLabel: 'Settings' },
         ]}
       />
 
       <AppLayout
-        stickyNotifications
         toolsHide
         headerSelector="#header"
         ariaLabels={{ navigationClose: 'close' }}
