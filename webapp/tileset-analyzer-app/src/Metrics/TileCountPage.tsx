@@ -3,7 +3,7 @@ import { AnalysisResult } from "../AnalysisResult";
 import ReactEcharts, { EChartsOption } from "echarts-for-react";
 import { BASE_CHART_CONFIG, CHART_STYLE } from "./Support/ChartProps";
 import { abbreviateNumber } from "./Support/NumberConverions";
-import { Container, Header, SpaceBetween, Spinner } from "@cloudscape-design/components";
+import { Container, ContentLayout, Header, SpaceBetween, Spinner } from "@cloudscape-design/components";
 
 const TileCount: FC = () => {
     const [countTilesbyZ, setCountTilesbyZ] = useState<any>(null);
@@ -58,17 +58,21 @@ const TileCount: FC = () => {
 
 
     return (
-        <SpaceBetween direction="vertical" size="m">
-            <Container
-                header={
-                    <Header variant="h3">
-                        Tiles Count by Zoom Level
-                    </Header>
-                }
-            >
-                {countTilesbyZ !== null ? <ReactEcharts option={countTilesbyZ} style={CHART_STYLE}></ReactEcharts> : <Spinner />}
-            </Container>
-        </SpaceBetween>);
+        <ContentLayout header={<Header
+            variant="h1">Tileset Mertics</Header>}>
+            <SpaceBetween direction="vertical" size="m">
+                <Container
+                    header={
+                        <Header variant="h3">
+                            Tiles Count by Zoom Level
+                        </Header>
+                    }
+                >
+                    {countTilesbyZ !== null ? <ReactEcharts option={countTilesbyZ} style={CHART_STYLE}></ReactEcharts> : <Spinner />}
+                </Container>
+            </SpaceBetween>
+        </ContentLayout>
+    );
 }
 
 export default TileCount;

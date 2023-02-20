@@ -3,7 +3,7 @@ import { AnalysisResult, TilesSizeAggByZ } from "../AnalysisResult";
 import ReactEcharts, { EChartsOption } from "echarts-for-react"
 import { BASE_CHART_CONFIG, CHART_STYLE } from "./Support/ChartProps";
 import { bytesConverted, bytesToString, bytesUnit } from "./Support/SizeConversions";
-import { Container, Header, Select, SpaceBetween, Spinner } from "@cloudscape-design/components";
+import { Container, ContentLayout, Header, Select, SpaceBetween, Spinner } from "@cloudscape-design/components";
 import { OptionDefinition } from "@cloudscape-design/components/internal/components/option/interfaces";
 
 const TileSize: FC = () => {
@@ -131,25 +131,29 @@ const TileSize: FC = () => {
     };
 
 
-    return (<SpaceBetween direction="vertical" size="m">
-
-        <Container
-            header={
-                <Header variant="h3" actions={<Select
-                    selectedOption={aggSelection}
-                    onChange={({ detail }) =>
-                        handleChange(detail.selectedOption)
+    return (
+        <ContentLayout header={<Header
+            variant="h1">Tileset Mertics</Header>}>
+            <SpaceBetween direction="vertical" size="m">
+                <Container
+                    header={
+                        <Header variant="h3" actions={<Select
+                            selectedOption={aggSelection}
+                            onChange={({ detail }) =>
+                                handleChange(detail.selectedOption)
+                            }
+                            options={aggOptions}
+                        />}>
+                            {`Tile Size ${aggOptions.filter(item => item.value === aggSelection.value)[0].label} by Zoom level`}
+                        </Header>
                     }
-                    options={aggOptions}
-                />}>
-                    {`Tile Size ${aggOptions.filter(item => item.value === aggSelection.value)[0].label} by Zoom level`}
-                </Header>
-            }
-        >
-            {tilesSizeAggbyZ !== null ? <ReactEcharts option={tilesSizeAggbyZ[aggSelection.value!]} style={CHART_STYLE}></ReactEcharts> : <Spinner />}
-        </Container>
+                >
+                    {tilesSizeAggbyZ !== null ? <ReactEcharts option={tilesSizeAggbyZ[aggSelection.value!]} style={CHART_STYLE}></ReactEcharts> : <Spinner />}
+                </Container>
 
-    </SpaceBetween>);
+            </SpaceBetween>
+        </ContentLayout>
+    );
 }
 
 export default TileSize;

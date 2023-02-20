@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import CustomBreadcrumb from "./CustomBreadcrumb";
 import React, { FC, useEffect, useState } from "react";
-import { AppLayout, Input, SideNavigation, TopNavigation } from "@cloudscape-design/components";
+import { AppLayout, ContentLayout, Header, Input, SideNavigation, TopNavigation } from "@cloudscape-design/components";
 
 
 
@@ -11,9 +11,9 @@ const LayoutPage: FC = () => {
   const [active, setActive] = useState<string | undefined>(undefined);
 
 
-    useEffect(() => {
-      setActive(location.pathname);
-    }, [location.pathname])
+  useEffect(() => {
+    setActive(location.pathname);
+  }, [location.pathname])
 
   const i18nStrings = {
     searchIconAriaLabel: 'Search',
@@ -66,7 +66,8 @@ const LayoutPage: FC = () => {
         ariaLabels={{ navigationClose: 'close' }}
         navigation={<SideNavigation activeHref={active} items={navItems} />}
         breadcrumbs={<CustomBreadcrumb />}
-        content={<Outlet />}
+        content={
+          <Outlet />}
         contentType="dashboard"
       />
     </>

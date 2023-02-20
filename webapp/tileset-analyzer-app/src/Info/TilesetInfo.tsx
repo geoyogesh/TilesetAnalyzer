@@ -164,9 +164,10 @@ const TileSetInfo: FC = () => {
     const getTextFilterCounterText = (count: number) => `${count} ${count === 1 ? 'match' : 'matches'}`;
 
     return (
-        <ContentLayout>
+        <ContentLayout header={<Header
+            variant="h1">Tileset Info</Header>}>
             <SpaceBetween size="m">
-                <Container header={<Header variant="h2">TileSet Info</Header>}>
+                <Container>
                     {tilesetInfo !== null ? <ColumnLayout columns={2} variant="text-grid">
                         <div>
                             <Box variant="awsui-key-label">Name</Box>
@@ -181,8 +182,8 @@ const TileSetInfo: FC = () => {
                             <div>{tilesetInfo.scheme}</div>
                             <Box variant="awsui-key-label">Size</Box>
                             <div>{bytesToString(tilesetInfo.size, true)}</div>
-                            <Box variant="awsui-key-label">Compressed</Box>
-                            <div>{tilesetInfo.compressed ? 'True' : 'False'} {tilesetInfo.compressed && <p>({tilesetInfo.compression_type})</p>}</div>
+                            <Box variant="awsui-key-label">Compression</Box>
+                            <div>{tilesetInfo.compressed ? tilesetInfo.compression_type : 'False'}</div>
                         </div>
                     </ColumnLayout> : <Spinner />}
                 </Container>

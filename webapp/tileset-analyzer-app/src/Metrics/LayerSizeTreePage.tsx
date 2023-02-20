@@ -3,13 +3,13 @@ import { AnalysisResult, TilesSizeAggByZLayer } from "../AnalysisResult";
 import ReactEcharts, { EChartsOption } from "echarts-for-react"
 import { BASE_CHART_CONFIG, CHART_STYLE } from "./Support/ChartProps";
 import { bytesConverted, bytesToString, bytesUnit } from "./Support/SizeConversions";
-import { Container, Header, Spinner, Select, SpaceBetween } from "@cloudscape-design/components";
+import { Container, Header, Spinner, Select, SpaceBetween, ContentLayout } from "@cloudscape-design/components";
 import { OptionDefinition } from "@cloudscape-design/components/internal/components/option/interfaces";
 
 
 const LayerSizeTree: FC = () => {
     const [tilesSizeAggbyZLayer, setTilesSizeAggbyZLayer] = useState<{ [agg_type: string]: any } | null>(null);
-    
+
     const aggOptions: OptionDefinition[] = [
         {
             value: 'SUM',
@@ -172,26 +172,32 @@ const LayerSizeTree: FC = () => {
     };
 
 
-    return (<SpaceBetween direction="vertical" size="m">
+    return (
+        <ContentLayout header={<Header
+            variant="h1">Tileset Mertics</Header>}>
+            <SpaceBetween direction="vertical" size="m">
 
-        <Container
-            header={
-                <Header variant="h3" actions={
-                    <Select
-                        selectedOption={aggSelection}
-                        onChange={({ detail }) =>
-                            handleChange(detail.selectedOption)
-                        }
-                        options={aggOptions}
-                    />
-                }>
-                    {`Tile Layer Size (TreeMap)`}
-                </Header>
-            }
-        >
-            {tilesSizeAggbyZLayer !== null ? <ReactEcharts option={tilesSizeAggbyZLayer[aggSelection.value!]} style={CHART_STYLE}></ReactEcharts> : <Spinner />}
-        </Container>
-    </SpaceBetween>);
+                <Container
+                    header={
+                        <Header variant="h3" actions={
+                            <Select
+                                selectedOption={aggSelection}
+                                onChange={({ detail }) =>
+                                    handleChange(detail.selectedOption)
+                                }
+                                options={aggOptions}
+                            />
+                        }>
+                            {`Tile Layer Size (TreeMap)`}
+                        </Header>
+                    }
+                >
+                    {tilesSizeAggbyZLayer !== null ? <ReactEcharts option={tilesSizeAggbyZLayer[aggSelection.value!]} style={CHART_STYLE}></ReactEcharts> : <Spinner />}
+                </Container>
+            </SpaceBetween>
+        </ContentLayout>
+
+    );
 }
 
 export default LayerSizeTree;
