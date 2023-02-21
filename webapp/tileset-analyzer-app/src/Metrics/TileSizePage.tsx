@@ -137,13 +137,17 @@ const TileSize: FC = () => {
             <SpaceBetween direction="vertical" size="m">
                 <Container
                     header={
-                        <Header variant="h3" actions={<Select
-                            selectedOption={aggSelection}
-                            onChange={({ detail }) =>
-                                handleChange(detail.selectedOption)
-                            }
-                            options={aggOptions}
-                        />}>
+                        <Header variant="h3" actions={
+                            <div className="select-metric">
+                                <Select
+                                    selectedOption={aggSelection}
+                                    onChange={({ detail }) =>
+                                        handleChange(detail.selectedOption)
+                                    }
+                                    options={aggOptions}
+                                />
+                            </div>
+                            }>
                             {`Tile Size ${aggOptions.filter(item => item.value === aggSelection.value)[0].label} by Zoom level`}
                         </Header>
                     }

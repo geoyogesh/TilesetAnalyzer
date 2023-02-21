@@ -180,13 +180,15 @@ const LayerSizeTree: FC = () => {
                 <Container
                     header={
                         <Header variant="h3" actions={
-                            <Select
-                                selectedOption={aggSelection}
-                                onChange={({ detail }) =>
-                                    handleChange(detail.selectedOption)
-                                }
-                                options={aggOptions}
-                            />
+                            <div className="select-metric">
+                                <Select
+                                    selectedOption={aggSelection}
+                                    onChange={({ detail }) =>
+                                        handleChange(detail.selectedOption)
+                                    }
+                                    options={aggOptions}
+                                />
+                            </div>
                         }>
                             {`Tile Layer Size (TreeMap)`}
                         </Header>
