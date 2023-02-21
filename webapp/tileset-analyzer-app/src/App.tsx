@@ -27,6 +27,10 @@ const App: FC = () => {
                     element: <Navigate to="/tile-size" replace={true}/>,
                 },
                 {
+                    path: "",
+                    element: <Navigate to="/tile-size" replace={true}/>,
+                },
+                {
                     path: "/tileset-info",
                     element: <TilesetInfo />,
                 },
