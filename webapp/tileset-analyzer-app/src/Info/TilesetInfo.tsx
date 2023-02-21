@@ -83,13 +83,19 @@ const TileSetInfo: FC = () => {
         {
             id: "geometry_type",
             header: "Geometry Type",
-            cell: (e: DataType) => e.geometry_type.map((tag) => {
+            cell: (e: DataType) => {
                 return (
-                    <Badge color={'green'} key={tag}>
-                        {tag.toUpperCase()}
-                    </Badge>
+                    <SpaceBetween direction="horizontal" size="xs">
+                        {
+                            e.geometry_type.map(tag => (
+                                <Badge color={'green'} key={tag}>
+                                    {tag.toUpperCase()}
+                                </Badge>
+                            ))
+                        }
+                    </SpaceBetween>
                 );
-            }),
+            },
             sortingField: "geometry_type",
         },
         {
