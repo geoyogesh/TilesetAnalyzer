@@ -24,7 +24,7 @@ const App: FC = () => {
             children: [
                 {
                     path: "/",
-                    element: <Navigate to="/tile-size" />,
+                    element: <Navigate to="/tile-size" replace={true}/>,
                 },
                 {
                     path: "/tileset-info",
