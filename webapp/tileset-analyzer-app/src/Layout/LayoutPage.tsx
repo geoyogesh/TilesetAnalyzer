@@ -1,14 +1,9 @@
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import CustomBreadcrumb from "./CustomBreadcrumb";
 import React, { FC, useEffect, useState } from "react";
-import { AppLayout, SideNavigation, TopNavigation } from "@cloudscape-design/components";
-import Settings from "./Settings";
+import { AppLayout, Box, Button, Modal, SideNavigation, SpaceBetween, Tabs, TopNavigation } from "@cloudscape-design/components";
+import GeneralSettingsTab from "./Settings/GeneralSettingsTab";
 
-
-export declare enum BoolEnum {
-  True = "True",
-  False = "False"
-}
 
 const LayoutPage: FC = () => {
   const location = useLocation();
@@ -76,7 +71,34 @@ const LayoutPage: FC = () => {
         contentType="dashboard"
       />
 
-      <Settings visible={settingsVisible} setVisible={setSettingsVisible}/>
+      (
+        <Modal
+            onDismiss={() => setSettingsVisible(false)}
+            visible={settingsVisible}
+            closeAriaLabel="Close modal"
+            footer={
+                <Box float="right">
+                    <SpaceBetween direction="horizontal" size="xs">
+                        <Button variant="primary" onClick={() => setSettingsVisible(false)}>Ok</Button>
+                    </SpaceBetween>
+                </Box>
+            }
+            header="Settings"
+        >
+            <Tabs
+                tabs={[
+                    {
+                        label: "General",
+                        id: "general",
+                        content: (
+                            <GeneralSettingsTab />
+                        )
+                    }
+                ]}
+            />
+        </Modal>
+
+    )
     </>
   );
 }
