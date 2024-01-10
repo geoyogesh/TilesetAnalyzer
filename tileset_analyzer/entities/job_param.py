@@ -10,6 +10,7 @@ class JobAction(str, Enum):
 
 class CompressionType(str, Enum):
     GZIP = 'gzip'
+    None = 'none'
 
 
 class TileScheme(str, Enum):
