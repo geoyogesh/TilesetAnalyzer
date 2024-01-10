@@ -51,7 +51,7 @@ def cli():
     parser = argparse.ArgumentParser(prog='tileset_analyzer')
     parser.add_argument('--source', help='source', required=True)
     parser.add_argument('--scheme', help='scheme', default=TileScheme.XYZ)
-    parser.add_argument('--compressed', help='compressed', default="store_false")
+    parser.add_argument('--compressed', help='compressed', default=False, action=argparse.BooleanOptionalAction)
     parser.add_argument('--compression_type', help='compression_type', default=CompressionType.GZIP)
     parser.add_argument('--temp_folder', help='temp_folder', required=True)
     parser.add_argument('--actions', help='actions', default=[JobAction.PROCESS, JobAction.SERVE])

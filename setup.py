@@ -10,7 +10,7 @@ CLASSIFIERS = [
 
 setup(
     name='tileset_analyzer',
-    version='0.0.68',
+    version='0.0.69',
     url='https://github.com/geoyogesh/tileset_analyzer',
     license='MIT',
     author='Yogesh Dhanapal',
