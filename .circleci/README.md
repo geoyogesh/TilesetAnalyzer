@@ -41,12 +41,14 @@ publish-pypi (uploads to PyPI)
 
 ## Environment Variables
 
-Required environment variables (configured in CircleCI contexts):
+Required environment variables (configured in CircleCI project settings):
 
-| Variable | Context | Purpose |
-|----------|---------|---------|
-| `GITHUB_TOKEN` | semantic-release | Create GitHub releases |
-| `PYPI_API_TOKEN` | pypi-publish | Upload to PyPI |
+| Variable | Purpose |
+|----------|---------|
+| `GITHUB_TOKEN` | Create GitHub releases and push tags |
+| `PYPI_API_TOKEN` | Upload packages to PyPI |
+
+**Setup**: Project Settings → Environment Variables → Add Environment Variable
 
 ## Local Testing
 

@@ -140,8 +140,6 @@ workflows:
           filters:
             branches:
               only: main
-          context:
-            - semantic-release
 
       - publish-pypi:
           requires:
@@ -149,8 +147,6 @@ workflows:
           filters:
             branches:
               only: main
-          context:
-            - pypi-publish
 
   # Optional: Run tests on all branches
   test-all-branches:
