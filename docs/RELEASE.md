@@ -1,221 +1,361 @@
 # Release Process
 
-This document describes how to create new releases for TilesetAnalyzer.
+TilesetAnalyzer uses [Python Semantic Release](https://python-semantic-release.readthedocs.io/) to automate versioning and releases based on [Conventional Commits](https://www.conventionalcommits.org/).
 
 ## Quick Start
 
-### Local Release (Recommended)
+### Automatic Release (Recommended)
+
+Releases are **automatically created** when commits are pushed to the `main` branch:
 
 ```bash
-# Patch release (0.1.0 -> 0.1.1)
-./scripts/release.sh
+# Make changes and commit using conventional commits
+git add .
+git commit -m "feat: add new tile processing algorithm"
+git push origin main
 
-# Minor release (0.1.0 -> 0.2.0)
-./scripts/release.sh minor
-
-# Major release (0.1.0 -> 1.0.0)
-./scripts/release.sh major
-
-# Dry run to preview changes
-./scripts/release.sh --dry-run minor
+# Semantic Release automatically:
+# 1. Analyzes commits since last release
+# 2. Determines version bump (major/minor/patch)
+# 3. Updates version in code
+# 4. Generates CHANGELOG
+# 5. Creates GitHub release
+# 6. Publishes to PyPI
 ```
 
-### GitHub Actions Release
+### Manual Trigger
+
+You can also manually trigger a release:
 
 ```bash
-# Trigger via CLI
-./scripts/release.sh --github minor
+# Via GitHub UI
+# Go to: Actions → "Semantic Release" → Run workflow
 
-# Or manually via GitHub UI
-# Go to: Actions → "Create a new release" → Run workflow
-# Select version bump type: patch/minor/major
+# Via GitHub CLI
+gh workflow run semantic-release.yml
 ```
 
-## Version Bump Types
+## Conventional Commits
 
-- **Patch** (0.1.0 → 0.1.1): Bug fixes, small changes
-- **Minor** (0.1.0 → 0.2.0): New features, backwards-compatible changes
-- **Major** (0.1.0 → 1.0.0): Breaking changes
+Version bumps are determined by commit messages following [Conventional Commits](https://www.conventionalcommits.org/):
 
-## What Happens During a Release
+### Commit Message Format
 
-The automated release process performs the following steps:
+```
+<type>[optional scope]: <description>
 
-1. **Fetch Current Version**: Gets the latest release tag from GitHub
-2. **Calculate New Version**: Bumps the version based on the selected type
-3. **Update setup.py**: Changes the version string in `setup.py`
-4. **Commit & Push**: Commits the change with message `chore: bump version to X.Y.Z`
-5. **Create GitHub Release**: Creates a new release with auto-generated release notes
-6. **Trigger PyPI Publication**: GitHub Actions automatically publishes to PyPI
+[optional body]
 
-## Local Release Script
+[optional footer(s)]
+```
 
-The `scripts/release.sh` script provides a convenient way to create releases:
+### Commit Types and Version Bumps
 
-### Options
+| Commit Type | Version Bump | Example |
+|-------------|--------------|---------|
+| `feat:` | **Minor** (0.1.0 → 0.2.0) | `feat: add vector tile compression` |
+| `fix:` | **Patch** (0.1.0 → 0.1.1) | `fix: resolve memory leak in tile parser` |
+| `perf:` | **Patch** (0.1.0 → 0.1.1) | `perf: optimize tile rendering` |
+| `BREAKING CHANGE:` | **Major** (0.1.0 → 1.0.0) | See below |
+
+### Other Commit Types (No Version Bump)
+
+These types don't trigger releases but appear in the changelog:
+
+- `build:` - Build system changes
+- `chore:` - Maintenance tasks
+- `ci:` - CI configuration changes
+- `docs:` - Documentation updates
+- `style:` - Code style changes
+- `refactor:` - Code refactoring
+- `test:` - Adding or updating tests
+
+### Breaking Changes (Major Version Bump)
+
+To trigger a major version bump, include `BREAKING CHANGE:` in the commit footer:
 
 ```bash
-Usage: ./scripts/release.sh [OPTIONS] [BUMP_TYPE]
+git commit -m "feat: redesign API interface
 
-BUMP_TYPE:
-    patch   Bump patch version (0.1.0 -> 0.1.1) [default]
-    minor   Bump minor version (0.1.0 -> 0.2.0)
-    major   Bump major version (0.1.0 -> 1.0.0)
-
-OPTIONS:
-    -h, --help      Show help message
-    -d, --dry-run   Preview changes without executing
-    -g, --github    Trigger GitHub Actions workflow instead
+BREAKING CHANGE: The analyze() method now returns a dict instead of a list.
+Migration guide: Convert list access to dict access using tile IDs as keys."
 ```
 
-### Examples
+Or use the `!` notation:
 
 ```bash
-# Create a patch release
-./scripts/release.sh
-
-# Create a minor release
-./scripts/release.sh minor
-
-# Preview what a major release would do
-./scripts/release.sh --dry-run major
-
-# Trigger minor release via GitHub Actions
-./scripts/release.sh --github minor
+git commit -m "feat!: remove deprecated process_tiles method"
 ```
 
-## Manual Release (Not Recommended)
+## Examples
 
-If you need to create a release manually:
+### Adding a New Feature (Minor Bump)
 
-1. Update version in `setup.py`:
-   ```python
-   version='0.2.0',
-   ```
+```bash
+git add .
+git commit -m "feat(parser): add support for MVT 3.0 format"
+git push origin main
+# → Version bumps from 0.1.0 to 0.2.0
+```
 
-2. Commit and push:
-   ```bash
-   git add setup.py
-   git commit -m "chore: bump version to 0.2.0"
-   git push
-   ```
+### Fixing a Bug (Patch Bump)
 
-3. Create GitHub release:
-   ```bash
-   gh release create 0.2.0 --generate-notes
-   ```
+```bash
+git add .
+git commit -m "fix(compression): handle gzip decompression errors"
+git push origin main
+# → Version bumps from 0.2.0 to 0.2.1
+```
 
-4. PyPI publication happens automatically via GitHub Actions
+### Breaking Change (Major Bump)
 
-## GitHub Actions Workflows
+```bash
+git add .
+git commit -m "feat!: change tile coordinate system to TMS
 
-### `.github/workflows/release.yml`
+BREAKING CHANGE: Default coordinate system changed from XYZ to TMS.
+Update your code to use --scheme XYZ for backward compatibility."
+git push origin main
+# → Version bumps from 0.2.1 to 1.0.0
+```
 
-Creates a new release on GitHub. Can be triggered:
-- Manually via GitHub UI (Actions tab)
-- Via GitHub CLI: `gh workflow run release.yml -f bump_type=minor`
-- Via local script: `./scripts/release.sh --github minor`
+### No Release
 
-**Inputs:**
-- `bump_type`: Version bump type (patch/minor/major)
+```bash
+git add .
+git commit -m "docs: update installation instructions"
+git push origin main
+# → No version bump, no release
+```
 
-### `.github/workflows/publish.yml`
+## How It Works
 
-Publishes the package to PyPI. Automatically triggered when a release is published.
+### Automated Release Workflow
 
-**Steps:**
-1. Builds the frontend React app
-2. Builds the Python package
-3. Publishes to PyPI using `PYPI_API_TOKEN` secret
+1. **Commit Analysis**: Scans commits since the last release
+2. **Version Calculation**: Determines next version based on commit types:
+   - `BREAKING CHANGE:` or `!` → Major bump
+   - `feat:` → Minor bump
+   - `fix:`, `perf:` → Patch bump
+   - Others → No release
+3. **Version Update**: Updates version in:
+   - `tileset_analyzer/__init__.py`
+   - `setup.py` (via dynamic reading)
+4. **Changelog Generation**: Updates `CHANGELOG.md` with grouped commits
+5. **Git Operations**:
+   - Commits version changes
+   - Creates git tag (e.g., `v0.2.0`)
+   - Pushes to GitHub
+6. **GitHub Release**: Creates release with auto-generated notes
+7. **PyPI Publication**: Builds and publishes package to PyPI
 
-## Prerequisites
+### Configuration
 
-### Local Development
+Python Semantic Release is configured in `pyproject.toml`:
 
-- Git
-- Python 3.9+
-- GitHub CLI (`gh`)
-- Clean working directory (no uncommitted changes)
+```toml
+[tool.semantic_release]
+version_variables = ["tileset_analyzer/__init__.py:__version__"]
+branch = "main"
+upload_to_pypi = false  # Handled separately by GitHub Actions
+build_command = "pip install build && python -m build"
+```
 
-### GitHub Secrets
+## Local Development
 
-The following secrets must be configured in repository settings:
+### Testing Before Release
 
-- `PERSONAL_ACCESS_TOKEN`: GitHub token for creating releases
-- `PYPI_API_TOKEN`: PyPI token for package publication
+```bash
+# Install semantic-release locally
+pip install python-semantic-release
+
+# Preview next version (dry-run)
+semantic-release version --print
+
+# Preview changelog
+semantic-release changelog --unreleased
+```
+
+### Manual Version Bump (Not Recommended)
+
+If needed, you can manually bump the version:
+
+```bash
+# Install semantic-release
+pip install python-semantic-release
+
+# Bump version manually
+semantic-release version --patch  # or --minor, --major
+
+# Or edit directly
+echo '__version__ = "0.2.0"' > tileset_analyzer/__init__.py
+```
 
 ## Monitoring Releases
 
-After creating a release:
+### Check Release Status
 
-1. **GitHub Release**:
-   - View at: `https://github.com/geoyogesh/TilesetAnalyzer/releases`
-
-2. **GitHub Actions**:
-   - Monitor workflow: `https://github.com/geoyogesh/TilesetAnalyzer/actions`
-   - Check for successful PyPI publication
-
-3. **PyPI Package**:
-   - Verify at: `https://pypi.org/project/tileset-analyzer/`
-
-## Troubleshooting
-
-### Release Script Fails
-
-**Working directory not clean:**
 ```bash
-# Stash or commit your changes first
-git stash
-./scripts/release.sh
+# View recent releases
+gh release list --limit 5
+
+# View latest release
+gh release view
+
+# Check workflow runs
+gh run list --workflow=semantic-release.yml --limit 5
 ```
 
-**GitHub CLI not authenticated:**
+### GitHub Actions Dashboard
+
+Monitor releases at:
+- **Workflows**: `https://github.com/geoyogesh/TilesetAnalyzer/actions`
+- **Releases**: `https://github.com/geoyogesh/TilesetAnalyzer/releases`
+- **PyPI**: `https://pypi.org/project/tileset-analyzer/`
+
+## Legacy Release Scripts
+
+The repository also includes legacy manual release scripts:
+
+### Local Script
+
 ```bash
-gh auth login
+# Still available for manual releases
+./scripts/release.sh [patch|minor|major]
+./scripts/release.sh --dry-run minor
 ```
 
-### PyPI Publication Fails
+### GitHub Workflow
 
-Check GitHub Actions logs:
-```bash
-gh run list --limit 5
-gh run view <run-id> --log
-```
-
-Common issues:
-- Invalid `PYPI_API_TOKEN`
-- Frontend build failure (check Node.js version)
-- Version already exists on PyPI
-
-### Version Conflicts
-
-If `setup.py` version doesn't match the latest release:
-```bash
-# Check current versions
-gh release view --json tagName
-grep "version=" setup.py
-
-# Manually sync if needed
-```
+The old workflow (`.github/workflows/release.yml`) is preserved but **Semantic Release is now preferred**.
 
 ## Best Practices
 
-1. **Always use semantic versioning** (major.minor.patch)
-2. **Test locally before releasing** with `--dry-run`
-3. **Keep CHANGELOG.md updated** with notable changes
-4. **Monitor GitHub Actions** after creating a release
-5. **Verify PyPI publication** completes successfully
-6. **Use descriptive commit messages** for release commits
+### Commit Message Guidelines
 
-## Release Checklist
+1. **Use imperative mood**: "add feature" not "added feature"
+2. **Be specific**: "fix: resolve null pointer in tile parser" not "fix: bug fix"
+3. **Include scope when helpful**: `feat(api):`, `fix(ui):`, `perf(core):`
+4. **Keep first line under 72 characters**
+5. **Use body for detailed explanations**
+6. **Reference issues**: `Fixes #123`, `Closes #456`
 
-- [ ] All tests pass
-- [ ] Documentation is up to date
-- [ ] CHANGELOG.md is updated
-- [ ] Working directory is clean
-- [ ] Choose correct version bump type
-- [ ] Run release script
-- [ ] Monitor GitHub Actions
-- [ ] Verify PyPI publication
-- [ ] Test installation: `pip install -U tileset-analyzer`
-- [ ] Announce release (if applicable)
+### Good Examples
+
+```bash
+feat(analyzer): add multi-threaded tile processing
+
+Implement parallel processing for tile analysis to improve
+performance on large tilesets. Uses ThreadPoolExecutor with
+configurable worker count.
+
+Performance: ~3x faster on tilesets with >10k tiles
+```
+
+```bash
+fix(server): prevent memory leak in long-running sessions
+
+Release tile data after processing to avoid memory buildup.
+Adds proper cleanup in the request handler.
+
+Fixes #142
+```
+
+### Bad Examples
+
+```bash
+# Too vague
+git commit -m "fix stuff"
+
+# Missing type
+git commit -m "updated the parser"
+
+# Wrong type (should be feat)
+git commit -m "docs: add new feature"
+```
+
+## Troubleshooting
+
+### No Release Created
+
+**Possible causes:**
+1. No commits with `feat:`, `fix:`, or `BREAKING CHANGE:` since last release
+2. Only commits with types like `docs:`, `chore:`, `style:`
+3. Workflow failed (check GitHub Actions logs)
+
+**Solution:**
+```bash
+# Check what commits would trigger a release
+semantic-release version --print
+
+# View unreleased changes
+semantic-release changelog --unreleased
+```
+
+### Version Conflict
+
+If manual version edits conflict with semantic-release:
+
+```bash
+# Reset to semantic-release version
+git fetch --tags
+git checkout main
+git reset --hard origin/main
+```
+
+### PyPI Upload Failure
+
+**Check:**
+1. `PYPI_API_TOKEN` secret is valid
+2. Version doesn't already exist on PyPI
+3. Package builds successfully
+4. Frontend build completed
+
+**Debug:**
+```bash
+# Test build locally
+pip install build
+python -m build
+
+# Check dist files
+ls -la dist/
+```
+
+## Migration from Manual Releases
+
+If migrating from manual versioning:
+
+1. ✓ Install `python-semantic-release`
+2. ✓ Configure `pyproject.toml`
+3. ✓ Update `__init__.py` with current version
+4. ✓ Start using conventional commits
+5. Push to `main` - semantic-release handles the rest!
+
+## Additional Resources
+
+- [Python Semantic Release Docs](https://python-semantic-release.readthedocs.io/)
+- [Conventional Commits Specification](https://www.conventionalcommits.org/)
+- [Semantic Versioning](https://semver.org/)
+- [GitHub Actions Workflows](https://docs.github.com/en/actions)
+
+## Quick Reference Card
+
+```bash
+# Conventional Commit Types
+feat:     → Minor version bump (new feature)
+fix:      → Patch version bump (bug fix)
+perf:     → Patch version bump (performance)
+feat!:    → Major version bump (breaking change)
+docs:     → No release (documentation)
+chore:    → No release (maintenance)
+
+# Workflow
+1. Make changes
+2. Commit with conventional format
+3. Push to main
+4. Automatic release happens
+5. Check GitHub releases & PyPI
+
+# Manual trigger
+gh workflow run semantic-release.yml
+```

@@ -1,4 +1,15 @@
 from setuptools import setup, find_packages
+import re
+from pathlib import Path
+
+# Read version from __init__.py
+def get_version():
+    init_file = Path(__file__).parent / "tileset_analyzer" / "__init__.py"
+    content = init_file.read_text()
+    match = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']', content)
+    if match:
+        return match.group(1)
+    raise RuntimeError("Unable to find version string.")
 
 CLASSIFIERS = [
     "Operating System :: OS Independent",
@@ -10,7 +21,7 @@ CLASSIFIERS = [
 
 setup(
     name='tileset_analyzer',
-    version='0.1.0',
+    version=get_version(),
     url='https://github.com/geoyogesh/tileset_analyzer',
     license='MIT',
     author='Yogesh Dhanapal',
