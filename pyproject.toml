@@ -33,8 +33,11 @@ Homepage = "https://github.com/geoyogesh/tileset_analyzer"
 tileset_analyzer = "tileset_analyzer.main:cli"
 
 [tool.setuptools]
-packages = ["tileset_analyzer"]
 include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tileset_analyzer*"]
 
 [tool.setuptools.dynamic]
 version = {attr = "tileset_analyzer.__version__"}
