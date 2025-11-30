@@ -220,19 +220,20 @@ Monitor releases at:
 
 ## CI/CD Platform
 
-### CircleCI (Primary - Recommended)
+### CircleCI (Primary)
 
 The project uses CircleCI for automated releases. See [CIRCLECI_SETUP.md](CIRCLECI_SETUP.md) for setup instructions.
 
 **Configuration**: `.circleci/config.yml`
 
-### GitHub Actions (Legacy - Optional)
+### GitHub Actions (Removed)
 
-GitHub Actions workflows are still available but not actively used:
-- `.github/workflows/semantic-release.yml` - Semantic release workflow
-- `.github/workflows/release.yml` - Manual release workflow
+GitHub Actions workflows have been removed in favor of CircleCI:
+- `semantic-release.yml` - Now handled by CircleCI
+- `publish.yml` - Now handled by CircleCI
+- `release.yml` - Now handled by CircleCI + conventional commits
 
-You can use either CircleCI or GitHub Actions, or both simultaneously.
+**Note**: Workflows are preserved in git history if needed. See [CI_PLATFORM_COMPARISON.md](CI_PLATFORM_COMPARISON.md) for migration details.
 
 ### Legacy Release Scripts
 

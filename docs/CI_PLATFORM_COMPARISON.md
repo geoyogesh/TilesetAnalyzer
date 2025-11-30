@@ -225,33 +225,50 @@ Choose **GitHub Actions** if:
 
 ## Current Setup
 
-TilesetAnalyzer supports **both platforms**:
+TilesetAnalyzer uses **CircleCI** as the CI/CD platform:
 
-1. **Primary (Recommended)**: CircleCI
-   - Full semantic-release pipeline
-   - Optimized for performance
-   - See: [CIRCLECI_SETUP.md](CIRCLECI_SETUP.md)
+**Active**: CircleCI
+- Full semantic-release pipeline
+- Optimized for performance
+- Configuration: `.circleci/config.yml`
+- See: [CIRCLECI_SETUP.md](CIRCLECI_SETUP.md)
 
-2. **Alternative**: GitHub Actions
-   - Legacy workflows preserved
-   - Can be activated if needed
-   - Configuration: `.github/workflows/`
+**Removed**: GitHub Actions
+- Workflows removed in favor of CircleCI
+- Preserved in git history if needed for reference
 
 ## Migration Guide
 
-### From GitHub Actions to CircleCI
+### From GitHub Actions to CircleCI (✅ Completed)
 
-1. Create CircleCI account
-2. Add `.circleci/config.yml` (already done)
-3. Connect repository to CircleCI
-4. Configure contexts/environment variables
-5. Disable GitHub Actions workflows (optional)
+The migration to CircleCI is complete:
+- ✅ `.circleci/config.yml` created
+- ✅ GitHub Actions workflows removed
+- ⏳ Needs CircleCI account connection
+- ⏳ Needs environment variables configured
 
-### From CircleCI to GitHub Actions
+See [CIRCLECI_SETUP.md](CIRCLECI_SETUP.md) for next steps.
 
-1. Copy secrets to GitHub repository settings
-2. Enable GitHub Actions workflows
-3. Update branch filters if needed
+### From CircleCI to GitHub Actions (Rollback)
+
+To switch back to GitHub Actions:
+
+1. Restore workflows from git history:
+   ```bash
+   # Find the commit before deletion
+   git log --all --full-history -- .github/workflows/
+
+   # Restore workflows
+   git checkout <commit-hash> -- .github/workflows/
+   ```
+
+2. Copy secrets to GitHub repository settings:
+   - `GITHUB_TOKEN` (automatic)
+   - `PYPI_API_TOKEN`
+   - `PERSONAL_ACCESS_TOKEN`
+
+3. Commit restored workflows and push
+
 4. Disable CircleCI project (optional)
 
 ## Conclusion
