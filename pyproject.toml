@@ -7,17 +7,16 @@ name = "tileset_analyzer"
 dynamic = ["version"]
 description = "Analyze vector Tileset"
 readme = "README.md"
-requires-python = ">=3.9, <4"
+requires-python = ">=3.10, <4"
 license = "MIT"
 authors = [
     {name = "Yogesh Dhanapal", email = "geoyogesh@gmail.com"}
 ]
 classifiers = [
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
     "fastapi",

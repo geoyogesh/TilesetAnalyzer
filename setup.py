@@ -13,10 +13,9 @@ def get_version():
 
 CLASSIFIERS = [
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 
 setup(
@@ -28,7 +27,7 @@ setup(
     author_email='geoyogesh@gmail.com',
     entry_points={"console_scripts": ["tileset_analyzer = tileset_analyzer.main:cli"]},
     description='Analyze vector Tileset',
-    python_requires=">=3.9, <4",
+    python_requires=">=3.10, <4",
     packages=find_packages(),
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
