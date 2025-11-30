@@ -33,6 +33,7 @@ export const propertyFilterI18nStrings: PropertyFilterProps.I18nStrings = {
   tokenLimitShowMore: 'Show more',
   tokenLimitShowFewer: 'Show fewer',
   clearFiltersText: 'Clear filters',
-  removeTokenButtonAriaLabel: token => `Remove token ${token.propertyKey} ${token.operator} ${token.value}`,
+  removeTokenButtonAriaLabel: token =>
+    `Remove token ${token.propertyKey} ${token.operator} ${token.value}`,
   enteredTextLabel: text => `Use: "${text}"`,
 };

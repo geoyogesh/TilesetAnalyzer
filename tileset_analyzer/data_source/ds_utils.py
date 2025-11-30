@@ -1,6 +1,7 @@
 import gzip
 import multiprocessing
 from multiprocessing.pool import ThreadPool as Pool
+
 from tileset_analyzer.entities.job_param import CompressionType
 from tileset_analyzer.entities.layer_info import LayerInfo
 from tileset_analyzer.readers.vector_tile.engine import VectorTile
@@ -13,7 +14,7 @@ def _processed_data(data, compressed, compression_type):
     if compression_type == CompressionType.GZIP:
         return gzip.decompress(data)
 
-    raise f'UNSUPPORTED COMPRESSION TYPE {compression_type}'
+    raise f"UNSUPPORTED COMPRESSION TYPE {compression_type}"
 
 
 def get_attr(tiles, compressed, compression_type):

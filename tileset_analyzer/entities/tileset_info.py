@@ -1,5 +1,3 @@
-from typing import List
-
 from tileset_analyzer.entities.layer_info import LayerInfo
 
 
@@ -10,7 +8,7 @@ class TilesetInfo:
         self.size: int | None = None
         self.location: str | None = None
         self.ds_type: str | None = None
-        self.layer_info_items: List[LayerInfo] | None = None
+        self.layer_info_items: list[LayerInfo] | None = None
         self.compressed: bool | None = None
         self.compression_type: str | None = None
 
@@ -29,7 +27,7 @@ class TilesetInfo:
     def set_ds_type(self, ds_type: str):
         self.ds_type = ds_type
 
-    def set_layer_info(self, layer_info_items: List[LayerInfo]):
+    def set_layer_info(self, layer_info_items: list[LayerInfo]):
         self.layer_info_items = layer_info_items
 
     def set_compression(self, compressed: bool, compression_type: str):

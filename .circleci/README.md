@@ -21,22 +21,56 @@ Preview:
 
 ## Configuration Overview
 
-The `config.yml` defines three main jobs:
+The `config.yml` defines four main jobs with **code quality as the gatekeeper**:
 
-1. **build-and-test**: Install dependencies, build frontend, run tests
-2. **semantic-release**: Analyze commits, bump version, create release
-3. **publish-pypi**: Upload package to PyPI
+1. **code-quality** (GATEKEEPER): Runs `make verify` - fails build if code doesn't meet standards
+2. **build-and-test**: Install dependencies, build frontend, verify artifacts, run tests
+3. **semantic-release**: Analyze commits, bump version, create release (main branch only)
+4. **publish-pypi**: Upload package to PyPI (main branch only)
 
 ### Workflow
 
 ```
-Push to main
-    ↓
-build-and-test
-    ↓
-semantic-release (determines version from commits)
-    ↓
-publish-pypi (uploads to PyPI)
+Every Branch/PR:
+    Push to any branch
+        ↓
+    code-quality (GATEKEEPER) ← make verify
+        ├── Black: Python formatting check
+        ├── Ruff: Python linting
+        └── ESLint/Prettier: React code quality
+        ❌ FAILS if code doesn't meet standards
+        ↓ (only if quality passes)
+    build-and-test
+        ├── Build Python package
+        ├── Build React application
+        ├── Verify build artifacts
+        └── Run tests
+        ❌ FAILS if build or tests fail
+
+Main Branch Only:
+        ↓ (only on main branch)
+    semantic-release
+        ├── Determine version from commits
+        ├── Update CHANGELOG.md
+        ├── Create git tag
+        └── Create GitHub release
+        ↓
+    publish-pypi
+        └── Upload to PyPI
+```
+
+### Code Quality Gatekeeper
+
+The **code-quality** job enforces standards on **every branch**:
+
+- **Python**: `black --check` + `ruff check`
+- **React**: `prettier --check` + `eslint`
+- **Failure**: ❌ Entire pipeline stops immediately
+
+Run locally before pushing:
+```bash
+make verify  # Check code quality (fails if issues)
+make check   # Auto-fix formatting/linting issues
 ```
 
 ## Python Version
@@ -47,16 +81,17 @@ This project requires Python 3.10 or higher. The CircleCI configuration uses Pyt
 
 Required environment variables (configured in CircleCI project settings):
 
-| Variable | Purpose |
-|----------|---------|
-| `GITHUB_TOKEN` | Create GitHub releases and push tags |
-| `PYPI_API_TOKEN` | Upload packages to PyPI |
+| Variable         | Purpose                              |
+| ---------------- | ------------------------------------ |
+| `GITHUB_TOKEN`   | Create GitHub releases and push tags |
+| `PYPI_API_TOKEN` | Upload packages to PyPI              |
 
 **Setup**: Project Settings → Environment Variables → Add Environment Variable
 
 ## Local Testing
 
 Validate configuration:
+
 ```bash
 # Install CircleCI CLI
 brew install circleci
@@ -74,6 +109,7 @@ circleci local execute --job build-and-test
 ## Customization
 
 Edit `config.yml` to:
+
 - Add test commands
 - Configure linting
 - Add code coverage

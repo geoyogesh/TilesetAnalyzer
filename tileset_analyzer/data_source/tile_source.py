@@ -1,5 +1,4 @@
 import abc
-from typing import List
 
 from tileset_analyzer.entities.job_param import JobParam
 from tileset_analyzer.entities.layer_level_size import LayerLevelSize
@@ -19,43 +18,43 @@ class TileSource(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def count_tiles_by_z(self) -> List[LevelCount]:
+    def count_tiles_by_z(self) -> list[LevelCount]:
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_sum_by_z(self) -> List[LevelSize]:
+    def tiles_size_agg_sum_by_z(self) -> list[LevelSize]:
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_min_by_z(self) -> List[LevelSize]:
+    def tiles_size_agg_min_by_z(self) -> list[LevelSize]:
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_max_by_z(self) -> List[LevelSize]:
+    def tiles_size_agg_max_by_z(self) -> list[LevelSize]:
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_avg_by_z(self) -> List[LevelSize]:
+    def tiles_size_agg_avg_by_z(self) -> list[LevelSize]:
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_50p_by_z(self) -> List[LevelSize]:
+    def tiles_size_agg_50p_by_z(self) -> list[LevelSize]:
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_85p_by_z(self) -> List[LevelSize]:
+    def tiles_size_agg_85p_by_z(self) -> list[LevelSize]:
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_90p_by_z(self) -> List[LevelSize]:
+    def tiles_size_agg_90p_by_z(self) -> list[LevelSize]:
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_95p_by_z(self) -> List[LevelSize]:
+    def tiles_size_agg_95p_by_z(self) -> list[LevelSize]:
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_99p_by_z(self) -> List[LevelSize]:
+    def tiles_size_agg_99p_by_z(self) -> list[LevelSize]:
         pass
 
     @abc.abstractmethod
@@ -63,39 +62,39 @@ class TileSource(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_sum_by_z_layer(self) -> List[LayerLevelSize]:
+    def tiles_size_agg_sum_by_z_layer(self) -> list[LayerLevelSize]:
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_min_by_z_layer(self) -> List[LayerLevelSize]:
+    def tiles_size_agg_min_by_z_layer(self) -> list[LayerLevelSize]:
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_max_by_z_layer(self) -> List[LayerLevelSize]:
+    def tiles_size_agg_max_by_z_layer(self) -> list[LayerLevelSize]:
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_avg_by_z_layer(self) -> List[LayerLevelSize]:
+    def tiles_size_agg_avg_by_z_layer(self) -> list[LayerLevelSize]:
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_50p_by_z_layer(self) -> List[LayerLevelSize]:
+    def tiles_size_agg_50p_by_z_layer(self) -> list[LayerLevelSize]:
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_85p_by_z_layer(self) -> List[LayerLevelSize]:
+    def tiles_size_agg_85p_by_z_layer(self) -> list[LayerLevelSize]:
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_90p_by_z_layer(self) -> List[LayerLevelSize]:
+    def tiles_size_agg_90p_by_z_layer(self) -> list[LayerLevelSize]:
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_95p_by_z_layer(self) -> List[LayerLevelSize]:
+    def tiles_size_agg_95p_by_z_layer(self) -> list[LayerLevelSize]:
         pass
 
     @abc.abstractmethod
-    def tiles_size_agg_99p_by_z_layer(self) -> List[LayerLevelSize]:
+    def tiles_size_agg_99p_by_z_layer(self) -> list[LayerLevelSize]:
         pass
 
     @abc.abstractmethod

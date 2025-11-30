@@ -1,9 +1,17 @@
-import { NavLink, Outlet, useLocation } from "react-router-dom";
-import CustomBreadcrumb from "./CustomBreadcrumb";
-import React, { FC, useEffect, useState } from "react";
-import { AppLayout, Box, Button, Modal, SideNavigation, SpaceBetween, Tabs, TopNavigation } from "@cloudscape-design/components";
-import GeneralSettingsTab from "./Settings/GeneralSettingsTab";
-
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import CustomBreadcrumb from './CustomBreadcrumb';
+import React, { FC, useEffect, useState } from 'react';
+import {
+  AppLayout,
+  Box,
+  Button,
+  Modal,
+  SideNavigation,
+  SpaceBetween,
+  Tabs,
+  TopNavigation,
+} from '@cloudscape-design/components';
+import GeneralSettingsTab from './Settings/GeneralSettingsTab';
 
 const LayoutPage: FC = () => {
   const location = useLocation();
@@ -13,7 +21,7 @@ const LayoutPage: FC = () => {
 
   useEffect(() => {
     setActive(location.pathname);
-  }, [location.pathname])
+  }, [location.pathname]);
 
   const i18nStrings = {
     searchIconAriaLabel: 'Search',
@@ -45,7 +53,6 @@ const LayoutPage: FC = () => {
     },
   ];
 
-
   return (
     <>
       <TopNavigation
@@ -56,51 +63,55 @@ const LayoutPage: FC = () => {
           logo: { src: '/logo.png', alt: 'Tile Analyzer' },
         }}
         utilities={[
-          { type: 'button', iconName: 'settings', title: 'Settings', ariaLabel: 'Settings', onClick: () => { setSettingsVisible(!settingsVisible) } },
+          {
+            type: 'button',
+            iconName: 'settings',
+            title: 'Settings',
+            ariaLabel: 'Settings',
+            onClick: () => {
+              setSettingsVisible(!settingsVisible);
+            },
+          },
         ]}
       />
-
       <AppLayout
         toolsHide
         headerSelector="#header"
         ariaLabels={{ navigationClose: 'close' }}
         navigation={<SideNavigation activeHref={active} items={navItems} />}
         breadcrumbs={<CustomBreadcrumb />}
-        content={
-          <Outlet />}
+        content={<Outlet />}
         contentType="dashboard"
       />
-
       (
-        <Modal
-            onDismiss={() => setSettingsVisible(false)}
-            visible={settingsVisible}
-            closeAriaLabel="Close modal"
-            footer={
-                <Box float="right">
-                    <SpaceBetween direction="horizontal" size="xs">
-                        <Button variant="primary" onClick={() => setSettingsVisible(false)}>Ok</Button>
-                    </SpaceBetween>
-                </Box>
-            }
-            header="Settings"
-        >
-            <Tabs
-                tabs={[
-                    {
-                        label: "General",
-                        id: "general",
-                        content: (
-                            <GeneralSettingsTab />
-                        )
-                    }
-                ]}
-            />
-        </Modal>
-
-    )
+      <Modal
+        onDismiss={() => setSettingsVisible(false)}
+        visible={settingsVisible}
+        closeAriaLabel="Close modal"
+        footer={
+          <Box float="right">
+            <SpaceBetween direction="horizontal" size="xs">
+              <Button variant="primary" onClick={() => setSettingsVisible(false)}>
+                Ok
+              </Button>
+            </SpaceBetween>
+          </Box>
+        }
+        header="Settings"
+      >
+        <Tabs
+          tabs={[
+            {
+              label: 'General',
+              id: 'general',
+              content: <GeneralSettingsTab />,
+            },
+          ]}
+        />
+      </Modal>
+      )
     </>
   );
-}
+};
 
 export default LayoutPage;

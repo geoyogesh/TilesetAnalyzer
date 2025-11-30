@@ -11,6 +11,35 @@ executors:
     working_directory: ~/repo
 
 jobs:
+  code-quality:
+    executor: python-node
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-quality-deps-{{ checksum "pyproject.toml" }}-{{ checksum "webapp/tileset-analyzer-app/package.json" }}
+            - v1-quality-deps-
+
+      - run:
+          name: Install dependencies
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            make install
+
+      - save_cache:
+          paths:
+            - ./venv
+            - webapp/tileset-analyzer-app/node_modules
+          key: v1-quality-deps-{{ checksum "pyproject.toml" }}-{{ checksum "webapp/tileset-analyzer-app/package.json" }}
+
+      - run:
+          name: Run code quality checks
+          command: |
+            . venv/bin/activate
+            make verify
+
   build-and-test:
     executor: python-node
     steps:
@@ -18,8 +47,8 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "requirements.txt" }}
-            - v1-dependencies-
+            - v2-dependencies-{{ checksum "pyproject.toml" }}
+            - v2-dependencies-
 
       - run:
           name: Install Python dependencies
@@ -27,13 +56,12 @@ jobs:
             python -m venv venv
             . venv/bin/activate
             pip install --upgrade pip
-            pip install -r requirements.txt
-            pip install python-semantic-release build
+            pip install -e ".[build]"
 
       - save_cache:
           paths:
             - ./venv
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
+          key: v2-dependencies-{{ checksum "pyproject.toml" }}
 
       - restore_cache:
           keys:
@@ -45,7 +73,9 @@ jobs:
           command: |
             cd webapp/tileset-analyzer-app
             npm install
-            npm run build_local
+            echo "🏗️  Building React application..."
+            npm run build_local || (echo "❌ React build failed" && exit 1)
+            echo "✅ React build completed successfully"
             cd ../..
 
       - save_cache:
@@ -54,12 +84,19 @@ jobs:
           key: v1-npm-{{ checksum "webapp/tileset-analyzer-app/package-lock.json" }}
 
       - run:
-          name: Run tests (if any)
+          name: Verify build artifacts
           command: |
             . venv/bin/activate
-            # Add your test commands here
-            # python -m pytest tests/
-            echo "No tests configured yet"
+            echo "🔍 Verifying Python package..."
+            python -c "import tileset_analyzer; print(f'✅ Package version: {tileset_analyzer.__version__}')"
+
+            echo "🔍 Verifying React build artifacts..."
+            # React build outputs to tileset_analyzer/static/ui/ (custom BUILD_PATH)
+            test -d tileset_analyzer/static/ui || (echo "❌ React build failed - no ui directory" && exit 1)
+            test -f tileset_analyzer/static/ui/index.html || (echo "❌ React build failed - no index.html" && exit 1)
+            test -f tileset_analyzer/static/ui/static/js/main.*.js || (echo "❌ React build failed - no JavaScript bundle" && exit 1)
+
+            echo "✅ All build artifacts verified successfully"
 
       - persist_to_workspace:
           root: ~/repo
@@ -85,7 +122,7 @@ jobs:
             python -m venv venv
             . venv/bin/activate
             pip install --upgrade pip
-            pip install python-semantic-release build
+            pip install -e ".[build]"
 
       - run:
           name: Run semantic release
@@ -112,11 +149,12 @@ jobs:
           at: ~/repo
 
       - run:
-          name: Install twine
+          name: Install dependencies
           command: |
             python -m venv venv
             . venv/bin/activate
-            pip install --upgrade pip twine
+            pip install --upgrade pip
+            pip install -e ".[build]"
 
       - run:
           name: Upload to PyPI
@@ -125,16 +163,21 @@ jobs:
             python -m twine upload dist/* --username __token__ --password $PYPI_API_TOKEN
 
 workflows:
-  version: 2
-  build-test-release:
+  # Main workflow - runs on ALL branches
+  build-and-verify:
     jobs:
-      - build-and-test:
-          filters:
-            branches:
-              only:
-                - main
-                - develop
+      # Step 1: Code quality checks (GATEKEEPER)
+      # Fails if code doesn't meet quality standards
+      - code-quality
 
+      # Step 2: Build and test (requires quality to pass first)
+      # Ensures code actually builds and works
+      - build-and-test:
+          requires:
+            - code-quality
+
+      # Step 3: Release (only on main branch)
+      # Automated versioning and changelog
       - semantic-release:
           requires:
             - build-and-test
@@ -142,19 +185,10 @@ workflows:
             branches:
               only: main
 
+      # Step 4: Publish to PyPI (only on main after release)
       - publish-pypi:
           requires:
             - semantic-release
           filters:
             branches:
               only: main
-
-  # Optional: Run tests on all branches
-  test-all-branches:
-    jobs:
-      - build-and-test:
-          filters:
-            branches:
-              ignore:
-                - main
-                - develop

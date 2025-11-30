@@ -8,16 +8,12 @@ import sys
 
 def get_last_version() -> str:
     """Return the version number of the last release."""
-    json_string = (
-        subprocess.run(
-            ["gh", "release", "view", "--json", "tagName"],
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-        .stdout.decode("utf8")
-        .strip()
+    result = subprocess.run(
+        ["gh", "release", "view", "--json", "tagName"],
+        check=True,
+        capture_output=True,
     )
+    json_string = result.stdout.decode("utf8").strip()
 
     return json.loads(json_string)["tagName"]
 
@@ -40,15 +36,11 @@ def update_setup_py(new_version: str):
     """Update the version in setup.py file."""
     setup_file = "setup.py"
 
-    with open(setup_file, "r") as f:
+    with open(setup_file) as f:
         content = f.read()
 
     # Replace version string
-    updated_content = re.sub(
-        r"version='[\d.]+',",
-        f"version='{new_version}',",
-        content
-    )
+    updated_content = re.sub(r"version='[\d.]+',", f"version='{new_version}',", content)
 
     with open(setup_file, "w") as f:
         f.write(updated_content)
@@ -59,10 +51,7 @@ def update_setup_py(new_version: str):
 def commit_and_push(version: str):
     """Commit version change and push to GitHub."""
     subprocess.run(["git", "add", "setup.py"], check=True)
-    subprocess.run(
-        ["git", "commit", "-m", f"chore: bump version to {version}"],
-        check=True
-    )
+    subprocess.run(["git", "commit", "-m", f"chore: bump version to {version}"], check=True)
     subprocess.run(["git", "push"], check=True)
     print(f"Committed and pushed version {version}")
 
@@ -95,7 +84,7 @@ def create_release(bump_type: str = "patch"):
     )
 
     print(f"✓ Release {new_version_number} created successfully!")
-    print(f"  PyPI publication will start automatically via GitHub Actions")
+    print("  PyPI publication will start automatically via GitHub Actions")
 
 
 if __name__ == "__main__":

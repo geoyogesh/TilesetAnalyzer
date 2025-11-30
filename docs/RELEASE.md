@@ -55,12 +55,12 @@ Version bumps are determined by commit messages following [Conventional Commits]
 
 ### Commit Types and Version Bumps
 
-| Commit Type | Version Bump | Example |
-|-------------|--------------|---------|
-| `feat:` | **Minor** (0.1.0 → 0.2.0) | `feat: add vector tile compression` |
-| `fix:` | **Patch** (0.1.0 → 0.1.1) | `fix: resolve memory leak in tile parser` |
-| `perf:` | **Patch** (0.1.0 → 0.1.1) | `perf: optimize tile rendering` |
-| `BREAKING CHANGE:` | **Major** (0.1.0 → 1.0.0) | See below |
+| Commit Type        | Version Bump              | Example                                   |
+| ------------------ | ------------------------- | ----------------------------------------- |
+| `feat:`            | **Minor** (0.1.0 → 0.2.0) | `feat: add vector tile compression`       |
+| `fix:`             | **Patch** (0.1.0 → 0.1.1) | `fix: resolve memory leak in tile parser` |
+| `perf:`            | **Patch** (0.1.0 → 0.1.1) | `perf: optimize tile rendering`           |
+| `BREAKING CHANGE:` | **Major** (0.1.0 → 1.0.0) | See below                                 |
 
 ### Other Commit Types (No Version Bump)
 
@@ -213,6 +213,7 @@ gh run list --workflow=semantic-release.yml --limit 5
 ### CircleCI Dashboard
 
 Monitor releases at:
+
 - **CircleCI Pipelines**: `https://app.circleci.com/pipelines/github/geoyogesh/TilesetAnalyzer`
 - **CircleCI Insights**: `https://app.circleci.com/insights/github/geoyogesh/TilesetAnalyzer/workflows`
 - **GitHub Releases**: `https://github.com/geoyogesh/TilesetAnalyzer/releases`
@@ -229,6 +230,7 @@ The project uses CircleCI for automated releases. See [CIRCLECI_SETUP.md](CIRCLE
 ### GitHub Actions (Removed)
 
 GitHub Actions workflows have been removed in favor of CircleCI:
+
 - `semantic-release.yml` - Now handled by CircleCI
 - `publish.yml` - Now handled by CircleCI
 - `release.yml` - Now handled by CircleCI + conventional commits
@@ -295,11 +297,13 @@ git commit -m "docs: add new feature"
 ### No Release Created
 
 **Possible causes:**
+
 1. No commits with `feat:`, `fix:`, or `BREAKING CHANGE:` since last release
 2. Only commits with types like `docs:`, `chore:`, `style:`
 3. Workflow failed (check GitHub Actions logs)
 
 **Solution:**
+
 ```bash
 # Check what commits would trigger a release
 semantic-release version --print
@@ -322,12 +326,14 @@ git reset --hard origin/main
 ### PyPI Upload Failure
 
 **Check:**
+
 1. `PYPI_API_TOKEN` secret is valid
 2. Version doesn't already exist on PyPI
 3. Package builds successfully
 4. Frontend build completed
 
 **Debug:**
+
 ```bash
 # Test build locally
 pip install build

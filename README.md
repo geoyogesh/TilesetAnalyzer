@@ -38,6 +38,7 @@ Vector tile size significantly influences map rendering performance. TilesetAnal
 ## Key Features
 
 ### Tileset Information
+
 - **Layer Exploration**: View all layers across zoom levels
 - **Attribute Inspection**: Analyze geometry types, data types, value ranges, and sample values
 - **Interactive Map**: Preview tiles with feature property inspection
@@ -47,6 +48,7 @@ Vector tile size significantly influences map rendering performance. TilesetAnal
 ![General Information](./docs/images/general_info.png)
 
 ### Metrics & Analytics
+
 - **Tile Count Analysis**: Distribution across zoom levels
 - **Size Aggregations**: Min, max, average, sum, and percentiles (50th, 85th, 90th, 95th, 99th)
 - **Layer Contributions**: Size breakdown by layer with percentage calculations
@@ -55,6 +57,7 @@ Vector tile size significantly influences map rendering performance. TilesetAnal
 ![Tile Size Metrics](./docs/images/zoom_level_tilesize_avg.png)
 
 ### Layer & Attribute Analysis
+
 - Geometry type detection (Point, LineString, Polygon)
 - Data type classification (string, numeric)
 - Domain analysis (min/max for numeric attributes)
@@ -156,14 +159,14 @@ tileset_analyzer \
 
 ### Command-Line Options
 
-| Option | Description | Default | Required |
-|--------|-------------|---------|----------|
-| `--source` | Path to tileset file or folder pattern | - | Yes |
-| `--temp_folder` | Output directory for results | - | Yes |
-| `--actions` | Comma-separated actions: `process`, `serve` | `process` | No |
-| `--scheme` | Coordinate scheme: `TMS` or `XYZ` | `TMS` | No |
-| `--compressed` | Whether tiles are gzip compressed | `True` | No |
-| `--mbtiles_tbl` | MBTiles table schema: `table,x,y,z,data` | `tiles,tile_column,tile_row,zoom_level,tile_data` | No |
+| Option          | Description                                 | Default                                           | Required |
+| --------------- | ------------------------------------------- | ------------------------------------------------- | -------- |
+| `--source`      | Path to tileset file or folder pattern      | -                                                 | Yes      |
+| `--temp_folder` | Output directory for results                | -                                                 | Yes      |
+| `--actions`     | Comma-separated actions: `process`, `serve` | `process`                                         | No       |
+| `--scheme`      | Coordinate scheme: `TMS` or `XYZ`           | `TMS`                                             | No       |
+| `--compressed`  | Whether tiles are gzip compressed           | `True`                                            | No       |
+| `--mbtiles_tbl` | MBTiles table schema: `table,x,y,z,data`    | `tiles,tile_column,tile_row,zoom_level,tile_data` | No       |
 
 ## Architecture
 
@@ -172,6 +175,7 @@ TilesetAnalyzer consists of two main components:
 ![Architecture](./docs/images/hld.png)
 
 ### 1. Python CLI Tool (Backend)
+
 - Reads and parses vector tiles (Mapbox Vector Tile format)
 - Performs comprehensive analysis using pandas and numpy
 - Generates JSON output with metrics and metadata
@@ -183,6 +187,7 @@ TilesetAnalyzer consists of two main components:
   - 🚧 COMTiles (coming soon)
 
 ### 2. React Web UI (Frontend)
+
 - Single-page application for interactive data exploration
 - Real-time chart rendering with ECharts
 - Interactive map preview with MapLibre GL JS
@@ -192,6 +197,7 @@ TilesetAnalyzer consists of two main components:
 ## Technology Stack
 
 ### Backend (Python)
+
 - **FastAPI** `~0.88.0` - Modern web framework for API
 - **uvicorn** `~0.20.0` - ASGI server
 - **pandas** `~1.5.2` - Data analysis and aggregations
@@ -200,6 +206,7 @@ TilesetAnalyzer consists of two main components:
 - **parse** `~1.19.0` - Pattern parsing for folder tiles
 
 ### Frontend (React/TypeScript)
+
 - **React** `18.2.0` - UI framework
 - **TypeScript** `4.9.3` - Type-safe JavaScript
 - **AWS Cloudscape Components** - Professional UI component library
@@ -208,28 +215,30 @@ TilesetAnalyzer consists of two main components:
 - **Zustand** `~4.3.3` - Lightweight state management
 - **React Router** `~6.4.4` - SPA routing
 - **LocalForage** `~1.10.0` - Persistent browser storage
-- **SCSS** - Styling 
+- **SCSS** - Styling
 
 ## Development
 
 ### Setting Up Development Environment
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/geoyogesh/tileset_analyzer.git
    cd tileset_analyzer
    ```
 
 2. **Create virtual environment**:
+
    ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
 3. **Install dependencies**:
+
    ```bash
-   pip install -r requirements.txt
-   pip install -e .
+   pip install -e ".[dev]"
    ```
 
 4. **Frontend development** (optional):
@@ -270,11 +279,13 @@ TilesetAnalyzer/
 ### CLI Commands
 
 **Main command**:
+
 ```bash
 tileset_analyzer --source <path> --temp_folder <output> [OPTIONS]
 ```
 
 **Options**:
+
 - `--source` (required): Path to tileset or folder pattern
 - `--temp_folder` (required): Output directory for analysis results
 - `--actions`: `process` (analyze), `serve` (web UI), or both (comma-separated)
@@ -313,26 +324,31 @@ Analysis results are saved as JSON in `<temp_folder>/analysis_result.json`:
 ## Screenshots
 
 ### Layer Exploration
+
 View all layers and their attributes across zoom levels:
 
 ![Explore Layers](./docs/images/explore_layers.png)
 
 ### Interactive Map View
+
 Preview tiles on a map and inspect feature properties:
 
 ![Map View](./docs/images/mapview.png)
 
 ### Tile Count Metrics
+
 Analyze tile distribution across zoom levels:
 
 ![Tile Count](./docs/images/zoom_tile_count.png)
 
 ### Layer Size Analysis
+
 Understand which layers contribute most to tileset size:
 
 ![Tile Set Size](./docs/images/tile_set_size.png)
 
 ### Treemap Visualization
+
 Hierarchical view of layer size contributions:
 
 ![Treemap](./docs/images/treemap.png)
@@ -342,18 +358,23 @@ Hierarchical view of layer size contributions:
 ### Common Issues
 
 **Issue**: `ModuleNotFoundError: No module named 'tileset_analyzer'`
+
 - **Solution**: Ensure you've installed the package: `pip install tileset-analyzer`
 
 **Issue**: Web UI doesn't load or shows blank page
+
 - **Solution**: Check that `--actions` includes `serve` and browser is pointing to `http://localhost:8080`
 
 **Issue**: "Permission denied" when reading tileset
+
 - **Solution**: Verify file permissions and that the path is correct
 
 **Issue**: Analysis fails with memory error on large tilesets
+
 - **Solution**: TilesetAnalyzer loads the entire tileset into memory. For very large tilesets, ensure sufficient RAM or process subsets
 
 **Issue**: Wrong tiles displayed on map
+
 - **Solution**: Verify the `--scheme` parameter matches your tileset (TMS vs XYZ)
 
 ### Getting Help
@@ -385,6 +406,7 @@ Contributions are welcome! To contribute:
 5. Open a Pull Request
 
 Please ensure:
+
 - Code follows existing style conventions
 - New features include appropriate documentation
 - Bug fixes include test cases when possible
@@ -403,6 +425,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Original repository: https://github.com/geoyogesh/tileset_analyzer
 - Mapbox Vector Tile Specification: https://github.com/mapbox/vector-tile-spec
-
-
-

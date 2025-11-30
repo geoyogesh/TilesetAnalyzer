@@ -1,8 +1,6 @@
 import React, { forwardRef } from 'react';
 import { Box, Button, Link, SpaceBetween } from '@cloudscape-design/components';
 
-
-
 export const TableNoMatchState = (props: any) => (
   <Box margin={{ vertical: 'xs' }} textAlign="center" color="inherit">
     <SpaceBetween size="xxs">

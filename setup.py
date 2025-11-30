@@ -1,6 +1,8 @@
-from setuptools import setup, find_packages
 import re
 from pathlib import Path
+
+from setuptools import find_packages, setup
+
 
 # Read version from __init__.py
 def get_version():
@@ -11,6 +13,7 @@ def get_version():
         return match.group(1)
     raise RuntimeError("Unable to find version string.")
 
+
 CLASSIFIERS = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3.10",
@@ -19,20 +22,20 @@ CLASSIFIERS = [
 ]
 
 setup(
-    name='tileset_analyzer',
+    name="tileset_analyzer",
     version=get_version(),
-    url='https://github.com/geoyogesh/tileset_analyzer',
-    license='MIT',
-    author='Yogesh Dhanapal',
-    author_email='geoyogesh@gmail.com',
+    url="https://github.com/geoyogesh/tileset_analyzer",
+    license="MIT",
+    author="Yogesh Dhanapal",
+    author_email="geoyogesh@gmail.com",
     entry_points={"console_scripts": ["tileset_analyzer = tileset_analyzer.main:cli"]},
-    description='Analyze vector Tileset',
+    description="Analyze vector Tileset",
     python_requires=">=3.10, <4",
     packages=find_packages(),
-    long_description=open('README.md').read(),
-    long_description_content_type='text/markdown',
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
     zip_safe=False,
     classifiers=CLASSIFIERS,
     include_package_data=True,
-    install_requires=["fastapi", "uvicorn[standard]", "pandas", "protobuf<=3.20.3", "parse"]
+    install_requires=["fastapi", "uvicorn[standard]", "pandas", "protobuf<=3.20.3", "parse"],
 )

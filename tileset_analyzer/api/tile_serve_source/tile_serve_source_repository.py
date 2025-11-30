@@ -1,4 +1,6 @@
-from tileset_analyzer.api.tile_serve_source.folder_tiles.folder_serve_source import get_folder_serve_source
+from tileset_analyzer.api.tile_serve_source.folder_tiles.folder_serve_source import (
+    get_folder_serve_source,
+)
 from tileset_analyzer.api.tile_serve_source.mbtiles.mbtiles_serve_source import get_mbtiles_source
 from tileset_analyzer.entities.job_param import JobParam, TileSourceType
 

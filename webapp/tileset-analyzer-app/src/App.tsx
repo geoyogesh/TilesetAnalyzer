@@ -1,64 +1,59 @@
-
-import {
-    createBrowserRouter,
-    RouterProvider,
-    Navigate,
-} from "react-router-dom";
-import ErrorPage from "./Error/ErrorPage";
-import Layout from "./Layout/LayoutPage";
-import TileCount from "./Metrics/TileCountPage";
-import TileSize from "./Metrics/TileSizePage";
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+import ErrorPage from './Error/ErrorPage';
+import Layout from './Layout/LayoutPage';
+import TileCount from './Metrics/TileCountPage';
+import TileSize from './Metrics/TileSizePage';
 import './App.scss';
 import React, { FC } from 'react';
-import TilesetInfo from "./Info/TilesetInfo";
-import LayerTileSize from "./Metrics/LayerTileSizePage";
-import LayerSizeTree from "./Metrics/LayerSizeTreePage";
-import TilesetMap from "./Info/TilesetMap";
+import TilesetInfo from './Info/TilesetInfo';
+import LayerTileSize from './Metrics/LayerTileSizePage';
+import LayerSizeTree from './Metrics/LayerSizeTreePage';
+import TilesetMap from './Info/TilesetMap';
 
 const App: FC = () => {
-    const router = createBrowserRouter([
+  const router = createBrowserRouter([
+    {
+      path: '/',
+      element: <Layout />,
+      errorElement: <ErrorPage />,
+      children: [
         {
-            path: "/",
-            element: <Layout />,
-            errorElement: <ErrorPage />,
-            children: [
-                {
-                    path: "/",
-                    element: <Navigate to="/tile-size" replace={true}/>,
-                },
-                {
-                    path: "",
-                    element: <Navigate to="/tile-size" replace={true}/>,
-                },
-                {
-                    path: "/tileset-info",
-                    element: <TilesetInfo />,
-                },
-                {
-                    path: "/map-view",
-                    element: <TilesetMap />,
-                },
-                {
-                    path: "/tile-size",
-                    element: <TileSize />,
-                },
-                {
-                    path: "/tile-count",
-                    element: <TileCount />,
-                },
-                {
-                    path: "/tile-layer-size",
-                    element: <LayerTileSize />,
-                },
-                {
-                    path: "/tile-layer-size-tree-map",
-                    element: <LayerSizeTree />,
-                },
-            ],
+          path: '/',
+          element: <Navigate to="/tile-size" replace={true} />,
         },
-    ]);
+        {
+          path: '',
+          element: <Navigate to="/tile-size" replace={true} />,
+        },
+        {
+          path: '/tileset-info',
+          element: <TilesetInfo />,
+        },
+        {
+          path: '/map-view',
+          element: <TilesetMap />,
+        },
+        {
+          path: '/tile-size',
+          element: <TileSize />,
+        },
+        {
+          path: '/tile-count',
+          element: <TileCount />,
+        },
+        {
+          path: '/tile-layer-size',
+          element: <LayerTileSize />,
+        },
+        {
+          path: '/tile-layer-size-tree-map',
+          element: <LayerSizeTree />,
+        },
+      ],
+    },
+  ]);
 
-    return (<RouterProvider router={router} />);
-}
+  return <RouterProvider router={router} />;
+};
 
 export default App;

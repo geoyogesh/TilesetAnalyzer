@@ -18,6 +18,7 @@ Generate fine-grained token at: https://github.com/settings/tokens?type=beta
 **Repository access**: Only select repositories → TilesetAnalyzer
 
 **Permissions**:
+
 - **Contents**: Read and write
 - **Metadata**: Read (automatic)
 
@@ -39,11 +40,13 @@ Monitor at: https://app.circleci.com/pipelines/github/geoyogesh/TilesetAnalyzer
 ### Permission Denied
 
 **Check token permissions**:
+
 - Contents: Read and write
 - Repository access: TilesetAnalyzer selected
 - Token not expired
 
 **Test token**:
+
 ```bash
 curl -H "Authorization: token $GITHUB_TOKEN" \
   https://api.github.com/repos/geoyogesh/TilesetAnalyzer
@@ -52,6 +55,7 @@ curl -H "Authorization: token $GITHUB_TOKEN" \
 ### No Release Created
 
 Ensure conventional commits:
+
 ```bash
 git commit -m "feat: add feature"  # ✓ Creates release
 git commit -m "add feature"        # ✗ No release

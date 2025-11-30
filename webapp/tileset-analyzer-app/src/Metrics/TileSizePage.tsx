@@ -1,163 +1,183 @@
-import { FC, useEffect, useState } from "react";
-import { AnalysisResult, TilesSizeAggByZ } from "../AnalysisResult";
-import ReactEcharts, { EChartsOption } from "echarts-for-react"
-import { BASE_CHART_CONFIG, CHART_STYLE } from "./Support/ChartProps";
-import { bytesConverted, bytesToString, bytesUnit } from "./Support/SizeConversions";
-import { Container, ContentLayout, Header, Select, SpaceBetween, Spinner } from "@cloudscape-design/components";
-import { OptionDefinition } from "@cloudscape-design/components/internal/components/option/interfaces";
+import { FC, useEffect, useState } from 'react';
+import { AnalysisResult, TilesSizeAggByZ } from '../AnalysisResult';
+import ReactEcharts, { EChartsOption } from 'echarts-for-react';
+import { BASE_CHART_CONFIG, CHART_STYLE } from './Support/ChartProps';
+import { bytesConverted, bytesToString, bytesUnit } from './Support/SizeConversions';
+import {
+  Container,
+  ContentLayout,
+  Header,
+  Select,
+  SpaceBetween,
+  Spinner,
+} from '@cloudscape-design/components';
+import { OptionDefinition } from '@cloudscape-design/components/internal/components/option/interfaces';
 
 const TileSize: FC = () => {
-    const [tilesSizeAggbyZ, setTilesSizeAggbyZ] = useState<{ [agg_type: string]: any } | null>(null);
+  const [tilesSizeAggbyZ, setTilesSizeAggbyZ] = useState<{ [agg_type: string]: any } | null>(null);
 
-    const aggOptions: OptionDefinition[] = [
-        {
-            value: 'SUM',
-            label: 'Sum',
-        },
-        {
-            value: 'MIN',
-            label: 'Minimum',
-        },
-        {
-            value: 'MAX',
-            label: 'Maximum',
-        },
-        {
-            value: 'AVG',
-            label: 'Average',
-        },
-        {
-            value: '50p',
-            label: '50th Percentile',
-        },
-        {
-            value: '85p',
-            label: '85th Percentile',
-        },
-        {
-            value: '90p',
-            label: '90th Percentile',
-        },
-        {
-            value: '95p',
-            label: '95th Percentile',
-        },
-        {
-            value: '99p',
-            label: '99th Percentile',
+  const aggOptions: OptionDefinition[] = [
+    {
+      value: 'SUM',
+      label: 'Sum',
+    },
+    {
+      value: 'MIN',
+      label: 'Minimum',
+    },
+    {
+      value: 'MAX',
+      label: 'Maximum',
+    },
+    {
+      value: 'AVG',
+      label: 'Average',
+    },
+    {
+      value: '50p',
+      label: '50th Percentile',
+    },
+    {
+      value: '85p',
+      label: '85th Percentile',
+    },
+    {
+      value: '90p',
+      label: '90th Percentile',
+    },
+    {
+      value: '95p',
+      label: '95th Percentile',
+    },
+    {
+      value: '99p',
+      label: '99th Percentile',
+    },
+  ];
+
+  const [aggSelection, setAggSelection] = useState<OptionDefinition>(
+    aggOptions.find(item => item.value === 'AVG')!
+  );
+
+  useEffect(() => {
+    fetch('http://0.0.0.0:8080/api/analysis_result.json')
+      .then(res => res.json())
+      .then((res: AnalysisResult) => {
+        const aggTypes = [
+          ['MIN', 'tiles_size_agg_min_by_z'],
+          ['MAX', 'tiles_size_agg_max_by_z'],
+          ['AVG', 'tiles_size_agg_avg_by_z'],
+          ['SUM', 'tiles_size_agg_sum_by_z'],
+          ['50p', 'tiles_size_agg_50p_by_z'],
+          ['85p', 'tiles_size_agg_85p_by_z'],
+          ['90p', 'tiles_size_agg_90p_by_z'],
+          ['95p', 'tiles_size_agg_95p_by_z'],
+          ['99p', 'tiles_size_agg_99p_by_z'],
+        ];
+
+        const tileSizeAggOptions: { [agg_type: string]: any } = {};
+
+        for (const [aggType, agg_metric] of aggTypes) {
+          const values = (res as any)[agg_metric].map((item: TilesSizeAggByZ) => item.size);
+          const maxValue = Math.max(
+            ...(res as any)[agg_metric]
+              .filter((item: TilesSizeAggByZ) => item.size !== null)
+              .map((item: TilesSizeAggByZ) => item.size)
+          );
+          const unit = bytesUnit(maxValue, true, 0);
+
+          const convertedValues = (res as any)[agg_metric].map((item: TilesSizeAggByZ) =>
+            bytesConverted(item.size, unit, true, 0)
+          );
+          //console.log(aggType, maxValue, unit, values, convertedValues);
+          const options: EChartsOption = {
+            ...BASE_CHART_CONFIG,
+            ...{
+              xAxis: {
+                ...BASE_CHART_CONFIG.xAxis,
+                ...{
+                  type: 'category',
+                  data: (res as any)[agg_metric].map((item: TilesSizeAggByZ) => item.z),
+                  name: 'Zoom Level',
+                },
+              },
+              yAxis: {
+                ...BASE_CHART_CONFIG.yAxis,
+                ...{
+                  type: 'value',
+                  name: `${
+                    aggOptions.filter(item => item.value === aggType)[0].label
+                  } Tile Size (in ${unit})`,
+                  nameGap: 40,
+                },
+              },
+              series: [
+                {
+                  data: convertedValues,
+                  type: 'bar',
+                  smooth: true,
+                  name: `${aggOptions.filter(item => item.value === aggType)[0].label} Tile Size: `,
+                  tooltip: {
+                    valueFormatter: (value: number) => (value ? `${value} ${unit}` : ' - '),
+                  },
+                  label: {
+                    show: true,
+                    position: 'top',
+                    valueAnimation: true,
+                    formatter: `{@score} ${unit}`,
+                  },
+                },
+              ],
+            },
+          };
+          tileSizeAggOptions[aggType] = options;
         }
-    ];
+        setTilesSizeAggbyZ(tileSizeAggOptions);
+      })
+      .catch(err => {
+        console.log(err.message);
+      });
+  }, []);
 
-    const [aggSelection, setAggSelection] = useState<OptionDefinition>(aggOptions.find(item => item.value === 'AVG')!);
+  const handleChange = (value: OptionDefinition) => {
+    setAggSelection(value);
+  };
 
-    useEffect(() => {
-        fetch('http://0.0.0.0:8080/api/analysis_result.json')
-            .then((res) => res.json())
-            .then((res: AnalysisResult) => {
-
-                const aggTypes = [
-                    ['MIN', 'tiles_size_agg_min_by_z'],
-                    ['MAX', 'tiles_size_agg_max_by_z'],
-                    ['AVG', 'tiles_size_agg_avg_by_z'],
-                    ['SUM', 'tiles_size_agg_sum_by_z'],
-                    ['50p', 'tiles_size_agg_50p_by_z'],
-                    ['85p', 'tiles_size_agg_85p_by_z'],
-                    ['90p', 'tiles_size_agg_90p_by_z'],
-                    ['95p', 'tiles_size_agg_95p_by_z'],
-                    ['99p', 'tiles_size_agg_99p_by_z']
-                ]
-
-                const tileSizeAggOptions: { [agg_type: string]: any } = {}
-
-                for (const [aggType, agg_metric] of aggTypes) {
-                    const values = (res as any)[agg_metric].map((item: TilesSizeAggByZ) => item.size);
-                    const maxValue = Math.max(...(res as any)[agg_metric]
-                        .filter((item: TilesSizeAggByZ) => item.size !== null)
-                        .map((item: TilesSizeAggByZ) => item.size));
-                    const unit = bytesUnit(maxValue, true, 0);
-
-                    const convertedValues = (res as any)[agg_metric].map((item: TilesSizeAggByZ) => bytesConverted(item.size, unit, true, 0));
-                    //console.log(aggType, maxValue, unit, values, convertedValues);
-                    const options: EChartsOption = {
-                        ...BASE_CHART_CONFIG,
-                        ...{
-                            xAxis: {
-                                ...BASE_CHART_CONFIG.xAxis,
-                                ...{
-                                    type: "category",
-                                    data: (res as any)[agg_metric].map((item: TilesSizeAggByZ) => item.z),
-                                    name: 'Zoom Level',
-                                }
-                            },
-                            yAxis: {
-                                ...BASE_CHART_CONFIG.yAxis,
-                                ...{
-                                    type: "value",
-                                    name: `${aggOptions.filter(item => item.value === aggType)[0].label} Tile Size (in ${unit})`,
-                                    nameGap: 40
-                                },
-                            },
-                            series: [
-                                {
-                                    data: convertedValues,
-                                    type: "bar",
-                                    smooth: true,
-                                    name: `${aggOptions.filter(item => item.value === aggType)[0].label} Tile Size: `,
-                                    tooltip: {
-                                        valueFormatter: (value: number) => value ? `${value} ${unit}` : ' - '
-                                    },
-                                    label: {
-                                        show: true,
-                                        position: 'top',
-                                        valueAnimation: true,
-                                        formatter: `{@score} ${unit}`
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                    tileSizeAggOptions[aggType] = options;
-                }
-                setTilesSizeAggbyZ(tileSizeAggOptions);
-            })
-            .catch((err) => {
-                console.log(err.message);
-            });
-    }, []);
-
-
-    const handleChange = (value: OptionDefinition) => {
-        setAggSelection(value);
-    };
-
-
-    return (
-        <ContentLayout header={<Header
-            variant="h1">Tileset Mertics</Header>}>
-            <SpaceBetween direction="vertical" size="m">
-                <Container
-                    header={
-                        <Header variant="h3" actions={
-                            <div className="select-metric">
-                                <Select
-                                    selectedOption={aggSelection}
-                                    onChange={({ detail }) =>
-                                        handleChange(detail.selectedOption)
-                                    }
-                                    options={aggOptions}
-                                />
-                            </div>
-                            }>
-                            {`Tile Size ${aggOptions.filter(item => item.value === aggSelection.value)[0].label} by Zoom level`}
-                        </Header>
-                    }
-                >
-                    {tilesSizeAggbyZ !== null ? <ReactEcharts option={tilesSizeAggbyZ[aggSelection.value!]} style={CHART_STYLE}></ReactEcharts> : <Spinner />}
-                </Container>
-
-            </SpaceBetween>
-        </ContentLayout>
-    );
-}
+  return (
+    <ContentLayout header={<Header variant="h1">Tileset Mertics</Header>}>
+      <SpaceBetween direction="vertical" size="m">
+        <Container
+          header={
+            <Header
+              variant="h3"
+              actions={
+                <div className="select-metric">
+                  <Select
+                    selectedOption={aggSelection}
+                    onChange={({ detail }) => handleChange(detail.selectedOption)}
+                    options={aggOptions}
+                  />
+                </div>
+              }
+            >
+              {`Tile Size ${
+                aggOptions.filter(item => item.value === aggSelection.value)[0].label
+              } by Zoom level`}
+            </Header>
+          }
+        >
+          {tilesSizeAggbyZ !== null ? (
+            <ReactEcharts
+              option={tilesSizeAggbyZ[aggSelection.value!]}
+              style={CHART_STYLE}
+            ></ReactEcharts>
+          ) : (
+            <Spinner />
+          )}
+        </Container>
+      </SpaceBetween>
+    </ContentLayout>
+  );
+};
 
 export default TileSize;

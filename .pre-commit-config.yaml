@@ -1,0 +1,32 @@
+# Pre-commit hooks for code quality
+# See https://pre-commit.com for more information
+
+repos:
+  # General file checks (fast)
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+
+  # Code quality - run make check (formats and lints all code)
+  - repo: local
+    hooks:
+      - id: make-check
+        name: make check (format & lint all code)
+        entry: make check
+        language: system
+        pass_filenames: false
+        always_run: true
+
+  # Commit message validation (Conventional Commits)
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.2.1
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]

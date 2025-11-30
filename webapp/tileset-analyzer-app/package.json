@@ -32,7 +32,13 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build_local": "BUILD_PATH='../../tileset_analyzer/static/ui/' CI=false react-scripts build"
+    "build_local": "BUILD_PATH='../../tileset_analyzer/static/ui/' CI=false react-scripts build",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint src --ext .js,.jsx,.ts,.tsx --fix",
+    "check": "npm run format && npm run lint:fix",
+    "verify": "npm run format:check && npm run lint"
   },
   "eslintConfig": {
     "extends": [
@@ -52,6 +58,7 @@
     ]
   },
   "devDependencies": {
+    "prettier": "^3.1.0",
     "sass": "^1.94.2"
   }
 }

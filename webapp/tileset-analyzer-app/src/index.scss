@@ -1,14 +1,12 @@
-@import "@cloudscape-design/global-styles/index.css";
-
+@import '@cloudscape-design/global-styles/index.css';
 
 .logo {
   float: left;
   width: 150px;
   height: 32px;
   margin: 16px 24px 16px 0;
-  object-fit:cover;
+  object-fit: cover;
 }
-
 
 .ant-row-rtl .logo {
   float: right;
@@ -18,4 +16,3 @@
 .site-layout-background {
   background: #fff;
 }
-

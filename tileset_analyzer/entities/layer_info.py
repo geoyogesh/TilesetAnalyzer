@@ -1,5 +1,5 @@
-import numbers
 import math
+import numbers
 
 
 class LayerInfo:

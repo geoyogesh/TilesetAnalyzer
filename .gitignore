@@ -167,4 +167,7 @@ output/*
 tileset_analyzer/static/data/*
 tileset_analyzer/static/ui/*
 
+# Claude Code local settings
+.claude/settings.local.json
+
 !/**/**/.gitkeep
