@@ -1,12 +1,14 @@
 # Release Process
 
-TilesetAnalyzer uses [Python Semantic Release](https://python-semantic-release.readthedocs.io/) to automate versioning and releases based on [Conventional Commits](https://www.conventionalcommits.org/).
+TilesetAnalyzer uses [Python Semantic Release](https://python-semantic-release.readthedocs.io/) with [CircleCI](https://circleci.com/) to automate versioning and releases based on [Conventional Commits](https://www.conventionalcommits.org/).
+
+> **Note**: For CircleCI setup instructions, see [CIRCLECI_SETUP.md](CIRCLECI_SETUP.md)
 
 ## Quick Start
 
 ### Automatic Release (Recommended)
 
-Releases are **automatically created** when commits are pushed to the `main` branch:
+Releases are **automatically created** via CircleCI when commits are pushed to the `main` branch:
 
 ```bash
 # Make changes and commit using conventional commits
@@ -14,7 +16,7 @@ git add .
 git commit -m "feat: add new tile processing algorithm"
 git push origin main
 
-# Semantic Release automatically:
+# CircleCI + Semantic Release automatically:
 # 1. Analyzes commits since last release
 # 2. Determines version bump (major/minor/patch)
 # 3. Updates version in code
@@ -25,14 +27,16 @@ git push origin main
 
 ### Manual Trigger
 
-You can also manually trigger a release:
+CircleCI can be triggered manually:
 
 ```bash
-# Via GitHub UI
-# Go to: Actions → "Semantic Release" → Run workflow
+# Via CircleCI UI
+# Go to: https://app.circleci.com/pipelines/github/geoyogesh/TilesetAnalyzer
+# Click "Trigger Pipeline"
 
-# Via GitHub CLI
-gh workflow run semantic-release.yml
+# Or via API (requires CIRCLECI_TOKEN)
+curl -X POST https://circleci.com/api/v2/project/gh/geoyogesh/TilesetAnalyzer/pipeline \
+  -H "Circle-Token: $CIRCLECI_TOKEN"
 ```
 
 ## Conventional Commits
@@ -206,28 +210,39 @@ gh release view
 gh run list --workflow=semantic-release.yml --limit 5
 ```
 
-### GitHub Actions Dashboard
+### CircleCI Dashboard
 
 Monitor releases at:
-- **Workflows**: `https://github.com/geoyogesh/TilesetAnalyzer/actions`
-- **Releases**: `https://github.com/geoyogesh/TilesetAnalyzer/releases`
+- **CircleCI Pipelines**: `https://app.circleci.com/pipelines/github/geoyogesh/TilesetAnalyzer`
+- **CircleCI Insights**: `https://app.circleci.com/insights/github/geoyogesh/TilesetAnalyzer/workflows`
+- **GitHub Releases**: `https://github.com/geoyogesh/TilesetAnalyzer/releases`
 - **PyPI**: `https://pypi.org/project/tileset-analyzer/`
 
-## Legacy Release Scripts
+## CI/CD Platform
 
-The repository also includes legacy manual release scripts:
+### CircleCI (Primary - Recommended)
 
-### Local Script
+The project uses CircleCI for automated releases. See [CIRCLECI_SETUP.md](CIRCLECI_SETUP.md) for setup instructions.
+
+**Configuration**: `.circleci/config.yml`
+
+### GitHub Actions (Legacy - Optional)
+
+GitHub Actions workflows are still available but not actively used:
+- `.github/workflows/semantic-release.yml` - Semantic release workflow
+- `.github/workflows/release.yml` - Manual release workflow
+
+You can use either CircleCI or GitHub Actions, or both simultaneously.
+
+### Legacy Release Scripts
+
+Manual release scripts are preserved for backward compatibility:
 
 ```bash
-# Still available for manual releases
+# Local release script (still available)
 ./scripts/release.sh [patch|minor|major]
 ./scripts/release.sh --dry-run minor
 ```
-
-### GitHub Workflow
-
-The old workflow (`.github/workflows/release.yml`) is preserved but **Semantic Release is now preferred**.
 
 ## Best Practices
 
