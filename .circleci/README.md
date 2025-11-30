@@ -39,6 +39,10 @@ semantic-release (determines version from commits)
 publish-pypi (uploads to PyPI)
 ```
 
+## Python Version
+
+This project requires Python 3.10 or higher. The CircleCI configuration uses Python 3.11.
+
 ## Environment Variables
 
 Required environment variables (configured in CircleCI project settings):
