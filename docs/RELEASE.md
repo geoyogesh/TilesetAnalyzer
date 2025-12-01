@@ -235,7 +235,7 @@ GitHub Actions workflows have been removed in favor of CircleCI:
 - `publish.yml` - Now handled by CircleCI
 - `release.yml` - Now handled by CircleCI + conventional commits
 
-**Note**: Workflows are preserved in git history if needed. See [CI_PLATFORM_COMPARISON.md](CI_PLATFORM_COMPARISON.md) for migration details.
+**Note**: Workflows are preserved in git history if needed.
 
 ### Legacy Release Scripts
 
