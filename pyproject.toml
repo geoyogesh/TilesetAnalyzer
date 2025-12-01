@@ -59,7 +59,6 @@ include = ["tileset_analyzer*"]
 version = {attr = "tileset_analyzer.__version__"}
 
 [tool.semantic_release]
-version_toml = ["pyproject.toml:project.version"]
 version_variables = ["tileset_analyzer/__init__.py:__version__"]
 branch = "main"
 upload_to_pypi = false
@@ -202,10 +201,9 @@ known-third-party = ["fastapi", "pandas", "protobuf"]
 # Commitizen configuration
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "1.1.2"
+version_provider = "pep621"
 version_files = [
-    "tileset_analyzer/__init__.py:__version__",
-    "pyproject.toml:version"
+    "tileset_analyzer/__init__.py:__version__"
 ]
 update_changelog_on_bump = true
 tag_format = "$version"
